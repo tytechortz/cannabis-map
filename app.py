@@ -20,14 +20,18 @@ mapbox_access_token = 'pk.eyJ1IjoidHl0ZWNob3J0eiIsImEiOiJjanN1emtuc2cwMXNhNDNuej
 
 
 with open('./Colorado_County_Boundaries.geojson') as f:
-    red_data = json.load(f)
+    counties = json.load(f)
 # with open('./solar.geojson') as f:
 #     red_data = json.load(f)    
 # sources=[{"type": "FeatureCollection", 'features': [feat]} for feat in red_data['features']]
-solar = gpd.read_file('./solar.geojson')
+dec_2017 = []
 
+
+weed_stats = pd.read_csv('./weed_stats.csv')
 county_df = pd.read_csv('./counties.csv')
 
+i = 0
+print(len(weed_stats['Tot_Sales']))
 
 text=[]
 # i = 0
@@ -52,11 +56,10 @@ body = dbc.Container([
                         'lat': county_df['CENT_LAT'],
                         'lon': county_df['CENT_LONG'],
                         'marker': {
-                            'color': df['YEAR'],
+                            # 'color': county_df[''],
                             'size': 8,
                             'opacity': 0.6
                         },
-                        'customdata': df['storenum'],
                         'type': 'scattermapbox'
                     }],
                     'layout': {
@@ -68,7 +71,7 @@ body = dbc.Container([
                             'layers': [
                                 {
                                     'sourcetype': 'geojson',
-                                    'source': red_data,
+                                    'source': counties,
                                     'type': 'fill',
 
                                     'color': 'rgba(255, 255, 255, .05)'
