@@ -5,6 +5,9 @@ import pandas as pd
 import dash_bootstrap_components as dbc
 import geopandas as gpd 
 import json
+import numpy as np
+# import dash_colorscales
+
 
 from plotly import graph_objs as go
 from plotly.graph_objs import *
@@ -15,84 +18,96 @@ from dash.dependencies import Input, Output, State
 
 app = dash.Dash(__name__)
 server = app.server
+
 app.config['suppress_callback_exceptions']=True
+
 mapbox_access_token = 'pk.eyJ1IjoidHl0ZWNob3J0eiIsImEiOiJjanN1emtuc2cwMXNhNDNuejdrMnN2aHYyIn0.kY0fOoozCTY-4IUzcLx22w'
 
-
+# Read data
 with open('./Colorado_County_Boundaries.geojson') as f:
     counties = json.load(f)
-# with open('./solar.geojson') as f:
-#     red_data = json.load(f)    
-# sources=[{"type": "FeatureCollection", 'features': [feat]} for feat in red_data['features']]
-dec_2017 = []
-
-
 weed_stats = pd.read_csv('./weed_stats.csv')
 county_df = pd.read_csv('./counties.csv')
 
-
-i = 0
-print(len(weed_stats['Tot_Sales']))
+new_cty_df = pd.DataFrame(counties.items())
 
 
+stats_2017 = weed_stats.loc[weed_stats['Year'] == 2017]
+values = stats_2017['Tot_Sales'].tolist()
+endpts = list(np.mgrid[min(values):max(values):4j])
 
-# i = 0
-# print(len(solar['dni']))
-# while i < len(solar['dni']):
-#     text.append(str(solar['dni'][i]))
-#     i += 1
-# print(type(text[0]))
+BINS = ['0-17872757','17872757.1-35745515','35745515.1-53618273', '>53618273']
+print(BINS)
+DEFAULT_COLORSCALE = ["#2a4858", "#265465", "#1e6172", "#106e7c"]
+
+DEFAULT_OPACITY = 0.8
+
+YEARS = [2014, 2015, 2016, 2017, 2018]
+
 names=[]
 i = 0
-print(len(county_df['COUNTY']))
 while i < len(county_df['COUNTY']):
     names.append(county_df['COUNTY'][i])
     i += 1
-print(names)
+
+
 
 
 #  Layouts
 body = dbc.Container([
     dbc.Row([
-        html.Div(id='text-content'),
-        html.Div(
-            [
-                dcc.Graph(id='map', figure={
-                    'data': [{
-                        'hoverinfo': 'text',
-                        'lat': county_df['CENT_LAT'],
-                        'lon': county_df['CENT_LONG'],
-                        'marker': {
-                            # 'color': county_df[''],
-                            'size': 4,
-                            'opacity': 0.6,
-                        },
-                        'text': ['LARIMER', 'LAS ANIMAS', 'FREMONT', 'GUNNISON', 'CONEJOS', 'EAGLE', 'OTERO', 'LA PLATA', 'SUMMIT', 'CUSTER', 'PITKIN', 'CROWLEY', 'CHEYENNE', 'BENT', 'ADAMS', 'ELBERT', 'YUMA', 'LAKE', 'DELTA', 'COSTILLA', 'GARFIELD', 'MORGAN', 'PROWERS', 'MONTEZUMA', 'MINERAL', 'LINCOLN', 'JEFFERSON', 'RIO BLANCO', 'SEDGWICK', 'SAN MIGUEL', 'ALAMOSA', 'PHILLIPS', 'OURAY', 'MESA', 'SAGUACHE', 'DOUGLAS', 'DOLORES', 'RIO GRANDE', 'PUEBLO', 'KIT CARSON', 'BACA', 'GRAND', 'LOGAN', 'CLEAR CREEK', 'MOFFAT', 'TELLER', 'BOULDER', 'KIOWA', 'CHAFFEE', 'HINSDALE', 'JACKSON', 'WELD', 'SAN JUAN', 'MONTROSE', 'BROOMFIELD', 'WASHINGTON', 'ROUTT', 'ARCHULETA', 'GILPIN', 'DENVER', 'PARK', 'EL PASO', 'ARAPAHOE', 'HUERFANO'],
-                        'type': 'scattermapbox'
-                    }],
-                    'layout': {
-                        'mapbox': {
-                            'accesstoken': mapbox_access_token,
-                            'center': {'lon':-105.5, 'lat':39},
-                            'zoom':6,
-                            'style': 'light',
-                            'layers': [
-                                {
-                                    'sourcetype': 'geojson',
-                                    'source': counties,
-                                    'type': 'fill',
-
-                                    'color': 'rgba(255, 255, 255, .05)'
-                                },
-                            ]
-                        },
-                        'hovermode': 'closest',
-                        'height': 1000
-                        # 'margin': {'l': 0, 'r': 0, 'b': 0, 't': 0},
-                    }
-                }),
-            ], 
-        ),    
+        html.Div([
+				html.H4(children='Cannabis Sales'),
+				html.P('Drag the slider to change the year:'),
+			]),
+        html.Div([
+				dcc.Slider(
+					id='years-slider',
+					min=min(YEARS),
+					max=max(YEARS),
+					value=min(YEARS),
+					marks={str(year): str(year) for year in YEARS},
+			    ),
+		], style={'width':400, 'margin':25}),
+        # html.Div(id='text-content'),
+        # html.Div(
+        #     [
+        #         dcc.Graph(id='map', figure={
+        #             'data': [{
+        #                 'hoverinfo': 'text',
+        #                 'lat': county_df['CENT_LAT'],
+        #                 'lon': county_df['CENT_LONG'],
+        #                 'marker': {
+        #                     'color': 'blue',
+        #                     'size': 4,
+        #                     'opacity': 0.6,
+        #                 },
+        #                 'text': names,
+        #                 'type': 'scattermapbox',
+        #             }],
+        #             'layout': {
+        #                 'mapbox': {
+        #                     'accesstoken': mapbox_access_token,
+        #                     'center': {'lon':-105.5, 'lat':39},
+        #                     'zoom':6,
+        #                     'style': 'light',
+        #                     'layers': [
+        #                         {
+        #                             'sourcetype': 'geojson',
+        #                             'source': counties,
+        #                             'type': 'fill',
+        #                             'color': 'blue',
+                                    
+        #                         } 
+        #                     ]
+        #                 },
+        #                 'hovermode': 'closest',
+        #                 'height': 1000
+        #                 # 'margin': {'l': 0, 'r': 0, 'b': 0, 't': 0},
+        #             }
+        #         }),
+        #     ], 
+        # ),    
     ])
 ])
 
