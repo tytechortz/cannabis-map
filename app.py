@@ -69,6 +69,24 @@ body = dbc.Container([
 					marks={str(year): str(year) for year in YEARS},
 			    ),
 		], style={'width':400, 'margin':25}),
+
+        html.Br(),
+
+        html.P('Map transparency:',
+				style={
+					'display':'inline-block',
+					'verticalAlign': 'top',
+					'marginRight': '10px'
+				}
+		),
+    
+        html.Div([
+				dcc.Slider(
+					id='opacity-slider',
+					min=0, max=1, value=DEFAULT_OPACITY, step=0.1,
+					marks={tick: str(tick)[0:3] for tick in np.linspace(0,1,11)},
+				),
+		], style={'width':300, 'display':'inline-block', 'marginBottom':10}),
         # html.Div(id='text-content'),
         # html.Div(
         #     [
