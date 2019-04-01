@@ -30,19 +30,25 @@ dec_2017 = []
 weed_stats = pd.read_csv('./weed_stats.csv')
 county_df = pd.read_csv('./counties.csv')
 
+
 i = 0
 print(len(weed_stats['Tot_Sales']))
 
-text=[]
+
+
 # i = 0
 # print(len(solar['dni']))
 # while i < len(solar['dni']):
 #     text.append(str(solar['dni'][i]))
 #     i += 1
 # print(type(text[0]))
-
+names=[]
 i = 0
 print(len(county_df['COUNTY']))
+while i < len(county_df['COUNTY']):
+    names.append(county_df['COUNTY'][i])
+    i += 1
+print(names)
 
 
 #  Layouts
@@ -53,13 +59,15 @@ body = dbc.Container([
             [
                 dcc.Graph(id='map', figure={
                     'data': [{
+                        'hoverinfo': 'text',
                         'lat': county_df['CENT_LAT'],
                         'lon': county_df['CENT_LONG'],
                         'marker': {
                             # 'color': county_df[''],
-                            'size': 8,
-                            'opacity': 0.6
+                            'size': 4,
+                            'opacity': 0.6,
                         },
+                        'text': ['LARIMER', 'LAS ANIMAS', 'FREMONT', 'GUNNISON', 'CONEJOS', 'EAGLE', 'OTERO', 'LA PLATA', 'SUMMIT', 'CUSTER', 'PITKIN', 'CROWLEY', 'CHEYENNE', 'BENT', 'ADAMS', 'ELBERT', 'YUMA', 'LAKE', 'DELTA', 'COSTILLA', 'GARFIELD', 'MORGAN', 'PROWERS', 'MONTEZUMA', 'MINERAL', 'LINCOLN', 'JEFFERSON', 'RIO BLANCO', 'SEDGWICK', 'SAN MIGUEL', 'ALAMOSA', 'PHILLIPS', 'OURAY', 'MESA', 'SAGUACHE', 'DOUGLAS', 'DOLORES', 'RIO GRANDE', 'PUEBLO', 'KIT CARSON', 'BACA', 'GRAND', 'LOGAN', 'CLEAR CREEK', 'MOFFAT', 'TELLER', 'BOULDER', 'KIOWA', 'CHAFFEE', 'HINSDALE', 'JACKSON', 'WELD', 'SAN JUAN', 'MONTROSE', 'BROOMFIELD', 'WASHINGTON', 'ROUTT', 'ARCHULETA', 'GILPIN', 'DENVER', 'PARK', 'EL PASO', 'ARAPAHOE', 'HUERFANO'],
                         'type': 'scattermapbox'
                     }],
                     'layout': {
