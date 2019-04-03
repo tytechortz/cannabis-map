@@ -24,8 +24,16 @@ app.config['suppress_callback_exceptions']=True
 mapbox_access_token = 'pk.eyJ1IjoidHl0ZWNob3J0eiIsImEiOiJjanN1emtuc2cwMXNhNDNuejdrMnN2aHYyIn0.kY0fOoozCTY-4IUzcLx22w'
 
 df = gpd.read_file('./cannabis_business.geojson')
-print(df)
+print(df['Licensee'])
 
+text = []
+print(len(df))
+text=[]
+i=0
+while i < len(df):
+    text.append(df['Licensee'][i])
+    i += 1
+print(len(text))
 #  Layouts
 body = dbc.Container([
         dbc.Row([
@@ -47,6 +55,7 @@ body = dbc.Container([
                     dcc.Graph(id='map', 
                         figure={
                             'data': [{
+                                
                                 'lat': df['lat'],
                                 'lon': df['long'],
                                 'marker': {
@@ -54,6 +63,8 @@ body = dbc.Container([
                                     'size': 5,
                                     'opacity': 0.6
                                 },
+                                'text': text,
+                                'hoverinfo': 'text',
                                 # 'customdata': df['storenum'],
                                 'type': 'scattermapbox'
                             }],
@@ -67,6 +78,7 @@ body = dbc.Container([
                                     'zoom': 6,
                                 },
                                 'hovermode': 'closest',
+                                
                                 'height': 550,
                                 'margin': {'l': 0, 'r': 0, 'b': 0, 't': 0}
                             }
@@ -82,5 +94,5 @@ body = dbc.Container([
 
 app.layout = html.Div(body)
 
-if __name__ == '__main__':
-    app.run_server(debug=True)
+if __name__ == "__main__":
+    app.run_server(port=8024, debug=True)
