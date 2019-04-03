@@ -47,9 +47,6 @@ body = dbc.Container([
             ),
         ]),
         dbc.Row([
-            html.Div(id='text-content'),
-        ]),
-        dbc.Row([
             dbc.Col(
                 html.Div([
                     dcc.Graph(id='map', 
@@ -60,12 +57,12 @@ body = dbc.Container([
                                 'lon': df['long'],
                                 'marker': {
                                     'color': 'blue',
-                                    'size': 5,
+                                    'size': 6,
                                     'opacity': 0.6
                                 },
                                 'text': text,
                                 'hoverinfo': 'text',
-                                # 'customdata': df['storenum'],
+                                'customdata': df['uid'],
                                 'type': 'scattermapbox'
                             }],
                             'layout': {
@@ -85,12 +82,71 @@ body = dbc.Container([
                         }
                     ),
                 ]),
-                width={'size':8, 'offset':2 }
+                width={'size':10, 'offset':1 }
             ),
-        ])
+        ]),
+        dbc.Row([
+            html.Div(id='lic-name'),
+        ]),
+        dbc.Row([
+            html.Div(id='biz-name'),
+        ]),
+        dbc.Row([
+            html.Div(id='biz-type'),
+        ]),
+        dbc.Row([
+            html.Div(id='city'),
+        ]),
+        dbc.Row([
+            html.Div(id='address'),
+        ]),
+        dbc.Row([
+            html.Div(id='lic-num'),
+        ]),
+        
 ])
 
+@app.callback(
+    dash.dependencies.Output('lic-name', 'children'),
+    [dash.dependencies.Input('map', 'hoverData')])
+def update_text(hoverData):
+    s = df[df['uid'] == hoverData['points'][0]['customdata']]
+    return  'Licensee Name: {}'.format(s.iloc[0]['Licensee'])
 
+@app.callback(
+    dash.dependencies.Output('biz-name', 'children'),
+    [dash.dependencies.Input('map', 'hoverData')])
+def update_text(hoverData):
+    s = df[df['uid'] == hoverData['points'][0]['customdata']]
+    return  'Business Name: {}'.format(s.iloc[0]['DBA'])
+
+@app.callback(
+    dash.dependencies.Output('biz-type', 'children'),
+    [dash.dependencies.Input('map', 'hoverData')])
+def update_text(hoverData):
+    s = df[df['uid'] == hoverData['points'][0]['customdata']]
+    return  'Business Type: {}'.format(s.iloc[0]['Category'])
+
+@app.callback(
+    dash.dependencies.Output('city', 'children'),
+    [dash.dependencies.Input('map', 'hoverData')])
+def update_text(hoverData):
+    s = df[df['uid'] == hoverData['points'][0]['customdata']]
+    return  'City: {}'.format(s.iloc[0]['City'])
+
+@app.callback(
+    dash.dependencies.Output('address', 'children'),
+    [dash.dependencies.Input('map', 'hoverData')])
+def update_text(hoverData):
+    s = df[df['uid'] == hoverData['points'][0]['customdata']]
+    return  'Address: {}'.format(s.iloc[0]['Street_Address'])
+        
+@app.callback(
+    dash.dependencies.Output('lic-num', 'children'),
+    [dash.dependencies.Input('map', 'hoverData')])
+def update_text(hoverData):
+    s = df[df['uid'] == hoverData['points'][0]['customdata']]
+    return  'License Number: {}'.format(s.iloc[0]['License_No'])
 
 app.layout = html.Div(body)
 
