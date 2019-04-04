@@ -17,7 +17,7 @@ from dash.dependencies import Input, Output, State
 
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
-server = app.server
+# server = app.server
 
 app.config['suppress_callback_exceptions']=True
 
@@ -25,7 +25,7 @@ mapbox_access_token = 'pk.eyJ1IjoidHl0ZWNob3J0eiIsImEiOiJjanN1emtuc2cwMXNhNDNuej
 
 df = gpd.read_file('./cannabis_business.geojson')
 
-
+# print(df)
 
 
 text = []
@@ -37,53 +37,7 @@ while i < len(df):
     i += 1
 print(len(text))
 
-
-
-# transporters = []
-# for x in df:
-#     if df['Category'].any() == 'MED Licensed Transporters':
-#        print(df[x])
-
-# print(transporters)
-df_MED_Liscensed_Transporters = df.loc[df['Category'] == 'MED Licensed Transporters']
-
-
-df_MED_Licensed_Centers = df.loc[df['Category']  == 'MED Licensed Center']
-
-
-df_MED_Licensed_Cultivator = df.loc[df['Category']  == 'MED Licensed Cultivator']
-
-
-df_MED_Licensed_Infused_Product_Manufacturer = df.loc[df['Category']  == 'MED Licensed Infused Product Manufacturer']
-
-
-df_MED_Licensed_Infused_Product_Manufacturer = df.loc[df['Category']  == 'MED Licensed R&D Cultivation']
-
-
-df_MED_Licensed_Retail_Operator = df.loc[df['Category']  == 'MED Licensed Retail Operator'] 
-
-
-df_MED_Licensed_Testing_Facility = df.loc[df['Category']  == 'MED Licensed Testing Facility']
-
-
-df_MED_Licensed_Retail_Manufacturer = df.loc[df['Category']  == 'MED Licensed Retail Marijuana Product Manufacturer']
-
-
-df_MED_Licensed_Retail_Cultivator = df.loc[df['Category']  == 'MED Licensed Retail Cultivator'] 
-
-
-df_MED_Licensed_Retail_Testing_Facility = df.loc[df['Category']  == 'MED Licensed Retail Testing Facility']
-
-
-df_MED_Licensed_Retail_Transporter = df.loc[df['Category'] == 'MED Licensed Retail Transporter']
-
-
-df_MED_Licensed_Retail_Marijuana_Store = df.loc[df['Category']  == 'MED Licensed Retail Marijuana Store']
-
-
-
-
-
+df_MED_Licensed_Transporters = pd.DataFrame(df.loc[df['Category'] == 'MED Licensed Transporters'])
 
 #  Layouts
 body = dbc.Container([
@@ -118,7 +72,7 @@ body = dbc.Container([
                             }],
                             'layout': {
                                 'mapbox': {
-                                    'accesstoken': 'pk.eyJ1IjoiY2hyaWRkeXAiLCJhIjoiY2ozcGI1MTZ3MDBpcTJ3cXR4b3owdDQwaCJ9.8jpMunbKjdq1anXwU5gxIw',
+                                    'accesstoken': mapbox_access_token,
                                     'center': {
                                         'lat': 39,
                                         'lon':-105.5
@@ -138,30 +92,30 @@ body = dbc.Container([
         ]),
         dbc.Row([
             dbc.Col(
-                dcc.RadioItems(id='typess', options=[
-                    {'label':'MED Licensed Transporters','value':'df_MED_Liscensed_Transporters'},
-                    {'label':'MED Licensed Center','value':'df_MED_Licensed_Centers'},
-                    {'label':'MED Licensed Cultivator','value':'df_MED_Licensed_Cultivator'},
+                dcc.RadioItems(id='types', options=[
+                    {'label':'MED Licensed Transporters','value':'MED Licensed Transporters'},
+                    {'label':'MED Licensed Center','value':'MED Licensed Center'},
+                    {'label':'MED Licensed Cultivator','value':'MED Licensed Cultivator'},
                     {'label':'MED Licensed Infused Product Manufacturer','value':'MED Licensed Infused Product Manufacturer'},
-                    {'label':'MED Licensed R&D Cultivation','value':'df_MED_Licensed_R&D_Cultivation'},
-                    {'label':'MED Licensed Retail Operator','value':'df_MED_Licensed_Retail_Operator'},
-                    {'label':'MED Licensed Testing Facility','value':'df_MED_Licensed_Testing_Facility'},
-                    {'label':'MED Licensed Retail Marijuana Product Manufacturer','value':'df_MED_Licensed_Retail_Product_Manufacturer'},
-                    {'label':'MED Licensed Retail Cultivator','value':'df_MED_Licensed_Retail_Cultivator'},
-                    {'label':'MED Licensed Retail Testing Facility','value':'df_MED_Licensed_Retail_Testing_Facility'},
-                    {'label':'MED Licensed Retail Transporter','value':'df_MED_Licensed_Retail_Transporter'},
-                    {'label':'MED Licensed Retail Marijuana Store','value':'df_MED_Licensed_Retail_Marijuana_Store'},
-                ]),
-                width = {'size': 10,'display': 'inline-block'}), 
+                    {'label':'MED Licensed R&D Cultivation','value':'MED Licensed R&D Cultivation'},
+                    {'label':'MED Licensed Retail Operator','value':'MED Licensed Retail Operator'},
+                    {'label':'MED Licensed Testing Facility','value':'MED Licensed Testing Facility'},
+                    {'label':'MED Licensed Retail Marijuana Product Manufacturer','value':'MED Licensed Retail Marijuana Product Manufacturer'},
+                    {'label':'MED Licensed Retail Cultivator','value':'MED Licensed Retail Cultivator'},
+                    {'label':'MED Licensed Retail Testing Facility','value':'MED Licensed Retail Testing Facility'},
+                    {'label':'MED Licensed Retail Transporter','value':'MED Licensed Retail Transporter'},
+                    {'label':'MED Licensed Retail Marijuana Store','value':'MED Licensed Retail Marijuana Store'}
+                    ]),
+                width = {'size': 10}),        
         ],
-        justify='center',
+        justify='around',
         ),
         dbc.Row([
             dbc.Col(
                 html.Div(id='table-container'),
             ),
             dbc.Col(
-                dcc.Graph(id='yearly-rankings-bar'),
+                dcc.Graph(id='map-2'),
             ),
         ]),
 
@@ -190,6 +144,74 @@ body = dbc.Container([
         ]),
         
 ])
+
+# figure={
+#                             'data': [{
+                                
+#                                 'lat': df['lat'],
+#                                 'lon': df['long'],
+#                                 'marker': {
+#                                     'color': 'blue',
+#                                     'size': 6,
+#                                     'opacity': 0.6
+#                                 },
+#                                 'text': text,
+#                                 'hoverinfo': 'text',
+#                                 'customdata': df['uid'],
+#                                 'type': 'scattermapbox'
+#                             }],
+#                             'layout': {
+#                                 'mapbox': {
+#                                     'accesstoken': 'pk.eyJ1IjoiY2hyaWRkeXAiLCJhIjoiY2ozcGI1MTZ3MDBpcTJ3cXR4b3owdDQwaCJ9.8jpMunbKjdq1anXwU5gxIw',
+#                                     'center': {
+#                                         'lat': 39,
+#                                         'lon':-105.5
+#                                     },
+#                                     'zoom': 6,
+#                                 },
+#                                 'hovermode': 'closest',
+                                
+#                                 'height': 550,
+#                                 'margin': {'l': 0, 'r': 0, 'b': 0, 't': 0}
+#                             }
+
+
+
+
+@app.callback(Output('map-2', 'figure'),
+            [Input('types', 'value')])
+def update_figure(selected_type):
+    df_MED_Licensed_Transporters = pd.DataFrame(df.loc[df['Category'] == selected_type])
+    print(df_MED_Licensed_Transporters)
+    data = [dict(
+        lat = df_MED_Licensed_Transporters['lat'],
+        lon = df_MED_Licensed_Transporters['long'],
+        text = text,
+        hoverinfo = 'text',
+        type = 'scattermapbox',
+        customdata = df_MED_Licensed_Transporters['uid'],
+        marker = dict(size=6,color='blue',opacity=.6)
+    )]
+
+    layout = dict(
+        mapbox = dict(
+            accesstoken = mapbox_access_token,
+            center = dict(lat=39, lon=-105.5),
+            zoom = 6,
+            style = 'light'
+        ),
+        hovermode = 'closest',
+        height = 550,
+        margin = dict(r=0, l=0, t=0, b=0)
+    )
+
+    fig = dict(data=data, layout=layout)
+    return fig
+
+
+
+
+
 
 @app.callback(
     dash.dependencies.Output('lic-name', 'children'),
