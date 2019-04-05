@@ -45,12 +45,12 @@ width: 50%;
   
 th {
 padding: 20px;
-text-align: center;
+text-align: left;
 font-size: 1.3em
 }
 
 td {
-    text-align: center;
-    font-size: 1.25em;
-    padding: 5px
+    text-align: left;
+    font-size: 1 em;
+    padding: 2px
 }

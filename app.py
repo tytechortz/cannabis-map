@@ -56,7 +56,21 @@ categories = []
 for i in df['Category'].unique():
     categories.append(i)
 
+categories_table = pd.DataFrame({'Category':df['Category'].unique()})
+print(categories_table)
+
 colors = dict(zip(categories, color_list))
+
+def generate_table_categories(categories_table, max_rows=12):
+    return html.Table (
+        [html.Tr([html.Th(col) for col in categories_table.columns])] +
+        [html.Tr([
+            html.Td(categories_table.iloc[i][col]) for col in categories_table.columns
+            ]) for i in range(min(len(categories_table), max_rows))]
+    )
+
+
+
 
 #  Layouts
 body = dbc.Container([
@@ -172,6 +186,15 @@ body = dbc.Container([
                 html.Div(id='lic-num', style={'height':20, 'text-align': 'center'}),
             ),
         ]),
+        dbc.Row([
+            dbc.Col(
+                generate_table_categories(categories_table, max_rows=12),
+                width ={'size':4}
+        ),
+            dbc.Col(
+                dcc.Graph(id='yearly-rankings-bar'),
+        ),
+    ]),
         
 ])
 
@@ -245,6 +268,8 @@ def update_text(hoverData):
 def update_text(hoverData):
     s = df[df['uid'] == hoverData['points'][0]['customdata']]
     return  'License Number: {}'.format(s.iloc[0]['License_No'])
+
+
 
 app.layout = html.Div(body)
 
