@@ -152,54 +152,66 @@ body = dbc.Container([
         # ]),
 
 
-        dbc.Row([
-            html.Div(id='none'),
-                html.H1("")
-        ]),
-        dbc.Row([
-            dbc.Col(
-                html.Div(id='lic-name', style={'height':20, 'text-align': 'center'}),
-            ),
-        ]),
-        dbc.Row([
-            dbc.Col(
-                 html.Div(id='biz-name', style={'height':20, 'text-align': 'center'}),
-            ),
-        ]),
-        dbc.Row([
-            dbc.Col(
-                html.Div(id='biz-type', style={'height':20, 'text-align': 'center'}),
-            ),
-        ]),
-        dbc.Row([
-            dbc.Col(
-                html.Div(id='city', style={'height':20, 'text-align': 'center'}),
-            ),
-        ]),
-        dbc.Row([
-            dbc.Col(
-                html.Div(id='address', style={'height':20, 'text-align': 'center'}),
-            ),
-        ]),
-        dbc.Row([
-            dbc.Col(
-                html.Div(id='lic-num', style={'height':20, 'text-align': 'center'}),
-            ),
-        ]),
+        # dbc.Row([
+        #     html.Div(id='none'),
+        #         html.H1("")
+        # ]),
+        # dbc.Row([
+        #     dbc.Col(
+        #         html.Div(id='lic-name', style={'height':20, 'text-align': 'center'}),
+        #     ),
+        # ]),
+        # dbc.Row([
+        #     dbc.Col(
+        #          html.Div(id='biz-name', style={'height':20, 'text-align': 'center'}),
+        #     ),
+        # ]),
+        # dbc.Row([
+        #     dbc.Col(
+        #         html.Div(id='biz-type', style={'height':20, 'text-align': 'center'}),
+        #     ),
+        # ]),
+        # dbc.Row([
+        #     dbc.Col(
+        #         html.Div(id='city', style={'height':20, 'text-align': 'center'}),
+        #     ),
+        # ]),
+        # dbc.Row([
+        #     dbc.Col(
+        #         html.Div(id='address', style={'height':20, 'text-align': 'center'}),
+        #     ),
+        # ]),
+        # dbc.Row([
+        #     dbc.Col(
+        #         html.Div(id='lic-num', style={'height':20, 'text-align': 'center'}),
+        #     ),
+        # ]),
         dbc.Row([
             dbc.Col(
                 generate_table_categories(categories_table, max_rows=12),
-                width ={'size':4}
-        ),
-            # dbc.Col(
-            #     html.Table (
-            #         html.Tr([html.Th('Business Data')]),
-            #         html.Tr(id='row1'),
-            #             html.Td('MED Licensed Transporters')
-            #     ),
-        # ),
-    ]),
-        
+                width = {'size':4, 'offset': 1}
+            ),
+            dbc.Col(
+                html.Table ([
+                    html.Tr(html.Div(id='lic-name', style={'height':20, 'text-align': 'center'})),
+                    html.Tr(html.Div(id='biz-name', style={'height':20, 'text-align': 'center'})),
+                    html.Tr(html.Div(id='biz-type', style={'height':20, 'text-align': 'center'})),
+                    html.Tr(html.Div(id='city', style={'height':20, 'text-align': 'center'})),
+                    html.Tr(html.Div(id='address', style={'height':20, 'text-align': 'center'})),
+                    html.Tr(html.Div(id='lic-num', style={'height':20, 'text-align': 'center'})),
+                ]),
+                width = {'size':6}
+            ),
+        ]),
+            
+    
+    #     def generate_table_categories(categories_table, max_rows=12):
+    # return html.Table (
+    #     [html.Tr([html.Th(col) for col in categories_table.columns])] +
+    #     [html.Tr([
+    #         html.Td(categories_table.iloc[i][col]) for col in categories_table.columns
+    #         ]) for i in range(min(len(categories_table), max_rows))]
+    # )
 ])
 
 @app.callback(Output('map-2', 'figure'),
