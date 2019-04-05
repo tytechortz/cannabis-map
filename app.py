@@ -191,9 +191,13 @@ body = dbc.Container([
                 generate_table_categories(categories_table, max_rows=12),
                 width ={'size':4}
         ),
-            dbc.Col(
-                dcc.Graph(id='yearly-rankings-bar'),
-        ),
+            # dbc.Col(
+            #     html.Table (
+            #         html.Tr([html.Th('Business Data')]),
+            #         html.Tr(id='row1'),
+            #             html.Td('MED Licensed Transporters')
+            #     ),
+        # ),
     ]),
         
 ])

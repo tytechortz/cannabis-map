@@ -36,21 +36,81 @@ table {
 }
 
 thead th:nth-child(1) {
-width: 50%;
+    width: 100%;
 }
   
 thead th:nth-child(2) {
-width: 50%;
+    width: 50%;
 }
   
 th {
-padding: 20px;
-text-align: left;
-font-size: 1.3em
+    padding: 20px;
+    text-align: center;
+    font-size: 1.3em;
 }
 
 td {
     text-align: left;
     font-size: 1 em;
-    padding: 2px
+    padding: 2px;
+}
+
+tr:nth-child(2) {
+    background-color: purple;
+    color: white
+}
+
+tr:nth-child(3) {
+    background-color: darkblue;
+    color: white
+}
+
+tr:nth-child(4) {
+    background-color: dodgerblue;
+    color: white
+}
+
+tr:nth-child(5) {
+    background-color: darkgreen;
+    color: white
+}
+
+tr:nth-child(6) {
+    background-color: black;
+    color: white
+}
+
+tr:nth-child(7) {
+    background-color: lightgreen;
+    color: black
+}
+
+tr:nth-child(8) {
+    background-color: yellow;
+    color: black
+}
+
+tr:nth-child(9) {
+    background-color: orange;
+    color: black
+}
+
+tr:nth-child(10) {
+    background-color: darkorange;
+    color: black
+}
+
+tr:nth-child(11) {
+    background-color: red;
+    color: white
+}
+
+tr:nth-child(12) {
+    background-color: darkred;
+    color: white
+}
+
+tr:nth-child(13) {
+    background-color: violet;
+    color: black
 }
