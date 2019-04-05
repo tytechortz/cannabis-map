@@ -26,18 +26,54 @@ mapbox_access_token = 'pk.eyJ1IjoidHl0ZWNob3J0eiIsImEiOiJjanN1emtuc2cwMXNhNDNuej
 df = gpd.read_file('./cannabis_business.geojson')
 
 # print(df)
-
+color_list = ['purple', 'darkblue', 'dodgerblue', 'darkgreen','black','lightgreen','yellow','orange', 'darkorange','red','darkred','violet']
 
 text = []
-print(len(df))
+# print(len(df))
 text=[]
 i=0
 while i < len(df):
     text.append(df['Licensee'][i])
     i += 1
-print(len(text))
+# print(len(text))
 
-df_MED_Licensed_Transporters = pd.DataFrame(df.loc[df['Category'] == 'MED Licensed Transporters'])
+# df_MED_Licensed_Transporters = pd.DataFrame(df.loc[df['Category'] == 'MED Licensed Transporters'])
+conditions = [
+    df['Category'] == 'MED Licensed Transporters',
+    df['Category'] == 'MED Licensed Center',
+    df['Category'] == 'MED Licensed Cultivator',
+    df['Category'] == 'MED Licensed Infused Product Manufacturer',
+    df['Category'] == 'MED Licensed R&D Cultivation',
+    df['Category'] == 'MED Licensed Retail Operator',
+    df['Category'] == 'MED Licensed Testing Facility',
+    df['Category'] == 'MED Licensed Retail Marijuana Product Manufacturer',
+    df['Category'] == 'MED Licensed Retail Cultivator',
+    df['Category'] == 'MED Licensed Retail Testing Facility',
+    df['Category'] == 'MED Licensed Retail Transporter',
+    df['Category'] == 'MED Licensed Retail Marijuana Store',
+]
+
+df['color'] = np.select(conditions, color_list)
+print(df['color'])
+
+
+
+
+
+
+
+
+
+categories = []
+for i in df['Category'].unique():
+    categories.append(i)
+
+
+
+
+colors = dict(zip(categories, color_list))
+
+# print(colors)
 
 #  Layouts
 body = dbc.Container([
@@ -57,11 +93,10 @@ body = dbc.Container([
                     dcc.Graph(id='map', 
                         figure={
                             'data': [{
-                                
                                 'lat': df['lat'],
                                 'lon': df['long'],
                                 'marker': {
-                                    'color': 'blue',
+                                    'color': df['color'],
                                     'size': 6,
                                     'opacity': 0.6
                                 },
@@ -145,52 +180,19 @@ body = dbc.Container([
         
 ])
 
-# figure={
-#                             'data': [{
-                                
-#                                 'lat': df['lat'],
-#                                 'lon': df['long'],
-#                                 'marker': {
-#                                     'color': 'blue',
-#                                     'size': 6,
-#                                     'opacity': 0.6
-#                                 },
-#                                 'text': text,
-#                                 'hoverinfo': 'text',
-#                                 'customdata': df['uid'],
-#                                 'type': 'scattermapbox'
-#                             }],
-#                             'layout': {
-#                                 'mapbox': {
-#                                     'accesstoken': 'pk.eyJ1IjoiY2hyaWRkeXAiLCJhIjoiY2ozcGI1MTZ3MDBpcTJ3cXR4b3owdDQwaCJ9.8jpMunbKjdq1anXwU5gxIw',
-#                                     'center': {
-#                                         'lat': 39,
-#                                         'lon':-105.5
-#                                     },
-#                                     'zoom': 6,
-#                                 },
-#                                 'hovermode': 'closest',
-                                
-#                                 'height': 550,
-#                                 'margin': {'l': 0, 'r': 0, 'b': 0, 't': 0}
-#                             }
-
-
-
 
 @app.callback(Output('map-2', 'figure'),
             [Input('types', 'value')])
 def update_figure(selected_type):
-    df_MED_Licensed_Transporters = pd.DataFrame(df.loc[df['Category'] == selected_type])
-    print(df_MED_Licensed_Transporters)
+    df1 = pd.DataFrame(df.loc[df['Category'] == selected_type])
     data = [dict(
-        lat = df_MED_Licensed_Transporters['lat'],
-        lon = df_MED_Licensed_Transporters['long'],
+        lat = df1['lat'],
+        lon = df1['long'],
         text = text,
         hoverinfo = 'text',
         type = 'scattermapbox',
-        customdata = df_MED_Licensed_Transporters['uid'],
-        marker = dict(size=6,color='blue',opacity=.6)
+        customdata = df1['uid'],
+        marker = dict(size=6,color='red',opacity=.6)
     )]
 
     layout = dict(
