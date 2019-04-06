@@ -61,13 +61,13 @@ print(categories_table)
 
 colors = dict(zip(categories, color_list))
 
-def generate_table_categories(categories_table, max_rows=12):
-    return html.Table (
-        [html.Tr([html.Th(col) for col in categories_table.columns])] +
-        [html.Tr([
-            html.Td(categories_table.iloc[i][col]) for col in categories_table.columns
-            ]) for i in range(min(len(categories_table), max_rows))]
-    )
+# def generate_table_categories(categories_table, max_rows=12):
+#     return html.Table (
+#         [html.Tr([html.Th(col) for col in categories_table.columns])] +
+#         [html.Tr([
+#             html.Td(categories_table.iloc[i][col]) for col in categories_table.columns
+#             ]) for i in range(min(len(categories_table), max_rows))]
+#     )
 
 
 
@@ -187,9 +187,15 @@ body = dbc.Container([
         #     ),
         # ]),
         dbc.Row([
+            # dbc.Col(
+            #     generate_table_categories(categories_table, max_rows=12),
+            #     width = {'size':4, 'offset': 1}
+            # ),
             dbc.Col(
-                generate_table_categories(categories_table, max_rows=12),
-                width = {'size':4, 'offset': 1}
+                html.Table ([
+                    html.Tr([html.Th('Business Info')]),
+                    html.Tr([html.Th('filter map')])
+                ])
             ),
             dbc.Col(
                 html.Table ([
@@ -226,7 +232,7 @@ def update_figure(selected_type):
         hoverinfo = 'text',
         type = 'scattermapbox',
         customdata = df['uid'],
-        marker = dict(size=6,color=df['color'],opacity=.6)
+        marker = dict(size=7,color=df['color'],opacity=.6)
     )]
 
     layout = dict(

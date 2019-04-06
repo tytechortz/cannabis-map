@@ -7,14 +7,15 @@
 .app-header .app-header--title {
     padding-left: 5px;
     text-align: center;
-    color: blue;
+    color: green;
     font-size: 30px;
     text-shadow: gray 2px 2px
 }
 
 body {
     font-family: sans-serif;
-    background-color: lightblue
+    background-image: url('./baking.png');
+    /* background-repeat: round */
 }
 
 .divider {
@@ -47,6 +48,7 @@ th {
     padding: 20px;
     text-align: center;
     font-size: 1.3em;
+    background-color: green
 }
 
 td {
@@ -116,12 +118,12 @@ tr:nth-child(13) {
 }
 
 #lic-name, #biz-type, #address {
-    background-color: lightgrey;
+    background-color: mediumseagreen;
     color: black
 }
 
 #biz-name, #city, #lic-num  {
-    background-color: lightblue;
+    background-color: seagreen;
     color: black
 }
 
