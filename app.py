@@ -193,6 +193,7 @@ body = dbc.Container([
             ),
             dbc.Col(
                 html.Table ([
+                    html.Tr([html.Th('Business Info')]),
                     html.Tr(html.Div(id='lic-name', style={'height':20, 'text-align': 'center'})),
                     html.Tr(html.Div(id='biz-name', style={'height':20, 'text-align': 'center'})),
                     html.Tr(html.Div(id='biz-type', style={'height':20, 'text-align': 'center'})),

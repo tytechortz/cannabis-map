@@ -114,3 +114,17 @@ tr:nth-child(13) {
     background-color: violet;
     color: black
 }
+
+#lic-name, #biz-type, #address {
+    background-color: lightgrey;
+    color: black
+}
+
+#biz-name, #city, #lic-num  {
+    background-color: lightblue;
+    color: black
+}
+
+
+
+
