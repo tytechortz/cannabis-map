@@ -188,21 +188,6 @@ body = dbc.Container([
         # ]),
         dbc.Row([
             dbc.Col(
-                dcc.Graph(id='map',
-                config={
-                    'scrollZoom': True
-                }),
-                width={'size':10, 'offset':1 },
-                
-            ),
-        ]),
-        # dbc.Row([
-            # dbc.Col(
-            #     generate_table_categories(categories_table, max_rows=12),
-            #     width = {'size':4, 'offset': 1}
-            # ),
-        dbc.Row([
-            dbc.Col(
                 html.Div(
                     className='radio',
                     children=[ 
@@ -244,7 +229,21 @@ body = dbc.Container([
                 ]),
                 width = {'size':4}
             ),
-            
+            dbc.Col(
+                dcc.Graph(id='map',
+                config={
+                    'scrollZoom': True
+                }),
+                width={'size':7},
+                
+            ),
+        ]),
+        # dbc.Row([
+            # dbc.Col(
+            #     generate_table_categories(categories_table, max_rows=12),
+            #     width = {'size':4, 'offset': 1}
+            # ),
+        dbc.Row([
             dbc.Col(
                 html.Table ([
                     html.Tr([html.Th('Business Info')]),
@@ -257,18 +256,18 @@ body = dbc.Container([
                 ]),
                 width = {'size':5}
             ),
-            # dbc.Col(
-            #     html.Table ([
-            #         html.Tr([html.Th('Business Info')]),
-            #         html.Tr(html.Div(id='lics1-name', style={'height':30, 'text-align': 'center'})),
-            #         html.Tr(html.Div(id='bizs-name', style={'height':30, 'text-align': 'center'})),
-            #         html.Tr(html.Div(id='bizs1-type', style={'height':30, 'text-align': 'center'})),
-            #         html.Tr(html.Div(id='citys', style={'height':30, 'text-align': 'center'})),
-            #         html.Tr(html.Div(id='addresss', style={'height':30, 'text-align': 'center'})),
-            #         html.Tr(html.Div(id='lics-num', style={'height':30, 'text-align': 'center'})),
-            #     ]),
-            #     width = {'size':3}
-            # ),
+            dbc.Col(
+                html.Table ([
+                    html.Tr([html.Th('Stats')]),
+                    html.Tr(html.Div(id='lics1-name', style={'height':30, 'text-align': 'center'})),
+                    html.Tr(html.Div(id='bizs-name', style={'height':30, 'text-align': 'center'})),
+                    html.Tr(html.Div(id='bizs1-type', style={'height':30, 'text-align': 'center'})),
+                    html.Tr(html.Div(id='citys', style={'height':30, 'text-align': 'center'})),
+                    html.Tr(html.Div(id='addresss', style={'height':30, 'text-align': 'center'})),
+                    html.Tr(html.Div(id='lics-num', style={'height':30, 'text-align': 'center'})),
+                ]),
+                width = {'size':2}
+            ),
         ]),
             
     
@@ -290,16 +289,27 @@ def update_figure(selected_values):
     print(selected_values)
     if selected_values == 'all':
         filtered_df = df
-    else: filtered_df = df1
-    data = [dict(
-        lat = filtered_df['lat'],
-        lon = filtered_df['long'],
-        text = text,
-        hoverinfo = 'text',
-        type = 'scattermapbox',
-        customdata = df1['uid'],
-        marker = dict(size=7,color=df1['color'],opacity=.6)
-    )]
+        data = [dict(
+            lat = df['lat'],
+            lon = df['long'],
+            text = text,
+            hoverinfo = 'text',
+            type = 'scattermapbox',
+            customdata = df['uid'],
+            marker = dict(size=7,color=df['color'],opacity=.6)
+        )]
+    else: 
+        filtered_df = df1
+        data = [dict(
+            lat = filtered_df['lat'],
+            lon = filtered_df['long'],
+            text = text,
+            hoverinfo = 'text',
+            type = 'scattermapbox',
+            customdata = df1['uid'],
+            marker = dict(size=7,color=df1['color'],opacity=.6)
+        )]
+    
     layout = dict(
         mapbox = dict(
             accesstoken = mapbox_access_token,
