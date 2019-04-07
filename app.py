@@ -57,7 +57,7 @@ for i in df['Category'].unique():
     categories.append(i)
 
 categories_table = pd.DataFrame({'Category':df['Category'].unique()})
-print(categories_table)
+
 
 colors = dict(zip(categories, color_list))
 
@@ -207,7 +207,7 @@ body = dbc.Container([
                     className='radio',
                     children=[ 
                     dcc.RadioItems(id='categories', options=[
-                        {'label':'', 'value':''},
+                        {'label':'', 'value':'all'},
                         {'label':'','value':'MED Licensed Transporters'},
                         {'label':'','value':'MED Licensed Center'},
                         {'label':'','value':'MED Licensed Cultivator'},
@@ -288,9 +288,12 @@ body = dbc.Container([
 def update_figure(selected_values):
     df1 = pd.DataFrame(df.loc[df['Category'] == selected_values])
     print(selected_values)
+    if selected_values == 'all':
+        filtered_df = df
+    else: filtered_df = df1
     data = [dict(
-        lat = df1['lat'],
-        lon = df1['long'],
+        lat = filtered_df['lat'],
+        lon = filtered_df['long'],
         text = text,
         hoverinfo = 'text',
         type = 'scattermapbox',
