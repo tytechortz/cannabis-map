@@ -84,44 +84,44 @@ body = dbc.Container([
                 ),
             ),
         ]),
-        dbc.Row([
-            dbc.Col(
-                html.Div([
-                    dcc.Graph(id='map', 
-                        figure={
-                            'data': [{
-                                'lat': df['lat'],
-                                'lon': df['long'],
-                                'marker': {
-                                    'color': df['color'],
-                                    'size': 6,
-                                    'opacity': 0.6
-                                },
-                                'text': text,
-                                'hoverinfo': 'text',
-                                'customdata': df['uid'],
-                                'type': 'scattermapbox'
-                            }],
-                            'layout': {
-                                'mapbox': {
-                                    'accesstoken': mapbox_access_token,
-                                    'center': {
-                                        'lat': 39,
-                                        'lon':-105.5
-                                    },
-                                    'zoom': 6,
-                                },
-                                'hovermode': 'closest',
+        # dbc.Row([
+        #     dbc.Col(
+        #         html.Div([
+        #             dcc.Graph(id='map', 
+        #                 figure={
+        #                     'data': [{
+        #                         'lat': df['lat'],
+        #                         'lon': df['long'],
+        #                         'marker': {
+        #                             'color': df['color'],
+        #                             'size': 6,
+        #                             'opacity': 0.6
+        #                         },
+        #                         'text': text,
+        #                         'hoverinfo': 'text',
+        #                         'customdata': df['uid'],
+        #                         'type': 'scattermapbox'
+        #                     }],
+        #                     'layout': {
+        #                         'mapbox': {
+        #                             'accesstoken': mapbox_access_token,
+        #                             'center': {
+        #                                 'lat': 39,
+        #                                 'lon':-105.5
+        #                             },
+        #                             'zoom': 6,
+        #                         },
+        #                         'hovermode': 'closest',
                                 
-                                'height': 550,
-                                'margin': {'l': 0, 'r': 0, 'b': 0, 't': 0}
-                            }
-                        }
-                    ),
-                ]),
-                width={'size':10, 'offset':1 }
-            ),
-        ]),
+        #                         'height': 550,
+        #                         'margin': {'l': 0, 'r': 0, 'b': 0, 't': 0}
+        #                     }
+        #                 }
+        #             ),
+        #         ]),
+        #         width={'size':10, 'offset':1 }
+        #     ),
+        # ]),
         # dbc.Row([
         #     dbc.Col(
         #         dcc.RadioItems(id='types', options=[
@@ -187,28 +187,88 @@ body = dbc.Container([
         #     ),
         # ]),
         dbc.Row([
+            dbc.Col(
+                dcc.Graph(id='map',
+                config={
+                    'scrollZoom': True
+                }),
+                width={'size':10, 'offset':1 },
+                
+            ),
+        ]),
+        # dbc.Row([
             # dbc.Col(
             #     generate_table_categories(categories_table, max_rows=12),
             #     width = {'size':4, 'offset': 1}
             # ),
+        dbc.Row([
             dbc.Col(
-                html.Table ([
-                    html.Tr([html.Th('Business Info')]),
-                    html.Tr([html.Th('filter map')])
-                ])
-            ),
-            dbc.Col(
-                html.Table ([
-                    html.Tr([html.Th('Business Info')]),
-                    html.Tr(html.Div(id='lic-name', style={'height':20, 'text-align': 'center'})),
-                    html.Tr(html.Div(id='biz-name', style={'height':20, 'text-align': 'center'})),
-                    html.Tr(html.Div(id='biz-type', style={'height':20, 'text-align': 'center'})),
-                    html.Tr(html.Div(id='city', style={'height':20, 'text-align': 'center'})),
-                    html.Tr(html.Div(id='address', style={'height':20, 'text-align': 'center'})),
-                    html.Tr(html.Div(id='lic-num', style={'height':20, 'text-align': 'center'})),
+                html.Div(
+                    className='radio',
+                    children=[ 
+                    dcc.RadioItems(id='categories', options=[
+                        {'label':'', 'value':''},
+                        {'label':'','value':'MED Licensed Transporters'},
+                        {'label':'','value':'MED Licensed Center'},
+                        {'label':'','value':'MED Licensed Cultivator'},
+                        {'label':'','value':'MED Licensed Infused Product Manufacturer'},
+                        {'label':'','value':'MED Licensed R&D Cultivation'},
+                        {'label':'','value':'MED Licensed Retail Operator'},
+                        {'label':'','value':'MED Licensed Testing Facility'},
+                        {'label':'','value':'MED Licensed Retail Marijuana Product Manufacturer'},
+                        {'label':'','value':'MED Licensed Retail Cultivator'},
+                        {'label':'','value':'MED Licensed Retail Testing Facility'},
+                        {'label':'','value':'MED Licensed Retail Transporter'},
+                        {'label':'','value':'MED Licensed Retail Marijuana Store'},
+                    ],
+                    labelStyle={'display':'block', 'margin': 0, 'padding': 1}
+                    ),
                 ]),
-                width = {'size':6}
+                width = {'size':.1}
             ),
+            dbc.Col(
+                html.Table ([
+                    html.Tr(html.Div('All License Types', id='lics-num9', style={'font-size':17.5})),
+                    html.Tr(html.Div('Licensed Transporters', id='lics-num10', style={'font-size':17.5})),
+                    html.Tr(html.Div('Licensed Center', id='lics-num11', style={'font-size':17.5})),
+                    html.Tr(html.Div('Licensed Cultivator', id='lics-num12', style={'font-size':17.5})),
+                    html.Tr(html.Div('Licensed Infused Product Manufacturer', id='lics-num13', style={'font-size':17.5})),
+                    html.Tr(html.Div('Licensed R&D Cultivation', id='lics-num1', style={'font-size':17.5})),
+                    html.Tr(html.Div('Licensed Retail Operator', id='lics-num2', style={'font-size':17.5})),
+                    html.Tr(html.Div('Licensed Testing Facility', id='lics-num3', style={'font-size':17.5})),
+                    html.Tr(html.Div('Licensed Retail Marijuana Product Manufacturer', id='lics-num4', style={'font-size':17.5})),
+                    html.Tr(html.Div('Licensed Retail Cultivator', id='lics-num5', style={'font-size':17.5})),
+                    html.Tr(html.Div('Licensed Retail Testing Facility', id='lics-num6', style={'font-size':17.5})),
+                    html.Tr(html.Div('Licensed Retail Transporter', id='lics-num7', style={'font-size':17.5})),
+                    html.Tr(html.Div('Licensed Retail Marijuana Store', id='lics-num8', style={'font-size':17.5})),
+                ]),
+                width = {'size':4}
+            ),
+            
+            dbc.Col(
+                html.Table ([
+                    html.Tr([html.Th('Business Info')]),
+                    html.Tr(html.Div(id='lic-name', style={'height':30, 'text-align': 'center', 'font-size': '1em'})),
+                    html.Tr(html.Div(id='biz-name', style={'height':30, 'text-align': 'center'})),
+                    html.Tr(html.Div(id='biz-type', style={'height':30, 'text-align': 'center'})),
+                    html.Tr(html.Div(id='city', style={'height':30, 'text-align': 'center'})),
+                    html.Tr(html.Div(id='address', style={'height':30, 'text-align': 'center'})),
+                    html.Tr(html.Div(id='lic-num', style={'height':30, 'text-align': 'center'})),
+                ]),
+                width = {'size':5}
+            ),
+            # dbc.Col(
+            #     html.Table ([
+            #         html.Tr([html.Th('Business Info')]),
+            #         html.Tr(html.Div(id='lics1-name', style={'height':30, 'text-align': 'center'})),
+            #         html.Tr(html.Div(id='bizs-name', style={'height':30, 'text-align': 'center'})),
+            #         html.Tr(html.Div(id='bizs1-type', style={'height':30, 'text-align': 'center'})),
+            #         html.Tr(html.Div(id='citys', style={'height':30, 'text-align': 'center'})),
+            #         html.Tr(html.Div(id='addresss', style={'height':30, 'text-align': 'center'})),
+            #         html.Tr(html.Div(id='lics-num', style={'height':30, 'text-align': 'center'})),
+            #     ]),
+            #     width = {'size':3}
+            # ),
         ]),
             
     
@@ -219,27 +279,29 @@ body = dbc.Container([
     #         html.Td(categories_table.iloc[i][col]) for col in categories_table.columns
     #         ]) for i in range(min(len(categories_table), max_rows))]
     # )
+   
 ])
 
-@app.callback(Output('map-2', 'figure'),
-            [Input('types', 'value')])
-def update_figure(selected_type):
-    df1 = pd.DataFrame(df.loc[df['Category'] == selected_type])
+@app.callback(
+            Output('map', 'figure'),
+            [Input('categories','value' )])         
+def update_figure(selected_values):
+    df1 = pd.DataFrame(df.loc[df['Category'] == selected_values])
+    print(selected_values)
     data = [dict(
-        lat = df['lat'],
-        lon = df['long'],
+        lat = df1['lat'],
+        lon = df1['long'],
         text = text,
         hoverinfo = 'text',
         type = 'scattermapbox',
-        customdata = df['uid'],
-        marker = dict(size=7,color=df['color'],opacity=.6)
+        customdata = df1['uid'],
+        marker = dict(size=7,color=df1['color'],opacity=.6)
     )]
-
     layout = dict(
         mapbox = dict(
             accesstoken = mapbox_access_token,
             center = dict(lat=39, lon=-105.5),
-            zoom = 6,
+            zoom = 6.25,
             style = 'light'
         ),
         hovermode = 'closest',

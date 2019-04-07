@@ -1,3 +1,8 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
 .app-header {
     height: 60px;
     line-height: 60px;
@@ -19,12 +24,15 @@ body {
 }
 
 .divider {
-    background-color: black
+    background-color: lightgreen
 }
 
 .container {
     max-width: 1300px;
     min-width: 1300px;
+}
+.radio {
+    background-color: lightgreen
 }
 
 table {
@@ -33,7 +41,8 @@ table {
     border-collapse: collapse;
     border: 3px solid dodgerblue;
     font-family: sans-serif;
-    font-size: 15px
+    font-size: 15px;
+    padding-left: 0px
 }
 
 thead th:nth-child(1) {
@@ -45,7 +54,7 @@ thead th:nth-child(2) {
 }
   
 th {
-    padding: 20px;
+    /* padding: 20px; */
     text-align: center;
     font-size: 1.3em;
     background-color: green
@@ -57,24 +66,29 @@ td {
     padding: 2px;
 }
 
+tr:nth-child(1) {
+    background-color: green;
+    color: black;
+}
+
 tr:nth-child(2) {
     background-color: purple;
-    color: white
+    color: white;
 }
 
 tr:nth-child(3) {
     background-color: darkblue;
-    color: white
+    color: white;
 }
 
 tr:nth-child(4) {
     background-color: dodgerblue;
-    color: white
+    color: white;
 }
 
 tr:nth-child(5) {
     background-color: darkgreen;
-    color: white
+    color: white;
 }
 
 tr:nth-child(6) {
