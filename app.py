@@ -24,6 +24,8 @@ app.config['suppress_callback_exceptions']=True
 mapbox_access_token = 'pk.eyJ1IjoidHl0ZWNob3J0eiIsImEiOiJjanN1emtuc2cwMXNhNDNuejdrMnN2aHYyIn0.kY0fOoozCTY-4IUzcLx22w'
 
 df = gpd.read_file('./cannabis_business.geojson')
+counties = gpd.read_file('./Colorado_County_Boundaries.geojson')
+
 
 
 color_list = ['purple', 'darkblue', 'dodgerblue', 'darkgreen','black','lightgreen','yellow','orange', 'darkorange','red','darkred','violet']
@@ -246,47 +248,119 @@ def update_figure_b(selected_values):
         return {'data': data, 'layout': layout}
 
 @app.callback(
-    dash.dependencies.Output('lic-name', 'children'),
-    [dash.dependencies.Input('map', 'hoverData')])
+    Output('lic-name', 'children'),
+    [Input('map', 'hoverData')])
 def update_text(hoverData):
     s = df[df['uid'] == hoverData['points'][0]['customdata']]
     return  'Licensee Name: {}'.format(s.iloc[0]['Licensee'])
 
 @app.callback(
-    dash.dependencies.Output('biz-name', 'children'),
-    [dash.dependencies.Input('map', 'hoverData')])
+    Output('biz-name', 'children'),
+    [Input('map', 'hoverData')])
 def update_text(hoverData):
     s = df[df['uid'] == hoverData['points'][0]['customdata']]
     return  'Business Name: {}'.format(s.iloc[0]['DBA'])
 
 @app.callback(
-    dash.dependencies.Output('biz-type', 'children'),
-    [dash.dependencies.Input('map', 'hoverData')])
+    Output('biz-type', 'children'),
+    [Input('map', 'hoverData')])
 def update_text(hoverData):
     s = df[df['uid'] == hoverData['points'][0]['customdata']]
     return  'Business Type: {}'.format(s.iloc[0]['Category'])
 
 @app.callback(
-    dash.dependencies.Output('city', 'children'),
-    [dash.dependencies.Input('map', 'hoverData')])
+    Output('city', 'children'),
+    [Input('map', 'hoverData')])
 def update_text(hoverData):
     s = df[df['uid'] == hoverData['points'][0]['customdata']]
     return  'City: {}'.format(s.iloc[0]['City'])
 
 @app.callback(
-    dash.dependencies.Output('address', 'children'),
-    [dash.dependencies.Input('map', 'hoverData')])
+    Output('address', 'children'),
+    [Input('map', 'hoverData')])
 def update_text(hoverData):
     s = df[df['uid'] == hoverData['points'][0]['customdata']]
     return  'Address: {}'.format(s.iloc[0]['Street_Address'])
         
 @app.callback(
-    dash.dependencies.Output('lic-num', 'children'),
-    [dash.dependencies.Input('map', 'hoverData')])
+    Output('lic-num', 'children'),
+    [Input('map', 'hoverData')])
 def update_text(hoverData):
     s = df[df['uid'] == hoverData['points'][0]['customdata']]
     return  'License Number: {}'.format(s.iloc[0]['License_No'])
 
+
+# @app.callback(
+#     Output('map-2', 'figure'),
+#     [Input('year', 'value')])
+# def update_figure_a(year):
+#     print(counties)
+#     data = [dict(
+#                 lat = counties['CENT_LAT'],
+#                 lon = counties['CENT_LONG'],
+#                 text = counties['COUNTY'],
+#                 type = 'scattermapbox',
+#                 hoverinfo = 'text',
+#                 marker = dict(size=7,color=df['color'],opacity=.6)
+#             )]
+#     layout = dict(
+#         mapbox = dict(
+#             accesstoken = mapbox_access_token,
+#             center = dict(lat=39, lon=-105.5),
+#             zoom = 5.75,
+#             style = 'light'
+#         ),
+#         hovermode = 'closest',
+#         height = 400,
+#         margin = dict(r=0, l=0, t=0, b=0)
+#     )
+
+#     fig = dict(data=data, layout=layout)
+#     return fig
+
+@app.callback(
+            Output('map-2', 'figure'),
+            [Input('categories','value' )])         
+def update_figure(selected_values):
+    df1 = pd.DataFrame(df.loc[df['Category'] == selected_values])
+    print(selected_values)
+    if selected_values == 'all':
+        filtered_df = df
+        data = [dict(
+            lat = counties['CENT_LAT'],
+            lon = counties['CENT_LONG'],
+            text = counties['COUNTY'],
+            hoverinfo = 'text',
+            type = 'scattermapbox',
+            # customdata = df['uid'],
+            marker = dict(size=7,color=df['color'],opacity=.6)
+        )]
+    else: 
+        filtered_df = df1
+        data = [dict(
+            lat = filtered_df['lat'],
+            lon = filtered_df['long'],
+            text = text,
+            hoverinfo = 'text',
+            type = 'scattermapbox',
+            customdata = df1['uid'],
+            marker = dict(size=7,color=df1['color'],opacity=.6)
+        )]
+    
+    layout = dict(
+        mapbox = dict(
+            accesstoken = mapbox_access_token,
+            center = dict(lat=39, lon=-105.5),
+            zoom = 5.75,
+            style = 'light'
+        ),
+        hovermode = 'closest',
+        height = 400,
+        margin = dict(r=0, l=0, t=0, b=0)
+    )
+
+    fig = dict(data=data, layout=layout)
+    return fig
 
 app.layout = html.Div(body)
 
