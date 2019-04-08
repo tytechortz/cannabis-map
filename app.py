@@ -27,6 +27,22 @@ df = gpd.read_file('./cannabis_business.geojson')
 counties = gpd.read_file('./Colorado_County_Boundaries.geojson')
 
 
+with open('./Colorado_County_Boundaries.geojson') as json_file:
+    jdata = json_file.read()
+    topoJSON = json.loads(jdata)
+
+sources=[]
+for feat in topoJSON['features']: 
+        sources.append({"type": "FeatureCollection", 'features': [feat]})
+
+layers=[dict(sourcetype = 'geojson',
+             source =sources[k],
+             below="water", 
+             type = 'fill',   
+             color = 'red',
+             opacity=0.8
+            ) for k in range(len(sources))]
+
 
 color_list = ['purple', 'darkblue', 'dodgerblue', 'darkgreen','black','lightgreen','yellow','orange', 'darkorange','red','darkred','violet']
 
@@ -50,6 +66,8 @@ conditions = [
     df['Category'] == 'MED Licensed Retail Transporter',
     df['Category'] == 'MED Licensed Retail Marijuana Store',
 ]
+
+
 
 df['color'] = np.select(conditions, color_list)
 
@@ -323,7 +341,6 @@ def update_text(hoverData):
             [Input('categories','value' )])         
 def update_figure(selected_values):
     df1 = pd.DataFrame(df.loc[df['Category'] == selected_values])
-    print(selected_values)
     if selected_values == 'all':
         filtered_df = df
         data = [dict(
@@ -333,7 +350,7 @@ def update_figure(selected_values):
             hoverinfo = 'text',
             type = 'scattermapbox',
             # customdata = df['uid'],
-            marker = dict(size=7,color=df['color'],opacity=.6)
+            marker = dict(size=7,color=df['color'],opacity=.5)
         )]
     else: 
         filtered_df = df1
@@ -344,7 +361,7 @@ def update_figure(selected_values):
             hoverinfo = 'text',
             type = 'scattermapbox',
             customdata = df1['uid'],
-            marker = dict(size=7,color=df1['color'],opacity=.6)
+            marker = dict(size=7,color=df1['color'],opacity=.5)
         )]
     
     layout = dict(
@@ -352,7 +369,8 @@ def update_figure(selected_values):
             accesstoken = mapbox_access_token,
             center = dict(lat=39, lon=-105.5),
             zoom = 5.75,
-            style = 'light'
+            style = 'light',
+            layers = layers
         ),
         hovermode = 'closest',
         height = 400,
