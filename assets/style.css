@@ -39,10 +39,11 @@ table {
     /* table-layout: fixed; */
     width: 100%;
     border-collapse: collapse;
-    border: 3px solid dodgerblue;
+    border: 3px solid darkgreen;
     font-family: sans-serif;
     font-size: 15px;
-    padding-left: 0px
+    padding-left: 0px;
+    opacity: .9
 }
 
 thead th:nth-child(1) {
@@ -57,7 +58,7 @@ th {
     /* padding: 20px; */
     text-align: center;
     font-size: 1.3em;
-    background-color: green
+    background-color: green;
 }
 
 td {
@@ -67,7 +68,7 @@ td {
 }
 
 tr:nth-child(1) {
-    background-color: green;
+    background-color: white;
     color: black;
 }
 

@@ -58,19 +58,10 @@ for i in df['Category'].unique():
 
 categories_table = pd.DataFrame({'Category':df['Category'].unique()})
 
+# def license_count():
+
 
 colors = dict(zip(categories, color_list))
-
-# def generate_table_categories(categories_table, max_rows=12):
-#     return html.Table (
-#         [html.Tr([html.Th(col) for col in categories_table.columns])] +
-#         [html.Tr([
-#             html.Td(categories_table.iloc[i][col]) for col in categories_table.columns
-#             ]) for i in range(min(len(categories_table), max_rows))]
-#     )
-
-
-
 
 #  Layouts
 body = dbc.Container([
@@ -84,109 +75,14 @@ body = dbc.Container([
                 ),
             ),
         ]),
-        # dbc.Row([
-        #     dbc.Col(
-        #         html.Div([
-        #             dcc.Graph(id='map', 
-        #                 figure={
-        #                     'data': [{
-        #                         'lat': df['lat'],
-        #                         'lon': df['long'],
-        #                         'marker': {
-        #                             'color': df['color'],
-        #                             'size': 6,
-        #                             'opacity': 0.6
-        #                         },
-        #                         'text': text,
-        #                         'hoverinfo': 'text',
-        #                         'customdata': df['uid'],
-        #                         'type': 'scattermapbox'
-        #                     }],
-        #                     'layout': {
-        #                         'mapbox': {
-        #                             'accesstoken': mapbox_access_token,
-        #                             'center': {
-        #                                 'lat': 39,
-        #                                 'lon':-105.5
-        #                             },
-        #                             'zoom': 6,
-        #                         },
-        #                         'hovermode': 'closest',
-                                
-        #                         'height': 550,
-        #                         'margin': {'l': 0, 'r': 0, 'b': 0, 't': 0}
-        #                     }
-        #                 }
-        #             ),
-        #         ]),
-        #         width={'size':10, 'offset':1 }
-        #     ),
-        # ]),
-        # dbc.Row([
-        #     dbc.Col(
-        #         dcc.RadioItems(id='types', options=[
-        #             {'label':'MED Licensed Transporters','value':'MED Licensed Transporters'},
-        #             {'label':'MED Licensed Center','value':'MED Licensed Center'},
-        #             {'label':'MED Licensed Cultivator','value':'MED Licensed Cultivator'},
-        #             {'label':'MED Licensed Infused Product Manufacturer','value':'MED Licensed Infused Product Manufacturer'},
-        #             {'label':'MED Licensed R&D Cultivation','value':'MED Licensed R&D Cultivation'},
-        #             {'label':'MED Licensed Retail Operator','value':'MED Licensed Retail Operator'},
-        #             {'label':'MED Licensed Testing Facility','value':'MED Licensed Testing Facility'},
-        #             {'label':'MED Licensed Retail Marijuana Product Manufacturer','value':'MED Licensed Retail Marijuana Product Manufacturer'},
-        #             {'label':'MED Licensed Retail Cultivator','value':'MED Licensed Retail Cultivator'},
-        #             {'label':'MED Licensed Retail Testing Facility','value':'MED Licensed Retail Testing Facility'},
-        #             {'label':'MED Licensed Retail Transporter','value':'MED Licensed Retail Transporter'},
-        #             {'label':'MED Licensed Retail Marijuana Store','value':'MED Licensed Retail Marijuana Store'}
-        #             ]),
-        #         width = {'size': 10}),        
-        # ],
-        # justify='around',
-        # ),
-        # dbc.Row([
-        #     dbc.Col(
-        #         html.Div(id='table-container'),
-        #     ),
-        #     dbc.Col(
-        #         dcc.Graph(id='map-2'),
-        #     ),
-        # ]),
-
-
-        # dbc.Row([
-        #     html.Div(id='none'),
-        #         html.H1("")
-        # ]),
-        # dbc.Row([
-        #     dbc.Col(
-        #         html.Div(id='lic-name', style={'height':20, 'text-align': 'center'}),
-        #     ),
-        # ]),
-        # dbc.Row([
-        #     dbc.Col(
-        #          html.Div(id='biz-name', style={'height':20, 'text-align': 'center'}),
-        #     ),
-        # ]),
-        # dbc.Row([
-        #     dbc.Col(
-        #         html.Div(id='biz-type', style={'height':20, 'text-align': 'center'}),
-        #     ),
-        # ]),
-        # dbc.Row([
-        #     dbc.Col(
-        #         html.Div(id='city', style={'height':20, 'text-align': 'center'}),
-        #     ),
-        # ]),
-        # dbc.Row([
-        #     dbc.Col(
-        #         html.Div(id='address', style={'height':20, 'text-align': 'center'}),
-        #     ),
-        # ]),
-        # dbc.Row([
-        #     dbc.Col(
-        #         html.Div(id='lic-num', style={'height':20, 'text-align': 'center'}),
-        #     ),
-        # ]),
         dbc.Row([
+            dbc.Col(
+                dcc.Graph(id='map',
+                config={
+                    'scrollZoom': True
+                }),
+                width={'size':6, 'offset':1},
+            ),
             dbc.Col(
                 html.Div(
                     className='radio',
@@ -229,20 +125,7 @@ body = dbc.Container([
                 ]),
                 width = {'size':4}
             ),
-            dbc.Col(
-                dcc.Graph(id='map',
-                config={
-                    'scrollZoom': True
-                }),
-                width={'size':7},
-                
-            ),
         ]),
-        # dbc.Row([
-            # dbc.Col(
-            #     generate_table_categories(categories_table, max_rows=12),
-            #     width = {'size':4, 'offset': 1}
-            # ),
         dbc.Row([
             dbc.Col(
                 html.Table ([
@@ -254,31 +137,23 @@ body = dbc.Container([
                     html.Tr(html.Div(id='address', style={'height':30, 'text-align': 'center'})),
                     html.Tr(html.Div(id='lic-num', style={'height':30, 'text-align': 'center'})),
                 ]),
-                width = {'size':5}
+                width = {'size':6, 'offset':1}
             ),
             dbc.Col(
-                html.Table ([
-                    html.Tr([html.Th('Stats')]),
-                    html.Tr(html.Div(id='lics1-name', style={'height':30, 'text-align': 'center'})),
-                    html.Tr(html.Div(id='bizs-name', style={'height':30, 'text-align': 'center'})),
-                    html.Tr(html.Div(id='bizs1-type', style={'height':30, 'text-align': 'center'})),
-                    html.Tr(html.Div(id='citys', style={'height':30, 'text-align': 'center'})),
-                    html.Tr(html.Div(id='addresss', style={'height':30, 'text-align': 'center'})),
-                    html.Tr(html.Div(id='lics-num', style={'height':30, 'text-align': 'center'})),
-                ]),
-                width = {'size':2}
+                dcc.Graph(id='stats-bar',
+                ),
+                width = {'size':5},
             ),
         ]),
-            
-    
-    #     def generate_table_categories(categories_table, max_rows=12):
-    # return html.Table (
-    #     [html.Tr([html.Th(col) for col in categories_table.columns])] +
-    #     [html.Tr([
-    #         html.Td(categories_table.iloc[i][col]) for col in categories_table.columns
-    #         ]) for i in range(min(len(categories_table), max_rows))]
-    # )
-   
+        dbc.Row([
+            dbc.Col(
+                dcc.Graph(id='map-2',
+                config={
+                    'scrollZoom': True
+                }),
+                width={'size':10},
+            ),
+        ]), 
 ])
 
 @app.callback(
@@ -314,16 +189,61 @@ def update_figure(selected_values):
         mapbox = dict(
             accesstoken = mapbox_access_token,
             center = dict(lat=39, lon=-105.5),
-            zoom = 6.25,
+            zoom = 5.75,
             style = 'light'
         ),
         hovermode = 'closest',
-        height = 550,
+        height = 400,
         margin = dict(r=0, l=0, t=0, b=0)
     )
 
     fig = dict(data=data, layout=layout)
     return fig
+
+@app.callback(Output('stats-bar', 'figure'),
+             [Input('categories', 'value')])
+            #  Input('years', 'value')])
+def update_figure_b(selected_values):
+    df1 = pd.DataFrame(df.loc[df['Category'] == selected_values])
+    if selected_values == 'all':
+        type_count = df['Category'].count()
+        count_year = []
+        count_year.append(type_count)
+        data = [
+            go.Bar(
+                x=df['Year'],
+                y=count_year,
+            )
+        ]
+        layout = go.Layout(
+            xaxis={'title': 'Year', 'range':[2014,2019]},
+            yaxis={'title': 'Count'},
+            title='License Count By Year',
+            plot_bgcolor = 'rgb(255,255,255,.5)',
+            paper_bgcolor = 'rgb(255,255,255,.7)',
+            height = 250  
+        )
+        return {'data': data, 'layout': layout}
+    else: 
+        
+        type_count1 = df1['Category'].count()
+        count_year1 = []
+        count_year1.append(type_count1)
+        data = [
+            go.Bar(
+                x=df1['Year'],
+                y=count_year1,
+            )
+        ]
+        layout = go.Layout(
+            xaxis={'title': 'Year', 'range':[2014,2019]},
+            yaxis={'title': 'Count'},
+            title='License Count By Year',
+            plot_bgcolor = 'rgb(255,255,255,.5)',
+            paper_bgcolor = 'rgb(255,255,255,.7)',
+            height = 250  
+        )
+        return {'data': data, 'layout': layout}
 
 @app.callback(
     dash.dependencies.Output('lic-name', 'children'),
@@ -366,7 +286,6 @@ def update_text(hoverData):
 def update_text(hoverData):
     s = df[df['uid'] == hoverData['points'][0]['customdata']]
     return  'License Number: {}'.format(s.iloc[0]['License_No'])
-
 
 
 app.layout = html.Div(body)
