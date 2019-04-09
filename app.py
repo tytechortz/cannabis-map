@@ -14,8 +14,6 @@ from plotly.graph_objs import *
 from dash.dependencies import Input, Output, State
 
 
-
-
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 # server = app.server
 
@@ -27,9 +25,13 @@ df = gpd.read_file('./cannabis_business.geojson')
 counties = gpd.read_file('./Colorado_County_Boundaries.geojson')
 
 
-with open('./Colorado_County_Boundaries.geojson') as json_file:
+with open('./Colorado_County_Boundaries.json') as json_file:
     jdata = json_file.read()
     topoJSON = json.loads(jdata)
+
+# with open('./us_counties.json') as json_file:
+#     jdata = json_file.read()
+#     topoJSON = json.loads(jdata)
 
 sources=[]
 for feat in topoJSON['features']: 
@@ -39,8 +41,8 @@ layers=[dict(sourcetype = 'geojson',
              source =sources[k],
              below="water", 
              type = 'fill',   
-             color = 'red',
-             opacity=0.8
+            #  color = 'red',
+             opacity=0.2
             ) for k in range(len(sources))]
 
 
@@ -171,8 +173,17 @@ body = dbc.Container([
                 config={
                     'scrollZoom': True
                 }),
-                width={'size':10},
+                width={'size':6, 'offset':1},
             ),
+            dbc.Col(
+                dcc.RangeSlider(
+                    id='year-selector',
+                    # min = 2014,
+                    # max = 2019,
+                    # step = 1,
+                    # value = 2014
+                ),
+            )
         ]), 
 ])
 
@@ -338,32 +349,18 @@ def update_text(hoverData):
 
 @app.callback(
             Output('map-2', 'figure'),
-            [Input('categories','value' )])         
+            [Input('year-selector','value' )])         
 def update_figure(selected_values):
     df1 = pd.DataFrame(df.loc[df['Category'] == selected_values])
-    if selected_values == 'all':
-        filtered_df = df
-        data = [dict(
-            lat = counties['CENT_LAT'],
-            lon = counties['CENT_LONG'],
-            text = counties['COUNTY'],
-            hoverinfo = 'text',
-            type = 'scattermapbox',
-            # customdata = df['uid'],
-            marker = dict(size=7,color=df['color'],opacity=.5)
+    filtered_df = df
+    data = [dict(
+        lat = counties['CENT_LAT'],
+        lon = counties['CENT_LONG'],
+        text = counties['COUNTY'],
+        hoverinfo = 'text',
+        type = 'scattermapbox',
+        marker = dict(size=5,color='red',opacity=.5)
         )]
-    else: 
-        filtered_df = df1
-        data = [dict(
-            lat = filtered_df['lat'],
-            lon = filtered_df['long'],
-            text = text,
-            hoverinfo = 'text',
-            type = 'scattermapbox',
-            customdata = df1['uid'],
-            marker = dict(size=7,color=df1['color'],opacity=.5)
-        )]
-    
     layout = dict(
         mapbox = dict(
             accesstoken = mapbox_access_token,
