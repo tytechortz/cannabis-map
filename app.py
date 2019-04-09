@@ -176,11 +176,12 @@ body = dbc.Container([
                 width={'size':6, 'offset':1},
             ),
             dbc.Col(
-                dcc.RangeSlider(
+                dcc.Slider(
                     id='year-selector',
-                    # min = 2014,
-                    # max = 2019,
-                    # step = 1,
+                    min = 2014,
+                    max = 2019,
+                    marks={i: '{}'.format(i) for i in range(2014,2020)},
+                    step = 1,
                     # value = 2014
                 ),
             )
