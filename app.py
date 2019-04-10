@@ -23,16 +23,13 @@ mapbox_access_token = 'pk.eyJ1IjoidHl0ZWNob3J0eiIsImEiOiJjanN1emtuc2cwMXNhNDNuej
 
 df = gpd.read_file('./cannabis_business.geojson')
 counties = gpd.read_file('./Colorado_County_Boundaries.geojson')
-print(counties['COUNTY'][1])
+df_revenue = pd.read_csv('./weed_stats.csv')
+print(df_revenue)
 
 
 with open('./Colorado_County_Boundaries.json') as json_file:
     jdata = json_file.read()
     topoJSON = json.loads(jdata)
-
-# with open('./us_counties.json') as json_file:
-#     jdata = json_file.read()
-#     topoJSON = json.loads(jdata)
 
 sources=[]
 for feat in topoJSON['features']: 
@@ -190,6 +187,11 @@ body = dbc.Container([
                 }),
                 width={'size':6, 'offset':1},
             ),
+            dbc.Col(
+                dcc.Graph(id='revenue-bar',
+                ),
+                width = {'size':5},
+            ),
         ]), 
 ])
 
@@ -198,7 +200,6 @@ body = dbc.Container([
             [Input('categories','value' )])         
 def update_figure(selected_values):
     df1 = pd.DataFrame(df.loc[df['Category'] == selected_values])
-    print(selected_values)
     if selected_values == 'all':
         filtered_df = df
         data = [dict(
@@ -353,6 +354,15 @@ def update_figure(selected_values):
 
     fig = dict(data=data, layout=layout)
     return fig
+
+@app.callback(Output('revenue-bar', 'figure'),
+             [Input('map-2', 'clickData')])
+            #  Input('years', 'value')])
+def update_figure_b(clickData):
+    # s = 
+    s = df[df['uid'] == clickData['points'][0]['customdata']]
+    return print(s)
+    
 
 app.layout = html.Div(body)
 
