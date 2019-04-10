@@ -24,7 +24,7 @@ mapbox_access_token = 'pk.eyJ1IjoidHl0ZWNob3J0eiIsImEiOiJjanN1emtuc2cwMXNhNDNuej
 df = gpd.read_file('./cannabis_business.geojson')
 counties = gpd.read_file('./Colorado_County_Boundaries.geojson')
 df_revenue = pd.read_csv('./weed_stats.csv')
-print(df_revenue)
+
 
 
 with open('./Colorado_County_Boundaries.json') as json_file:
@@ -67,10 +67,7 @@ conditions = [
     df['Category'] == 'MED Licensed Retail Marijuana Store',
 ]
 
-
-
 df['color'] = np.select(conditions, color_list)
-
 
 categories = []
 for i in df['Category'].unique():
@@ -80,8 +77,15 @@ categories_table = pd.DataFrame({'Category':df['Category'].unique()})
 
 # def license_count():
 
-
 colors = dict(zip(categories, color_list))
+
+county_revenue_df = df_revenue.groupby(['County', 'Year'])
+c_r_annual_tot = county_revenue_df.sum()
+print(c_r_annual_tot)
+
+
+
+
 
 #  Layouts
 body = dbc.Container([
@@ -192,7 +196,22 @@ body = dbc.Container([
                 ),
                 width = {'size':5},
             ),
-        ]), 
+        ]),
+        # dbc.Row([
+        #     dbc.Col(
+        #         dcc.Graph(id='rev-bar',
+        #         figure = {
+        #             'data': [
+        #                 {
+        #                    'x' : df_revenue['Year'],
+        #                    'y' : df_revenue['Tot_Sales'],
+        #                    'mode' : 
+        #                 }
+        #             ]
+        #         }
+        #         )
+        #     )
+        # ]) 
 ])
 
 @app.callback(
@@ -330,13 +349,14 @@ def update_text(hoverData):
             [Input('year-selector','value' )])         
 def update_figure(selected_values):
     df1 = pd.DataFrame(df.loc[df['Category'] == selected_values])
-    filtered_df = df
+    # filtered_df = df
     data = [dict(
         lat = counties['CENT_LAT'],
         lon = counties['CENT_LONG'],
         text = counties['COUNTY'],
         hoverinfo = 'text',
         type = 'scattermapbox',
+        customdata = df['uid'],
         marker = dict(size=5,color='red',opacity=.5)
         )]
     layout = dict(
@@ -355,13 +375,18 @@ def update_figure(selected_values):
     fig = dict(data=data, layout=layout)
     return fig
 
-@app.callback(Output('revenue-bar', 'figure'),
-             [Input('map-2', 'clickData')])
-            #  Input('years', 'value')])
-def update_figure_b(clickData):
-    # s = 
-    s = df[df['uid'] == clickData['points'][0]['customdata']]
-    return print(s)
+
+# @app.callback(Output('revenue-bar', 'figure'),
+#              [Input('map-2', 'clickData')])
+#             #  Input('years', 'value')])
+# def update_figure_b(clickData):
+#     s = df_revenue[[df_revenue['Tot_Sales']
+#     print(s)
+#     # s = df[df['uid'] == clickData['points'][0]['customdata']]
+#     # data = dict(
+#     #     x = s
+#     # )
+#     return print(clickData)
     
 
 app.layout = html.Div(body)
