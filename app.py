@@ -26,7 +26,6 @@ counties = gpd.read_file('./Colorado_County_Boundaries.geojson')
 df_revenue = pd.read_csv('./weed_stats.csv')
 rpd = pd.read_csv('./revenue_pop_data.csv')
 
-print(rpd)
 
 with open('./Colorado_County_Boundaries.json') as json_file:
     jdata = json_file.read()
@@ -83,17 +82,21 @@ colors = dict(zip(categories, color_list))
 
 
 county_revenue_df = df_revenue.groupby(['County', 'Year'])
-c_r_annual_tot = county_revenue_df.sum()
-c_r_annual_tot.reset_index(inplace=True)
+crat = county_revenue_df.sum()
+crat.reset_index(inplace=True)
 
 
-data = []
-trace = go.Bar(
-    x = c_r_annual_tot['County'],
-    y = c_r_annual_tot['Tot_Sales']
-)
+Adams = crat['County'] == 'Adams'
+county = crat[Adams]
+print(county)
 
-data.append(trace)
+# data = []
+# trace = go.Bar(
+#     x = c_r_annual_tot['County'],
+#     y = c_r_annual_tot['Tot_Sales']
+# )
+
+# data.append(trace)
 
 
 
@@ -210,9 +213,18 @@ body = dbc.Container([
         # dbc.Row([
         #     dbc.Col(
         #         dcc.Graph(id='rev-bar',
-        #             figure = {      
-        #     )
-        # ]) 
+        #             figure = {
+        #                 'data': [
+        #                     {'x': crat['Year'], 'y': crat['Tot_Sales'], 'type': 'bar'},
+        #                     # {'x': [1, 2, 3], 'y': [2, 4, 5], 'type': 'bar'},
+        #                 ],
+        #                 'layout': {
+        #                     'title': 'Dash Data'
+        #                 }
+        #              }
+        #         ),
+        #     ),
+        # ]), 
 ])
 
 @app.callback(
