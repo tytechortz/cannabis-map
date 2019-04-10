@@ -210,21 +210,21 @@ body = dbc.Container([
                 width = {'size':5},
             ),
         ]),
-        # dbc.Row([
-        #     dbc.Col(
-        #         dcc.Graph(id='rev-bar',
-        #             figure = {
-        #                 'data': [
-        #                     {'x': crat['Year'], 'y': crat['Tot_Sales'], 'type': 'bar'},
-        #                     # {'x': [1, 2, 3], 'y': [2, 4, 5], 'type': 'bar'},
-        #                 ],
-        #                 'layout': {
-        #                     'title': 'Dash Data'
-        #                 }
-        #              }
-        #         ),
-        #     ),
-        # ]), 
+        dbc.Row([
+            dbc.Col(
+                dcc.Graph(id='rev-bar',
+                    figure = {
+                        'data': [
+                            {'x': county['Year'], 'y': county['Tot_Sales'], 'type': 'bar'},
+                            # {'x': [1, 2, 3], 'y': [2, 4, 5], 'type': 'bar'},
+                        ],
+                        'layout': {
+                            'title': 'Dash Data'
+                        }
+                     }
+                ),
+            ),
+        ]), 
 ])
 
 @app.callback(
