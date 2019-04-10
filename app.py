@@ -24,8 +24,9 @@ mapbox_access_token = 'pk.eyJ1IjoidHl0ZWNob3J0eiIsImEiOiJjanN1emtuc2cwMXNhNDNuej
 df = gpd.read_file('./cannabis_business.geojson')
 counties = gpd.read_file('./Colorado_County_Boundaries.geojson')
 df_revenue = pd.read_csv('./weed_stats.csv')
+rpd = pd.read_csv('./revenue_pop_data.csv')
 
-
+print(rpd)
 
 with open('./Colorado_County_Boundaries.json') as json_file:
     jdata = json_file.read()
@@ -79,11 +80,20 @@ categories_table = pd.DataFrame({'Category':df['Category'].unique()})
 
 colors = dict(zip(categories, color_list))
 
+
+
 county_revenue_df = df_revenue.groupby(['County', 'Year'])
 c_r_annual_tot = county_revenue_df.sum()
-print(c_r_annual_tot)
+c_r_annual_tot.reset_index(inplace=True)
 
 
+data = []
+trace = go.Bar(
+    x = c_r_annual_tot['County'],
+    y = c_r_annual_tot['Tot_Sales']
+)
+
+data.append(trace)
 
 
 
@@ -200,16 +210,7 @@ body = dbc.Container([
         # dbc.Row([
         #     dbc.Col(
         #         dcc.Graph(id='rev-bar',
-        #         figure = {
-        #             'data': [
-        #                 {
-        #                    'x' : df_revenue['Year'],
-        #                    'y' : df_revenue['Tot_Sales'],
-        #                    'mode' : 
-        #                 }
-        #             ]
-        #         }
-        #         )
+        #             figure = {      
         #     )
         # ]) 
 ])
