@@ -88,7 +88,29 @@ crat.reset_index(inplace=True)
 
 Adams = crat['County'] == 'Adams'
 county = crat[Adams]
-print(county)
+
+
+Arapahoe = crat['County'] == 'Arapahoe'
+county2 = crat[Arapahoe]
+
+
+counties = crat['County'].unique()
+
+data = []
+
+x = 0
+for i in counties:
+    y = crat['County'] == counties[x]
+    crd = crat[y]
+    data.append(crd)
+    x += 1
+print(data)
+    
+# print(data)
+
+
+# for x in crat['County']:
+    # data.append(crat[x])
 
 # data = []
 # trace = go.Bar(
@@ -216,16 +238,47 @@ body = dbc.Container([
                     figure = {
                         'data': [
                             {'x': county['Year'], 'y': county['Tot_Sales'], 'type': 'bar'},
-                            # {'x': [1, 2, 3], 'y': [2, 4, 5], 'type': 'bar'},
+                            {'x': county2['Year'], 'y': county2['Tot_Sales'], 'type': 'bar'},
+                            
                         ],
                         'layout': {
-                            'title': 'Dash Data'
+                            'title': 'County Revenue By Year'
                         }
                      }
                 ),
             ),
         ]), 
+        dbc.Row([
+            dbc.Col(
+                dcc.Graph(id='rev-bar-2',
+                ),
+                width = {'size': 10}
+            ),
+            dbc.Col(
+                html.Div(
+                    className='rev-radio',
+                    children=[ 
+                        dcc.RadioItems(id='sales', options=[
+                            {'label':'Total Sales', 'value':'Tot_Sales'},
+                            {'label':'Rec Sales','value':'Rec_Sales'},
+                            {'label':'Med Sales','value':'Med_Sales'},
+                        ],
+                    labelStyle={'display':'block', 'margin': 0, 'padding': 1}
+                        ),
+                    ]),
+                    width = {'size': 2}
+            ),
+        ]),
 ])
+
+# @app.callback(
+#             Output('rev-bar-2', 'figure'),
+#             [Input('sales', 'value')])
+# def create_rev_bar(selected_values):
+#     data = []
+#     for x in crat['County']:
+#         data.append(crat[x])
+#     return print(data)
 
 @app.callback(
             Output('map', 'figure'),
