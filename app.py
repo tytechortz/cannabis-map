@@ -24,7 +24,11 @@ mapbox_access_token = 'pk.eyJ1IjoidHl0ZWNob3J0eiIsImEiOiJjanN1emtuc2cwMXNhNDNuej
 df = gpd.read_file('./cannabis_business.geojson')
 counties = gpd.read_file('./Colorado_County_Boundaries.geojson')
 df_revenue = pd.read_csv('./weed_stats.csv')
-rpd = pd.read_csv('./revenue_pop_data.csv')
+per_rev = pd.read_csv('./revenue_pop_data.csv',header=0, delim_whitespace=False)
+rpd = per_rev.set_index('name', drop=False)
+print(rpd.columns)
+
+# rpd.drop(['med_rate', 'rec_rate', 'Id', 'Id2'], axis=1)
 
 df_revenue['County'] = df_revenue['County'].str.upper()
 
@@ -81,26 +85,10 @@ categories_table = pd.DataFrame({'Category':df['Category'].unique()})
 
 colors = dict(zip(categories, color_list))
 
-
-
 county_revenue_df = df_revenue.groupby(['County', 'Year'])
 crat = county_revenue_df.sum()
 crat.reset_index(inplace=True)
-
-
-# Adams = crat['County'] == 'Adams'
-# print(Adams)
-# county = crat[Adams]
-# print(county)
-
-# Arapahoe = crat['County'] == 'Arapahoe'
-# county2 = crat[Arapahoe]
-
-
-# county_list = crat['County'].unique()
-
-
-    
+   
 #  Layouts
 body = dbc.Container([
         dbc.Row([
@@ -184,20 +172,6 @@ body = dbc.Container([
             ),
         ]),
         dbc.Row([
-             dbc.Col(
-                dcc.Slider(
-                    id='year-selector',
-                    min = 2014,
-                    max = 2019,
-                    marks={i: '{}'.format(i) for i in range(2014,2020)},
-                    step = 1,
-                    # value = 2014
-                ),
-                width = {'size': 4, 'offset':4},
-                style = {'height': 40}
-            ),
-        ]),
-        dbc.Row([
             dbc.Col(
                 dcc.Graph(id='map-2',
                 config={
@@ -209,6 +183,20 @@ body = dbc.Container([
                 dcc.Graph(id='rev-bar-2',
                 ),
                 width = {'size':6},
+            ),
+        ]),
+        dbc.Row([
+             dbc.Col(
+                dcc.Slider(
+                    id='year-selector',
+                    min = 2014,
+                    max = 2019,
+                    marks={i: '{}'.format(i) for i in range(2014,2020)},
+                    step = 1,
+                    # value = 2014
+                ),
+                width = {'size': 4, 'offset':4},
+                style = {'height': 40}
             ),
         ]),
         dbc.Row([
@@ -231,32 +219,40 @@ body = dbc.Container([
                     ]),
                     width = {'size': 2}
             ),
-        ]),
-        # dbc.Row([
-        #     dbc.Col(
-        #         dcc.Graph(id='rev-bar',
-        #             figure = {
-        #                 'data': [
-        #                     {'x': county['Year'], 'y': county['Tot_Sales'], 'name': 'Adams', 'type': 'bar'},
-        #                     {'x': county2['Year'], 'y': county2['Tot_Sales'], 'type': 'bar'},
-                            
-        #                 ],
-        #                 'layout': {
-        #                     'title': 'County Revenue By Year'
-        #                 }
-        #              }
-        #         ),
-        #     ),
-        # ]), 
-        
+        ]),   
 ])
+
+@app.callback(
+            Output('rev-bar-3', 'figure'),
+            [Input('sales', 'value'),
+            Input('year-selector', 'value'),
+            Input('map-2', 'clickData')])
+def create_rev_bar_b(selected_values,year,clickData):
+    year = str(year)
+    # selected_pop = rpd['respop7'+ year]
+    # selected_med_rev = rpd['per_cap_med_'+year]
+    selected_rec_rev = rpd.loc[ : ,'per_cap_rec_2017']
+    print(selected_rec_rev)
+    # print(selected_med_rev)
+    # def dpc():
+        
+    trace = [
+        {'x': selected_rec_rev.index, 'y': selected_rec_rev[1], 'type': 'bar'},
+        # {'x': rpd[selected_rec_rev], 'y': rpd['name']}
+    ]
+
+    return {
+        'data': trace,
+        'layout': go.Layout(
+            title = 'stuff'
+        ),
+    }
 
 @app.callback(
             Output('rev-bar-2', 'figure'),
             [Input('sales', 'value'),
-            Input('year-selector', 'value'),
             Input('map-2', 'clickData')])
-def create_rev_bar(selected_values,year,clickData):
+def create_rev_bar_a(selected_values,clickData):
     print(clickData['points'][-1]['text'])
     filtered_county = crat['County'] ==  clickData['points'][-1]['text']
     # filtered_county = crat['County'] == 'ADAMS'
@@ -432,7 +428,7 @@ def update_figure(selected_values):
             layers = layers
         ),
         hovermode = 'closest',
-        height = 400,
+        height = 450,
         margin = dict(r=0, l=0, t=0, b=0)
     )
 
