@@ -255,14 +255,15 @@ def create_rev_bar_b(selected_values,year,clickData):
 
 
     trace = [
-        {'x': fsrr.index, 'y': fsrr, 'type': 'bar'},
-        {'x': fsmr.index, 'y': fsmr, 'type': 'bar'}
+        {'x': fsrr.index, 'y': fsrr, 'type': 'bar', 'name': 'Rec Revenue'},
+        {'x': fsmr.index, 'y': fsmr, 'type': 'bar', 'name': 'Med Revenue'}
     ]
 
     return {
         'data': trace,
         'layout': go.Layout(
-            title = 'stuff'
+            title = 'County Revenue Per Capita-{}'.format(year)
+            
         ),
     }
 
