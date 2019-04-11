@@ -255,8 +255,8 @@ def create_rev_bar_b(selected_values,year,clickData):
 
 
     trace = [
-        {'y': fsrr, 'type': 'bar'},
-        {'y': fsmr, 'type': 'bar'}
+        {'x': fsrr.index, 'y': fsrr, 'type': 'bar'},
+        {'x': fsmr.index, 'y': fsmr, 'type': 'bar'}
     ]
 
     return {
