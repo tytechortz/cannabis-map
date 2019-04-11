@@ -19,7 +19,8 @@
 
 body {
     font-family: sans-serif;
-    background-image: url('./baking.png');
+    background-color: lightgrey
+    /* background-image: url('./baking.png'); */
     /* background-repeat: round */
 }
 

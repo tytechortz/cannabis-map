@@ -172,7 +172,16 @@ body = dbc.Container([
                 dcc.Graph(id='stats-bar',
                 ),
                 width = {'size':5},
+                style = {'height': 200}
             ),
+        ]),
+        dbc.Row([
+            dbc.Col(
+                html.Div(   
+                ),
+                style = {'height': 50}
+            ),
+            
         ]),
         dbc.Row([
             dbc.Col(
@@ -190,16 +199,18 @@ body = dbc.Container([
         ]),
         dbc.Row([
              dbc.Col(
-                dcc.Slider(
-                    id='year-selector',
-                    min = 2014,
-                    max = 2019,
-                    marks={i: '{}'.format(i) for i in range(2014,2020)},
-                    step = 1,
-                    # value = 2014
-                ),
-                width = {'size': 4, 'offset':4},
-                style = {'height': 40}
+                 html.Div(
+                    dcc.Slider(
+                        id='year-selector',
+                        min = 2014,
+                        max = 2019,
+                        marks={i: '{}'.format(i) for i in range(2014,2020)},
+                        step = 1,
+                        # value = 2014
+                    ),
+                 ),
+                width = {'size':4, 'offset':4},
+                style = {'height': 50}
             ),
         ]),
         dbc.Row([
@@ -213,9 +224,9 @@ body = dbc.Container([
                     className='rev-radio',
                     children=[ 
                         dcc.RadioItems(id='sales', options=[
-                            {'label':'Total Sales', 'value':'Tot_Sales'},
-                            {'label':'Rec Sales','value':'Rec_Sales'},
-                            {'label':'Med Sales','value':'Med_Sales'},
+                            {'label':'Total Sales', 'value':'tot'},
+                            {'label':'Rec Sales','value':'rec'},
+                            {'label':'Med Sales','value':'med'},
                         ],
                     labelStyle={'display':'block', 'margin': 0, 'padding': 1}
                         ),
@@ -231,16 +242,17 @@ body = dbc.Container([
             Input('year-selector', 'value'),
             Input('map-2', 'clickData')])
 def create_rev_bar_b(selected_values,year,clickData):
+    # print(selected_values)
     year = str(year)
     # selected_pop = rpd['respop7'+ year]
-    # selected_med_rev = rpd['per_cap_med_'+year]
-    selected_rec_rev = rpd.loc[ : ,'per_cap_rec_2017']
-    # print(selected_med_rev)
-    # def dpc():
+    selected_med_rev = rpd.loc[ : ,'per_cap_med_'+year+'']
+    selected_rec_rev = rpd.loc[ : ,'per_cap_rec_'+year+'']
+    print(selected_med_rev)
+    print(selected_rec_rev)
         
     trace = [
-        {'x': selected_rec_rev.index, 'y': selected_rec_rev[1], 'type': 'bar'},
-        # {'x': rpd[selected_rec_rev], 'y': rpd['name']}
+        {'y': selected_rec_rev, 'type': 'bar'},
+        {'y': selected_med_rev, 'type': 'bar'}
     ]
 
     return {
