@@ -26,7 +26,7 @@ counties = gpd.read_file('./Colorado_County_Boundaries.geojson')
 df_revenue = pd.read_csv('./weed_stats.csv')
 per_rev = pd.read_csv('./revenue_pop_data.csv',header=0, delim_whitespace=False)
 rpd = per_rev.set_index('name', drop=False)
-print(rpd.columns)
+
 
 # rpd.drop(['med_rate', 'rec_rate', 'Id', 'Id2'], axis=1)
 
@@ -37,16 +37,19 @@ with open('./Colorado_County_Boundaries.json') as json_file:
     jdata = json_file.read()
     topoJSON = json.loads(jdata)
 
+
 sources=[]
 for feat in topoJSON['features']: 
         sources.append({"type": "FeatureCollection", 'features': [feat]})
+print(sources[63]['features'][0]['properties']['US_FIPS'])
+
 
 layers=[dict(sourcetype = 'geojson',
              source =sources[k],
              below="water", 
-             type = 'fill',   
-            #  color = 'red',
-             opacity=0.2
+             type = 'fill',
+             color = sources[k]['features'][0]['properties']['COLOR'],
+             opacity = 0.2
             ) for k in range(len(sources))]
 
 
@@ -232,7 +235,6 @@ def create_rev_bar_b(selected_values,year,clickData):
     # selected_pop = rpd['respop7'+ year]
     # selected_med_rev = rpd['per_cap_med_'+year]
     selected_rec_rev = rpd.loc[ : ,'per_cap_rec_2017']
-    print(selected_rec_rev)
     # print(selected_med_rev)
     # def dpc():
         
@@ -253,7 +255,6 @@ def create_rev_bar_b(selected_values,year,clickData):
             [Input('sales', 'value'),
             Input('map-2', 'clickData')])
 def create_rev_bar_a(selected_values,clickData):
-    print(clickData['points'][-1]['text'])
     filtered_county = crat['County'] ==  clickData['points'][-1]['text']
     # filtered_county = crat['County'] == 'ADAMS'
     selected_county = crat[filtered_county]
@@ -417,7 +418,7 @@ def update_figure(selected_values):
         hoverinfo = 'text',
         type = 'scattermapbox',
         customdata = df['uid'],
-        marker = dict(size=5,color='red',opacity=.5)
+        marker = dict(size=5,color=counties['COLOR'],opacity=.5),
         )]
     layout = dict(
         mapbox = dict(
