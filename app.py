@@ -247,12 +247,16 @@ def create_rev_bar_b(selected_values,year,clickData):
     # selected_pop = rpd['respop7'+ year]
     selected_med_rev = rpd.loc[ : ,'per_cap_med_'+year+'']
     selected_rec_rev = rpd.loc[ : ,'per_cap_rec_'+year+'']
-    print(selected_med_rev)
-    print(selected_rec_rev)
-        
+    print(type(selected_med_rev))
+    print(type(selected_rec_rev))
+    fsmr = selected_med_rev[selected_med_rev != 0]
+    fsrr = selected_rec_rev[selected_rec_rev != 0]
+    print(fsmr)
+
+
     trace = [
-        {'y': selected_rec_rev, 'type': 'bar'},
-        {'y': selected_med_rev, 'type': 'bar'}
+        {'y': fsrr, 'type': 'bar'},
+        {'y': fsmr, 'type': 'bar'}
     ]
 
     return {
