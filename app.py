@@ -26,6 +26,8 @@ counties = gpd.read_file('./Colorado_County_Boundaries.geojson')
 df_revenue = pd.read_csv('./weed_stats.csv')
 rpd = pd.read_csv('./revenue_pop_data.csv')
 
+df_revenue['County'] = df_revenue['County'].str.upper()
+
 
 with open('./Colorado_County_Boundaries.json') as json_file:
     jdata = json_file.read()
@@ -86,42 +88,19 @@ crat = county_revenue_df.sum()
 crat.reset_index(inplace=True)
 
 
-Adams = crat['County'] == 'Adams'
-county = crat[Adams]
+# Adams = crat['County'] == 'Adams'
+# print(Adams)
+# county = crat[Adams]
+# print(county)
+
+# Arapahoe = crat['County'] == 'Arapahoe'
+# county2 = crat[Arapahoe]
 
 
-Arapahoe = crat['County'] == 'Arapahoe'
-county2 = crat[Arapahoe]
+# county_list = crat['County'].unique()
 
 
-counties = crat['County'].unique()
-
-data = []
-
-x = 0
-for i in counties:
-    y = crat['County'] == counties[x]
-    crd = crat[y]
-    data.append(crd)
-    x += 1
-print(data)
     
-# print(data)
-
-
-# for x in crat['County']:
-    # data.append(crat[x])
-
-# data = []
-# trace = go.Bar(
-#     x = c_r_annual_tot['County'],
-#     y = c_r_annual_tot['Tot_Sales']
-# )
-
-# data.append(trace)
-
-
-
 #  Layouts
 body = dbc.Container([
         dbc.Row([
@@ -224,33 +203,17 @@ body = dbc.Container([
                 config={
                     'scrollZoom': True
                 }),
-                width={'size':6, 'offset':1},
+                width={'size':6},
             ),
             dbc.Col(
-                dcc.Graph(id='revenue-bar',
+                dcc.Graph(id='rev-bar-2',
                 ),
-                width = {'size':5},
+                width = {'size':6},
             ),
         ]),
         dbc.Row([
             dbc.Col(
-                dcc.Graph(id='rev-bar',
-                    figure = {
-                        'data': [
-                            {'x': county['Year'], 'y': county['Tot_Sales'], 'type': 'bar'},
-                            {'x': county2['Year'], 'y': county2['Tot_Sales'], 'type': 'bar'},
-                            
-                        ],
-                        'layout': {
-                            'title': 'County Revenue By Year'
-                        }
-                     }
-                ),
-            ),
-        ]), 
-        dbc.Row([
-            dbc.Col(
-                dcc.Graph(id='rev-bar-2',
+                dcc.Graph(id='rev-bar-3',
                 ),
                 width = {'size': 10}
             ),
@@ -269,16 +232,51 @@ body = dbc.Container([
                     width = {'size': 2}
             ),
         ]),
+        # dbc.Row([
+        #     dbc.Col(
+        #         dcc.Graph(id='rev-bar',
+        #             figure = {
+        #                 'data': [
+        #                     {'x': county['Year'], 'y': county['Tot_Sales'], 'name': 'Adams', 'type': 'bar'},
+        #                     {'x': county2['Year'], 'y': county2['Tot_Sales'], 'type': 'bar'},
+                            
+        #                 ],
+        #                 'layout': {
+        #                     'title': 'County Revenue By Year'
+        #                 }
+        #              }
+        #         ),
+        #     ),
+        # ]), 
+        
 ])
 
-# @app.callback(
-#             Output('rev-bar-2', 'figure'),
-#             [Input('sales', 'value')])
-# def create_rev_bar(selected_values):
-#     data = []
-#     for x in crat['County']:
-#         data.append(crat[x])
-#     return print(data)
+@app.callback(
+            Output('rev-bar-2', 'figure'),
+            [Input('sales', 'value'),
+            Input('year-selector', 'value'),
+            Input('map-2', 'clickData')])
+def create_rev_bar(selected_values,year,clickData):
+    print(clickData['points'][-1]['text'])
+    filtered_county = crat['County'] ==  clickData['points'][-1]['text']
+    # filtered_county = crat['County'] == 'ADAMS'
+    selected_county = crat[filtered_county]
+    # print(selected_county)
+    traces = []
+    trace1 = [
+        {'x': selected_county['Year'], 'y': selected_county['Med_Sales'], 'type': 'bar', 'name': 'Med Sales' },
+        {'x': selected_county['Year'], 'y': selected_county['Rec_Sales'], 'type': 'bar', 'name': 'Rec Sales' },
+        {'x': selected_county['Year'], 'y': selected_county['Tot_Sales'], 'type': 'bar', 'name': 'Tot Sales' },
+    ]
+    traces.append(trace1)
+  
+    return {
+        'data': trace1,
+        'layout': go.Layout(
+            title = '{} County Revenue By Year'.format(clickData['points'][-1]['text'])
+        ),
+    }
+
 
 @app.callback(
             Output('map', 'figure'),
