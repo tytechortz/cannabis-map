@@ -233,8 +233,64 @@ body = dbc.Container([
                     ]),
                     width = {'size': 2}
             ),
+        ]),
+         dbc.Row([
+            dbc.Col(
+                dcc.Graph(id='map-3',
+                config={
+                    'scrollZoom': True
+                }),
+                width={'size':10},
+            ),
         ]),   
 ])
+
+@app.callback(
+            Output('map-3', 'figure'),
+            [Input('year-selector','value' )])         
+def update_figure(year):
+    year = str(year)
+    rpd_s = rpd.sort_values(by=['Id2'])
+    counties_s = counties.sort_values(by=['US_FIPS'])
+
+    selected_med_rev = rpd_s.loc[ : ,'per_cap_med_'+year+'']
+    selected_rec_rev = rpd_s.loc[ : ,'per_cap_rec_'+year+'']
+    # print(selected_med_rev)
+    
+    
+    print(rpd_s)
+    print(counties_s)
+    df_smr = pd.DataFrame({'name': selected_med_rev.index, 'med_rev': selected_med_rev.values, 'rec_rev': selected_rec_rev.values, 'tot_rev': selected_med_rev.values + selected_rec_rev.values, 'CENT_LAT':counties_s['CENT_LAT'], 'CENT_LON':counties_s['CENT_LONG'], 'marker_size': (selected_med_rev.values + selected_rec_rev.values)*.05})
+    print(df_smr)
+
+
+
+
+    data = [dict(
+        lat = df_smr['CENT_LAT'],
+        lon = df_smr['CENT_LON'],
+        text = df_smr['name'],
+        hoverinfo = 'text',
+        type = 'scattermapbox',
+        customdata = df['uid'],
+        marker = dict(size=df_smr['marker_size'],color=counties['COLOR'],opacity=.5),
+        )]
+    layout = dict(
+        mapbox = dict(
+            accesstoken = mapbox_access_token,
+            center = dict(lat=39, lon=-105.5),
+            zoom = 6.5,
+            style = 'light',
+            layers = layers
+        ),
+        hovermode = 'closest',
+        height = 650,
+        margin = dict(r=0, l=0, t=0, b=0)
+    )
+
+    fig = dict(data=data, layout=layout)
+    return fig
+
 
 @app.callback(
             Output('rev-bar-3', 'figure'),
@@ -247,11 +303,10 @@ def create_rev_bar_b(selected_values,year,clickData):
     # selected_pop = rpd['respop7'+ year]
     selected_med_rev = rpd.loc[ : ,'per_cap_med_'+year+'']
     selected_rec_rev = rpd.loc[ : ,'per_cap_rec_'+year+'']
-    print(type(selected_med_rev))
-    print(type(selected_rec_rev))
+
     fsmr = selected_med_rev[selected_med_rev != 0]
     fsrr = selected_rec_rev[selected_rec_rev != 0]
-    print(fsmr)
+    
 
 
     trace = [
@@ -290,6 +345,8 @@ def create_rev_bar_a(selected_values,clickData):
             title = '{} County Revenue By Year'.format(clickData['points'][-1]['text'])
         ),
     }
+
+
 
 
 @app.callback(
