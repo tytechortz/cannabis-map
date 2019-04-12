@@ -215,6 +215,15 @@ body = dbc.Container([
         ]),
         dbc.Row([
             dbc.Col(
+                dcc.Graph(id='map-3',
+                config={
+                    'scrollZoom': True
+                }),
+                width={'size':10},
+            ),
+        ]),
+        dbc.Row([
+            dbc.Col(
                 dcc.Graph(id='rev-bar-3',
                 ),
                 width = {'size': 10}
@@ -232,15 +241,6 @@ body = dbc.Container([
                         ),
                     ]),
                     width = {'size': 2}
-            ),
-        ]),
-         dbc.Row([
-            dbc.Col(
-                dcc.Graph(id='map-3',
-                config={
-                    'scrollZoom': True
-                }),
-                width={'size':10},
             ),
         ]),   
 ])
@@ -325,9 +325,9 @@ def create_rev_bar_b(selected_values,year,clickData):
 @app.callback(
             Output('rev-bar-2', 'figure'),
             [Input('sales', 'value'),
-            Input('map-2', 'clickData')])
-def create_rev_bar_a(selected_values,clickData):
-    filtered_county = crat['County'] ==  clickData['points'][-1]['text']
+            Input('map-2', 'hoverData')])
+def create_rev_bar_a(selected_values,hoverData):
+    filtered_county = crat['County'] ==  hoverData['points'][-1]['text']
     # filtered_county = crat['County'] == 'ADAMS'
     selected_county = crat[filtered_county]
     # print(selected_county)
@@ -342,7 +342,7 @@ def create_rev_bar_a(selected_values,clickData):
     return {
         'data': trace1,
         'layout': go.Layout(
-            title = '{} County Revenue By Year'.format(clickData['points'][-1]['text'])
+            title = '{} County Revenue By Year'.format(hoverData['points'][-1]['text'])
         ),
     }
 
