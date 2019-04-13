@@ -71,7 +71,7 @@ body = dbc.Container([
                         max = 2018,
                         marks={i: '{}'.format(i) for i in range(2014,2019)}, 
                         step = 1,
-                        # value = 2014
+                        value = 2014
                     ),
                  ),
                 width = {'size':4, 'offset':4},
