@@ -192,11 +192,42 @@ def create_rev_bar(selected_values,hoverData):
             [Input('rev', 'value'),
             Input('map', 'hoverData'),
             Input('year-selector','value')])
-def create_rev_scat(selected_values,hoverData,year):
+def create_rev_scat(rev,hoverData,year):
     # year = str(year)
     year_df = df_revenue[df_revenue['Year'] == year]
     filtered_df = year_df[year_df['County'] == hoverData['points'][-1]['text']]
-    return print(filtered_df)
+
+    traces = []
+
+    if rev == 'tot':
+        traces.append(go.Scatter(
+        y = filtered_df['Tot_Sales'],
+        name = rev,
+        line = {'color':'red'} 
+        ))
+    elif rev == 'rec':  
+        traces.append(go.Scatter(
+        y = filtered_df['Rec_Sales'],
+        name = rev,
+        line = {'color':'dodgerblue'}
+        ))
+    elif rev == 'med':  
+        traces.append(go.Scatter(
+        y = filtered_df['Med_Sales'],
+        name = rev,
+        line = {'color':'black'}
+        ))
+    return {
+        'data': traces,
+        'layout': go.Layout(
+            xaxis = {'title': 'Month'},
+            yaxis = {'title': 'Revenue'},
+            hovermode = 'closest',
+            title = 'Revenue',
+            height = 450,
+        )
+    }
+    
 
 app.layout = html.Div(body)
 
