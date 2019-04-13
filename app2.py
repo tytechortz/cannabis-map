@@ -6,7 +6,10 @@ import geopandas as gpd
 import dash_bootstrap_components as dbc
 import plotly.graph_objs as go
 import json
+import numpy as np
 from dash.dependencies import Input, Output, State
+from plotly import graph_objs as go
+from plotly.graph_objs import *
 
 
 
@@ -19,7 +22,8 @@ mapbox_access_token = 'pk.eyJ1IjoidHl0ZWNob3J0eiIsImEiOiJjanN1emtuc2cwMXNhNDNuej
 counties = gpd.read_file('./Colorado_County_Boundaries.geojson')
 pop_rev = gpd.read_file('./per_cap_joined.geojson')
 df = gpd.read_file('./cannabis_business.geojson')
-
+df_revenue = pd.read_csv('./weed_stats.csv')
+df_revenue['County'] = df_revenue['County'].str.upper()
 # pop_rev.set_index('RId2', drop=False)
 print(pop_rev.loc[0]['Rrev_med_14'])
 
@@ -32,7 +36,9 @@ for feat in topoJSON['features']:
         sources.append({"type": "FeatureCollection", 'features': [feat]})
 print(sources[63]['features'][0]['properties']['US_FIPS'])
 
-
+county_revenue_df = df_revenue.groupby(['County', 'Year'])
+crat = county_revenue_df.sum()
+crat.reset_index(inplace=True)
 
 # def color_maker():
 #     for i in pop_rev:
@@ -104,8 +110,9 @@ body = dbc.Container([
                     ],
                 labelStyle={'display':'block', 'margin': 0, 'padding': 1}
                     ),
-                ]),
-                width = {'size': 2}
+                ]
+            ),
+            width = {'size': 2}
         ),
     ]), 
 ])
@@ -121,7 +128,7 @@ def update_figure(year):
 
     selected_med_rev = pop_rev.loc[ : ,'Rrev_med_'+year+'']
     selected_rec_rev = pop_rev.loc[ : ,'Rrev_rec_'+year+'']
-    print(selected_rec_rev)
+    
   
     data = [dict(
         lat = counties_s['CENT_LAT'],
@@ -148,11 +155,33 @@ def update_figure(year):
     fig = dict(data=data, layout=layout)
     return fig
 
-
+@app.callback(
+            Output('rev-bar', 'figure'),
+            [Input('sales', 'value'),
+            Input('map', 'hoverData')])
+def create_rev_bar_a(selected_values,hoverData):
+    filtered_county = crat['County'] ==  hoverData['points'][-1]['text']
+    # filtered_county = crat['County'] == 'ADAMS'
+    selected_county = crat[filtered_county]
+    # print(selected_county)
+    traces = []
+    trace1 = [
+        {'x': selected_county['Year'], 'y': selected_county['Med_Sales'], 'type': 'bar', 'name': 'Med Sales' },
+        {'x': selected_county['Year'], 'y': selected_county['Rec_Sales'], 'type': 'bar', 'name': 'Rec Sales' },
+        {'x': selected_county['Year'], 'y': selected_county['Tot_Sales'], 'type': 'bar', 'name': 'Tot Sales' },
+    ]
+    traces.append(trace1)
+  
+    return {
+        'data': trace1,
+        'layout': go.Layout(
+            title = '{} County Revenue By Year'.format(hoverData['points'][-1]['text'])
+        ),
+    }
 
 
 app.layout = html.Div(body)
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(port=8024, debug=True)
 

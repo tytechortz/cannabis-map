@@ -26,7 +26,7 @@ counties = gpd.read_file('./Colorado_County_Boundaries.geojson')
 df_revenue = pd.read_csv('./weed_stats.csv')
 per_rev = pd.read_csv('./revenue_pop_data.csv',header=0, delim_whitespace=False)
 rpd = per_rev.set_index('name', drop=False)
-
+print(df_revenue)
 
 # rpd.drop(['med_rate', 'rec_rate', 'Id', 'Id2'], axis=1)
 
@@ -330,7 +330,7 @@ def create_rev_bar_a(selected_values,hoverData):
     filtered_county = crat['County'] ==  hoverData['points'][-1]['text']
     # filtered_county = crat['County'] == 'ADAMS'
     selected_county = crat[filtered_county]
-    # print(selected_county)
+    print(selected_county)
     traces = []
     trace1 = [
         {'x': selected_county['Year'], 'y': selected_county['Med_Sales'], 'type': 'bar', 'name': 'Med Sales' },
@@ -527,4 +527,4 @@ def update_figure(selected_values):
 app.layout = html.Div(body)
 
 if __name__ == "__main__":
-    app.run_server(port=8024, debug=True)
+    app.run_server(port=8050, debug=True)
