@@ -34,11 +34,12 @@ print(sources[63]['features'][0]['properties']['US_FIPS'])
 
 
 layers=[dict(sourcetype = 'geojson',
-             source =sources[k],
-             below="water", 
-             type = 'fill',
-             color = sources[k]['features'][0]['properties']['COLOR'],
-             opacity = 0.2
+            source =sources[k],
+            below="water", 
+            type = 'fill',
+            #  color = sources[k]['features'][0]['properties']['COLOR'],
+            color = 'white',
+            opacity = 0.2
             ) for k in range(len(sources))]
 
 body = dbc.Container([
@@ -101,7 +102,7 @@ def update_figure(year):
             center = dict(lat=39, lon=-105.5),
             zoom = 6.5,
             style = 'light',
-            # layers = layers
+            layers = layers
         ),
         hovermode = 'closest',
         height = 800,
