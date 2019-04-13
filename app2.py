@@ -8,8 +8,8 @@ import plotly.graph_objs as go
 import json
 import numpy as np
 from dash.dependencies import Input, Output, State
-from plotly import graph_objs as go
-from plotly.graph_objs import *
+# from plotly import graph_objs as go
+# from plotly.graph_objs import *
 
 
 
@@ -23,9 +23,11 @@ counties = gpd.read_file('./Colorado_County_Boundaries.geojson')
 pop_rev = gpd.read_file('./per_cap_joined.geojson')
 df = gpd.read_file('./cannabis_business.geojson')
 df_revenue = pd.read_csv('./weed_stats.csv')
+
+# df_revenue1 = pd.read_csv('./weed_stats.csv')
 df_revenue['County'] = df_revenue['County'].str.upper()
 # pop_rev.set_index('RId2', drop=False)
-print(pop_rev.loc[0]['Rrev_med_14'])
+# print(pop_rev.loc[0]['Rrev_med_14'])
 
 with open('./Colorado_County_Boundaries.json') as json_file:
     jdata = json_file.read()
@@ -34,11 +36,12 @@ with open('./Colorado_County_Boundaries.json') as json_file:
 sources=[]
 for feat in topoJSON['features']: 
         sources.append({"type": "FeatureCollection", 'features': [feat]})
-print(sources[63]['features'][0]['properties']['US_FIPS'])
-
+# print(sources[63]['features'][0]['properties']['US_FIPS'])
 county_revenue_df = df_revenue.groupby(['County', 'Year'])
 crat = county_revenue_df.sum()
 crat.reset_index(inplace=True)
+
+
 
 # def color_maker():
 #     for i in pop_rev:
@@ -74,7 +77,7 @@ body = dbc.Container([
             config={
                 'scrollZoom': True
             }),
-            width={'size':12},
+            width={'size':8},
         ),       
     ]),
     dbc.Row([
@@ -89,30 +92,35 @@ body = dbc.Container([
                     value = 2014
                 ),
             ),
-            width = {'size':4, 'offset':4},
+            width = {'size':4, 'offset':2},
             style = {'height': 50}
+        ),
+        dbc.Col(
+            html.Div(
+                className='rev-radio',
+                children=[ 
+                    dcc.RadioItems(id='rev', options=[
+                        {'label':'Total Sales', 'value':'tot'},
+                        {'label':'Rec Sales','value':'rec'},
+                        {'label':'Med Sales','value':'med'},
+                    ],
+                labelStyle={'display':'inline-block', 'margin': 0, 'padding': 1}
+                    ),
+                ]
+            ),
+            width = {'size': 4}
         ),
     ]),
     dbc.Row([
         dbc.Col(
             dcc.Graph(id='rev-bar',
             ),
-            width = {'size': 10}
+            width = {'size': 6}
         ),
         dbc.Col(
-            html.Div(
-                className='rev-radio',
-                children=[ 
-                    dcc.RadioItems(id='sales', options=[
-                        {'label':'Total Sales', 'value':'tot'},
-                        {'label':'Rec Sales','value':'rec'},
-                        {'label':'Med Sales','value':'med'},
-                    ],
-                labelStyle={'display':'block', 'margin': 0, 'padding': 1}
-                    ),
-                ]
+            dcc.Graph(id='rev-scatter',
             ),
-            width = {'size': 2}
+            width = {'size': 6}
         ),
     ]), 
 ])
@@ -143,12 +151,12 @@ def update_figure(year):
         mapbox = dict(
             accesstoken = mapbox_access_token,
             center = dict(lat=39, lon=-105.5),
-            zoom = 6.5,
+            zoom = 6,
             style = 'light',
             layers = layers
         ),
         hovermode = 'closest',
-        height = 800,
+        height = 600,
         margin = dict(r=0, l=0, t=0, b=0)
     )
 
@@ -157,9 +165,9 @@ def update_figure(year):
 
 @app.callback(
             Output('rev-bar', 'figure'),
-            [Input('sales', 'value'),
+            [Input('rev', 'value'),
             Input('map', 'hoverData')])
-def create_rev_bar_a(selected_values,hoverData):
+def create_rev_bar(selected_values,hoverData):
     filtered_county = crat['County'] ==  hoverData['points'][-1]['text']
     # filtered_county = crat['County'] == 'ADAMS'
     selected_county = crat[filtered_county]
@@ -179,6 +187,16 @@ def create_rev_bar_a(selected_values,hoverData):
         ),
     }
 
+@app.callback(
+            Output('rev-scatter', 'figure'),
+            [Input('rev', 'value'),
+            Input('map', 'hoverData'),
+            Input('year-selector','value')])
+def create_rev_scat(selected_values,hoverData,year):
+    # year = str(year)
+    year_df = df_revenue[df_revenue['Year'] == year]
+    filtered_df = year_df[year_df['County'] == hoverData['points'][-1]['text']]
+    return print(filtered_df)
 
 app.layout = html.Div(body)
 
