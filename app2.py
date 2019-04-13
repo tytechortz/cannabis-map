@@ -72,21 +72,42 @@ body = dbc.Container([
         ),       
     ]),
     dbc.Row([
-             dbc.Col(
-                 html.Div(
-                    dcc.Slider(
-                        id='year-selector',
-                        min = 2014,
-                        max = 2018,
-                        marks={i: '{}'.format(i) for i in range(2014,2019)}, 
-                        step = 1,
-                        value = 2014
-                    ),
-                 ),
-                width = {'size':4, 'offset':4},
-                style = {'height': 50}
+        dbc.Col(
+            html.Div(
+                dcc.Slider(
+                    id='year-selector',
+                    min = 2014,
+                    max = 2018,
+                    marks={i: '{}'.format(i) for i in range(2014,2019)}, 
+                    step = 1,
+                    value = 2014
+                ),
             ),
-        ]),
+            width = {'size':4, 'offset':4},
+            style = {'height': 50}
+        ),
+    ]),
+    dbc.Row([
+        dbc.Col(
+            dcc.Graph(id='rev-bar',
+            ),
+            width = {'size': 10}
+        ),
+        dbc.Col(
+            html.Div(
+                className='rev-radio',
+                children=[ 
+                    dcc.RadioItems(id='sales', options=[
+                        {'label':'Total Sales', 'value':'tot'},
+                        {'label':'Rec Sales','value':'rec'},
+                        {'label':'Med Sales','value':'med'},
+                    ],
+                labelStyle={'display':'block', 'margin': 0, 'padding': 1}
+                    ),
+                ]),
+                width = {'size': 2}
+        ),
+    ]), 
 ])
 
 @app.callback(
@@ -95,12 +116,12 @@ body = dbc.Container([
 def update_figure(year):
     year = str(year)
     year = year[-2:]
-    print(year)
+   
     counties_s = counties.sort_values(by=['US_FIPS'])
 
-    # selected_med_rev = pop_rev.loc[ : ,'Rrev_med_14'+year+'']
-    # selected_rec_rev = rpd_s.loc[ : ,'per_cap_rec_'+year+'']
-    # print(selected_med_rev)
+    selected_med_rev = pop_rev.loc[ : ,'Rrev_med_'+year+'']
+    selected_rec_rev = pop_rev.loc[ : ,'Rrev_rec_'+year+'']
+    print(selected_rec_rev)
   
     data = [dict(
         lat = counties_s['CENT_LAT'],
