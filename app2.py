@@ -19,9 +19,9 @@ mapbox_access_token = 'pk.eyJ1IjoidHl0ZWNob3J0eiIsImEiOiJjanN1emtuc2cwMXNhNDNuej
 counties = gpd.read_file('./Colorado_County_Boundaries.geojson')
 pop_rev = gpd.read_file('./per_cap_joined.geojson')
 df = gpd.read_file('./cannabis_business.geojson')
-print(counties)
+
 # pop_rev.set_index('RId2', drop=False)
-print(pop_rev.loc[0])
+print(pop_rev.loc[0]['Rrev_med_14'])
 
 with open('./Colorado_County_Boundaries.json') as json_file:
     jdata = json_file.read()
@@ -32,6 +32,15 @@ for feat in topoJSON['features']:
         sources.append({"type": "FeatureCollection", 'features': [feat]})
 print(sources[63]['features'][0]['properties']['US_FIPS'])
 
+
+
+# def color_maker():
+#     for i in pop_rev:
+#         if pop_rev.loc[i]['Rrev_med_14'] is not None:
+#             print(true)
+#         else: print(false)
+
+# color_maker()
 
 layers=[dict(sourcetype = 'geojson',
             source =sources[k],
@@ -85,7 +94,13 @@ body = dbc.Container([
             [Input('year-selector','value' )])         
 def update_figure(year):
     year = str(year)
+    year = year[-2:]
+    print(year)
     counties_s = counties.sort_values(by=['US_FIPS'])
+
+    # selected_med_rev = pop_rev.loc[ : ,'Rrev_med_14'+year+'']
+    # selected_rec_rev = rpd_s.loc[ : ,'per_cap_rec_'+year+'']
+    # print(selected_med_rev)
   
     data = [dict(
         lat = counties_s['CENT_LAT'],
