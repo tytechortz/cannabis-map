@@ -100,9 +100,9 @@ body = dbc.Container([
                 className='rev-radio',
                 children=[ 
                     dcc.RadioItems(id='rev', options=[
-                        {'label':'Total Sales', 'value':'tot'},
-                        {'label':'Rec Sales','value':'rec'},
-                        {'label':'Med Sales','value':'med'},
+                        {'label':'Total Sales', 'value':'TOTAL'},
+                        {'label':'Rec Sales','value':'REC'},
+                        {'label':'Med Sales','value':'MED'},
                     ],
                 labelStyle={'display':'inline-block', 'margin': 0, 'padding': 1}
                     ),
@@ -166,9 +166,9 @@ def update_figure(year):
 @app.callback(
             Output('rev-bar', 'figure'),
             [Input('rev', 'value'),
-            Input('map', 'hoverData')])
-def create_rev_bar(selected_values,hoverData):
-    filtered_county = crat['County'] ==  hoverData['points'][-1]['text']
+            Input('map', 'clickData')])
+def create_rev_bar(selected_values,clickData):
+    filtered_county = crat['County'] ==  clickData['points'][-1]['text']
     # filtered_county = crat['County'] == 'ADAMS'
     selected_county = crat[filtered_county]
     # print(selected_county)
@@ -183,36 +183,39 @@ def create_rev_bar(selected_values,hoverData):
     return {
         'data': trace1,
         'layout': go.Layout(
-            title = '{} County Revenue By Year'.format(hoverData['points'][-1]['text'])
+            title = '{} COUNTY REVENUE BY YEAR'.format(clickData['points'][-1]['text'])
         ),
     }
 
 @app.callback(
             Output('rev-scatter', 'figure'),
             [Input('rev', 'value'),
-            Input('map', 'hoverData'),
+            Input('map', 'clickData'),
             Input('year-selector','value')])
-def create_rev_scat(rev,hoverData,year):
+def create_rev_scat(rev,clickData,year):
     # year = str(year)
     year_df = df_revenue[df_revenue['Year'] == year]
-    filtered_df = year_df[year_df['County'] == hoverData['points'][-1]['text']]
-
+    filtered_df = year_df[year_df['County'] == clickData['points'][-1]['text']]
+    print(filtered_df)
     traces = []
 
-    if rev == 'tot':
+    if rev == 'TOTAL':
         traces.append(go.Scatter(
+        x = filtered_df['Month'],
         y = filtered_df['Tot_Sales'],
         name = rev,
         line = {'color':'red'} 
         ))
-    elif rev == 'rec':  
+    elif rev == 'REC':  
         traces.append(go.Scatter(
+        x = filtered_df['Month'],
         y = filtered_df['Rec_Sales'],
         name = rev,
         line = {'color':'dodgerblue'}
         ))
-    elif rev == 'med':  
+    elif rev == 'MED':  
         traces.append(go.Scatter(
+        x = filtered_df['Month'],
         y = filtered_df['Med_Sales'],
         name = rev,
         line = {'color':'black'}
@@ -223,7 +226,7 @@ def create_rev_scat(rev,hoverData,year):
             xaxis = {'title': 'Month'},
             yaxis = {'title': 'Revenue'},
             hovermode = 'closest',
-            title = 'Revenue',
+            title = '{} COUNTY {} REVENUE'.format(clickData['points'][-1]['text'],rev),
             height = 450,
         )
     }
