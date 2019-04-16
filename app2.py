@@ -31,6 +31,8 @@ df_biz = pd.read_csv('https://data.colorado.gov/resource/sqs8-2un5.csv')
 # df_revenue1 = pd.read_csv('./weed_stats.csv')
 df_revenue['county'] = df_revenue['county'].str.upper()
 
+
+df_revenue.fillna(0, inplace=True)
 df_revenue['tot_sales'] = df_revenue['med_sales'] + df_revenue['rec_sales']
 print(df_revenue)# print(df_revenue)
 # pop_rev.set_index('RId2', drop=False)
@@ -219,7 +221,8 @@ body = dbc.Container([
                         {'label':'Rec Sales','value':'REC'},
                         {'label':'Med Sales','value':'MED'},
                     ],
-                labelStyle={'display':'inline-block', 'margin': 0, 'padding': 1}
+                labelStyle={'display':'inline-block', 'margin': 0, 'padding': 1},
+                value = 'TOTAL'
                     ),
                 ]
             ),
@@ -312,7 +315,7 @@ body = dbc.Container([
 def update_figure(year,map,selected_values):
     year = str(year)
     year = year[-2:]
-    print(map)
+    # print(map)
     counties_s = counties.sort_values(by=['US_FIPS'])
 
     selected_med_rev = pop_rev.loc[ : ,'Rrev_med_'+year+'']
@@ -412,7 +415,7 @@ def create_rev_scat(rev,clickData,year):
     # year = str(year)
     year_df = df_revenue[df_revenue['year'] == year]
     filtered_df = year_df[year_df['county'] == clickData['points'][-1]['text']]
-    print(filtered_df)
+    # print(filtered_df)
     traces = []
 
     if rev == 'TOTAL':
