@@ -25,14 +25,14 @@ df = gpd.read_file('./cannabis_business.geojson')
 df_revenue = pd.read_csv('https://data.colorado.gov/resource/j7a3-jgd3.csv?$limit=4000&$$app_token=Uwt19jYZWTc9a2UPr7tB6x2k1')
 df_taxes = pd.read_csv('https://data.colorado.gov/resource/3sm5-jtur.csv')
 df_biz = pd.read_csv('https://data.colorado.gov/resource/sqs8-2un5.csv')
-print(df_revenue)
+
 # df_revenue = pd.read_csv('./weed_stats.csv')
 
 # df_revenue1 = pd.read_csv('./weed_stats.csv')
 df_revenue['county'] = df_revenue['county'].str.upper()
 
 df_revenue['tot_sales'] = df_revenue['med_sales'] + df_revenue['rec_sales']
-# print(df_revenue)
+print(df_revenue)# print(df_revenue)
 # pop_rev.set_index('RId2', drop=False)
 # print(pop_rev.loc[0]['Rrev_med_14'])
 
@@ -148,7 +148,8 @@ body = dbc.Container([
                         {'label':'','value':'MED Licensed Retail Transporter'},
                         {'label':'','value':'MED Licensed Retail Marijuana Store'},
                     ],
-                    labelStyle={'display':'block', 'margin': 0, 'padding': 1}
+                    labelStyle={'display':'block', 'margin': 0, 'padding': 1},
+                    value = 'all'
                     ),
                 ]),
                 width = {'size':.1}
@@ -202,7 +203,8 @@ body = dbc.Container([
                         {'label':'Rev Map', 'value':'rev-map'},
                         {'label':'Biz Map','value':'biz-map'},
                     ],
-                labelStyle={'display':'inline-block', 'margin': 0, 'padding': 1}
+                labelStyle={'display':'inline-block', 'margin': 0, 'padding': 1},
+                value = 'rev-map'
                     ),
                 ]
             ),
