@@ -483,45 +483,57 @@ def create_rev_scat(rev,clickData,year,map):
 
 @app.callback(
     Output('lic-name', 'children'),
-    [Input('map', 'hoverData')])
-def update_text_a(hoverData):
-    s = df[df['uid'] == hoverData['points'][0]['customdata']]
-    return  'Licensee: {}'.format(s.iloc[0]['Licensee'])
+    [Input('map', 'hoverData'),
+    Input('map-radio', 'value')])
+def update_text_a(hoverData,map):
+    if map == 'biz-map':
+        s = df[df['uid'] == hoverData['points'][0]['customdata']]
+        return  'Licensee: {}'.format(s.iloc[0]['Licensee'])
 
 @app.callback(
     Output('biz-name', 'children'),
-    [Input('map', 'hoverData')])
-def update_text_b(hoverData):
-    s = df[df['uid'] == hoverData['points'][0]['customdata']]
-    return  'Business: {}'.format(s.iloc[0]['DBA'])
+    [Input('map', 'hoverData'),
+    Input('map-radio', 'value')])
+def update_text_b(hoverData,map):
+    if map == 'biz-map':
+        s = df[df['uid'] == hoverData['points'][0]['customdata']]
+        return  'Business: {}'.format(s.iloc[0]['DBA'])
 
 @app.callback(
     Output('biz-type', 'children'),
-    [Input('map', 'hoverData')])
-def update_text_c(hoverData):
-    s = df[df['uid'] == hoverData['points'][0]['customdata']]
-    return  'Business Type: {}'.format(s.iloc[0]['Category'][13:])
+    [Input('map', 'hoverData'),
+    Input('map-radio', 'value')])
+def update_text_c(hoverData,map):
+    if map == 'biz-map':
+        s = df[df['uid'] == hoverData['points'][0]['customdata']]
+        return  'Business Type: {}'.format(s.iloc[0]['Category'][13:])
 
 @app.callback(
     Output('city', 'children'),
-    [Input('map', 'hoverData')])
-def update_text_d(hoverData):
-    s = df[df['uid'] == hoverData['points'][0]['customdata']]
-    return  'City: {}'.format(s.iloc[0]['City'])
+    [Input('map', 'hoverData'),
+    Input('map-radio', 'value')])
+def update_text_d(hoverData,map):
+    if map == 'biz-map':
+        s = df[df['uid'] == hoverData['points'][0]['customdata']]
+        return  'City: {}'.format(s.iloc[0]['City'])
 
 @app.callback(
     Output('address', 'children'),
-    [Input('map', 'hoverData')])
-def update_text_e(hoverData):
-    s = df[df['uid'] == hoverData['points'][0]['customdata']]
-    return  'Address: {}'.format(s.iloc[0]['Street_Address'])
+    [Input('map', 'hoverData'),
+    Input('map-radio', 'value')])
+def update_text_e(hoverData,map):
+    if map == 'biz-map':
+        s = df[df['uid'] == hoverData['points'][0]['customdata']]
+        return  'Address: {}'.format(s.iloc[0]['Street_Address'])
         
 @app.callback(
     Output('lic-num', 'children'),
-    [Input('map', 'hoverData')])
-def update_text_f(hoverData):
-    s = df[df['uid'] == hoverData['points'][0]['customdata']]
-    return  'License Number: {}'.format(s.iloc[0]['License_No'])
+    [Input('map', 'hoverData'),
+    Input('map-radio', 'value')])
+def update_text_f(hoverData,map):
+    if map == 'biz-map':
+        s = df[df['uid'] == hoverData['points'][0]['customdata']]
+        return  'License Number: {}'.format(s.iloc[0]['License_No'])
 
 @app.callback(Output('stats-bar', 'figure'),
              [Input('categories', 'value')])
