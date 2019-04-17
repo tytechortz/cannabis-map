@@ -136,7 +136,7 @@ body = dbc.Container([
             config={
                 'scrollZoom': True
             }),
-            width={'size':8},
+            width={'size':7},
         ),
         dbc.Col(
                 html.Div(
@@ -164,7 +164,8 @@ body = dbc.Container([
                 width = {'size':.1}
             ),
             dbc.Col(
-                html.Table ([
+                html.Div([
+                    html.Table ([
                     html.Tr(html.Div('All License Types', id='lics-num9', style={'font-size':17.5})),
                     html.Tr(html.Div('Transporters', id='lics-num10', style={'font-size':17.5})),
                     html.Tr(html.Div('Center', id='lics-num11', style={'font-size':17.5})),
@@ -186,7 +187,11 @@ body = dbc.Container([
                     html.Tr(html.Div(id='address', style={'height':30, 'text-align': 'left'})),
                     html.Tr(html.Div(id='lic-num', style={'height':30, 'text-align': 'left'})),
                 ]),
-                width = {'size':3}
+                ],
+                style = {'overflow-x':'scroll'}
+                ),
+                
+                width = {'size':4}
             ),       
     ]),
     dbc.Row([
@@ -330,7 +335,7 @@ def update_figure(year,map,selected_values):
 
 
     df_year = df_revenue.loc[df_revenue['year'] == year]
-    print(type(sources))
+    # print(type(sources))
     # df_year.set_index('county')
    
     # print(sources[0])
@@ -338,15 +343,15 @@ def update_figure(year,map,selected_values):
     # print(type(df_revenue))
     # color_counties = []
     df_year_filtered = df_year.loc[df_year['color'] == 'red']
-    print(df_year_filtered)
+    # print(df_year_filtered)
     color_counties = df_year_filtered['county'].unique().tolist()
-    print(color_counties)
+    # print(color_counties)
 
-    print(sources[0]['features'][0]['properties']['COUNTY'])
+    # print(sources[0]['features'][0]['properties']['COUNTY'])
     def color_maker():
         for k in range(len(sources)):
             if sources[k]['features'][0]['properties']['COUNTY'] in color_counties:
-                print(sources[k]['features'][0]['properties']['COUNTY'])
+                # print(sources[k]['features'][0]['properties']['COUNTY'])
                 sources[k]['features'][0]['properties']['COLOR'] = 'green'
             # if sources[k]['features'][0]['properties']['COUNTY'].isin(color_counties):
             #     sources[k]['features'][0]['properties']['COLOR'] = 'red'
@@ -496,42 +501,42 @@ def create_rev_scat(rev,clickData,year):
 @app.callback(
     Output('lic-name', 'children'),
     [Input('map', 'hoverData')])
-def update_text(hoverData):
+def update_text_a(hoverData):
     s = df[df['uid'] == hoverData['points'][0]['customdata']]
-    return  'Licensee Name: {}'.format(s.iloc[0]['Licensee'])
+    return  'Licensee: {}'.format(s.iloc[0]['Licensee'])
 
 @app.callback(
     Output('biz-name', 'children'),
     [Input('map', 'hoverData')])
-def update_text(hoverData):
+def update_text_b(hoverData):
     s = df[df['uid'] == hoverData['points'][0]['customdata']]
-    return  'Business Name: {}'.format(s.iloc[0]['DBA'])
+    return  'Business: {}'.format(s.iloc[0]['DBA'])
 
 @app.callback(
     Output('biz-type', 'children'),
     [Input('map', 'hoverData')])
-def update_text(hoverData):
+def update_text_c(hoverData):
     s = df[df['uid'] == hoverData['points'][0]['customdata']]
     return  'Business Type: {}'.format(s.iloc[0]['Category'])
 
 @app.callback(
     Output('city', 'children'),
     [Input('map', 'hoverData')])
-def update_text(hoverData):
+def update_text_d(hoverData):
     s = df[df['uid'] == hoverData['points'][0]['customdata']]
     return  'City: {}'.format(s.iloc[0]['City'])
 
 @app.callback(
     Output('address', 'children'),
     [Input('map', 'hoverData')])
-def update_text(hoverData):
+def update_text_e(hoverData):
     s = df[df['uid'] == hoverData['points'][0]['customdata']]
     return  'Address: {}'.format(s.iloc[0]['Street_Address'])
         
 @app.callback(
     Output('lic-num', 'children'),
     [Input('map', 'hoverData')])
-def update_text(hoverData):
+def update_text_f(hoverData):
     s = df[df['uid'] == hoverData['points'][0]['customdata']]
     return  'License Number: {}'.format(s.iloc[0]['License_No'])
 

@@ -26,7 +26,7 @@ counties = gpd.read_file('./Colorado_County_Boundaries.geojson')
 df_revenue = pd.read_csv('./weed_stats.csv')
 per_rev = pd.read_csv('./revenue_pop_data.csv',header=0, delim_whitespace=False)
 rpd = per_rev.set_index('name', drop=False)
-print(df_revenue)
+
 
 # rpd.drop(['med_rate', 'rec_rate', 'Id', 'Id2'], axis=1)
 
