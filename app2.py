@@ -327,7 +327,7 @@ body = dbc.Container([
 def update_figure(year,map,selected_values):
     year1 = str(year)
     year2 = year1[-2:]
-    # print(map)
+  
     counties_s = counties.sort_values(by=['US_FIPS'])
 
     selected_med_rev = pop_rev.loc[ : ,'Rrev_med_'+year2+'']
@@ -335,26 +335,15 @@ def update_figure(year,map,selected_values):
 
 
     df_year = df_revenue.loc[df_revenue['year'] == year]
-    # print(type(sources))
-    # df_year.set_index('county')
-   
-    # print(sources[0])
-    # print(df_revenue)
-    # print(type(df_revenue))
-    # color_counties = []
+ 
     df_year_filtered = df_year.loc[df_year['color'] == 'red']
-    # print(df_year_filtered)
-    color_counties = df_year_filtered['county'].unique().tolist()
-    # print(color_counties)
 
-    # print(sources[0]['features'][0]['properties']['COUNTY'])
+    color_counties = df_year_filtered['county'].unique().tolist()
+
     def color_maker():
         for k in range(len(sources)):
             if sources[k]['features'][0]['properties']['COUNTY'] in color_counties:
-                # print(sources[k]['features'][0]['properties']['COUNTY'])
                 sources[k]['features'][0]['properties']['COLOR'] = 'green'
-            # if sources[k]['features'][0]['properties']['COUNTY'].isin(color_counties):
-            #     sources[k]['features'][0]['properties']['COLOR'] = 'red'
             else: sources[k]['features'][0]['properties']['COLOR'] = 'red'                 
     color_maker()
 
@@ -517,7 +506,7 @@ def update_text_b(hoverData):
     [Input('map', 'hoverData')])
 def update_text_c(hoverData):
     s = df[df['uid'] == hoverData['points'][0]['customdata']]
-    return  'Business Type: {}'.format(s.iloc[0]['Category'])
+    return  'Business Type: {}'.format(s.iloc[0]['Category'][13:])
 
 @app.callback(
     Output('city', 'children'),
