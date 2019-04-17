@@ -43,21 +43,14 @@ sources=[]
 for feat in topoJSON['features']: 
         sources.append({"type": "FeatureCollection", 'features': [feat]})
 
-
-
 # counties_s = counties.sort_values(by=['US_FIPS'])
 dfinal = df_revenue.merge(counties, how='inner', left_on='county', right_on='COUNTY')
-
-
-
 
 county_revenue_df = df_revenue.groupby(['county', 'year'])
 crat = county_revenue_df.sum()
 crat.reset_index(inplace=True)
 
 color_list = ['purple', 'darkblue', 'dodgerblue', 'darkgreen','black','lightgreen','yellow','orange', 'darkorange','red','darkred','violet']
-
-
 
 text=[]
 i=0
@@ -335,12 +328,12 @@ def update_figure(year,map,selected_values):
 
     color_counties = df_year_filtered['county'].unique().tolist()
 
-    def color_maker():
+    def fill_color():
         for k in range(len(sources)):
             if sources[k]['features'][0]['properties']['COUNTY'] in color_counties:
                 sources[k]['features'][0]['properties']['COLOR'] = 'lightgreen'
             else: sources[k]['features'][0]['properties']['COLOR'] = 'white'                 
-    color_maker()
+    fill_color()
 
     layers=[dict(sourcetype = 'json',
              source =sources[k],
@@ -445,45 +438,48 @@ def create_rev_bar(selected_values,clickData,map):
             Output('rev-scatter', 'figure'),
             [Input('rev', 'value'),
             Input('map', 'clickData'),
-            Input('year-selector','value')])
-def create_rev_scat(rev,clickData,year):
-    # year = str(year)
+            Input('year-selector','value'),
+            Input('map-radio', 'value')])
+def create_rev_scat(rev,clickData,year,map):
+  
     year_df = df_revenue[df_revenue['year'] == year]
     filtered_df = year_df[year_df['county'] == clickData['points'][-1]['text']]
-    # print(filtered_df)
-    traces = []
 
-    if rev == 'TOTAL':
-        traces.append(go.Scatter(
-        x = filtered_df['month'],
-        y = filtered_df['tot_sales'],
-        name = rev,
-        line = {'color':'red'} 
-        ))
-    elif rev == 'REC':  
-        traces.append(go.Scatter(
-        x = filtered_df['month'],
-        y = filtered_df['rec_sales'],
-        name = rev,
-        line = {'color':'dodgerblue'}
-        ))
-    elif rev == 'MED':  
-        traces.append(go.Scatter(
-        x = filtered_df['month'],
-        y = filtered_df['med_sales'],
-        name = rev,
-        line = {'color':'black'}
-        ))
-    return {
-        'data': traces,
-        'layout': go.Layout(
-            xaxis = {'title': 'Month'},
-            yaxis = {'title': 'Revenue'},
-            hovermode = 'closest',
-            title = '{} COUNTY {} REVENUE'.format(clickData['points'][-1]['text'],rev),
-            height = 450,
-        )
-    }
+    if map == 'rev-map':
+
+        traces = []
+
+        if rev == 'TOTAL':
+            traces.append(go.Scatter(
+            x = filtered_df['month'],
+            y = filtered_df['tot_sales'],
+            name = rev,
+            line = {'color':'red'} 
+            ))
+        elif rev == 'REC':  
+            traces.append(go.Scatter(
+            x = filtered_df['month'],
+            y = filtered_df['rec_sales'],
+            name = rev,
+            line = {'color':'dodgerblue'}
+            ))
+        elif rev == 'MED':  
+            traces.append(go.Scatter(
+            x = filtered_df['month'],
+            y = filtered_df['med_sales'],
+            name = rev,
+            line = {'color':'black'}
+            ))
+        return {
+            'data': traces,
+            'layout': go.Layout(
+                xaxis = {'title': 'Month'},
+                yaxis = {'title': 'Revenue'},
+                hovermode = 'closest',
+                title = '{} COUNTY {} REVENUE'.format(clickData['points'][-1]['text'],rev),
+                height = 450,
+            )
+        }
 
 @app.callback(
     Output('lic-name', 'children'),
