@@ -418,8 +418,9 @@ def update_figure(year,map,selected_values):
 @app.callback(
             Output('rev-bar', 'figure'),
             [Input('rev', 'value'),
-            Input('map', 'clickData')])
-def create_rev_bar(selected_values,clickData):
+            Input('map', 'clickData'),
+            Input('map-radio', 'value')])
+def create_rev_bar(selected_values,clickData,map):
     filtered_county = crat['county'] ==  clickData['points'][-1]['text']
     # filtered_county = crat['County'] == 'ADAMS'
     selected_county = crat[filtered_county]
@@ -431,13 +432,14 @@ def create_rev_bar(selected_values,clickData):
         {'x': selected_county['year'], 'y': selected_county['tot_sales'], 'type': 'bar', 'name': 'Tot Sales' },
     ]
     traces.append(trace1)
-  
-    return {
-        'data': trace1,
-        'layout': go.Layout(
-            title = '{} COUNTY REVENUE BY YEAR'.format(clickData['points'][-1]['text'])
-        ),
-    }
+    if map == 'rev-map':
+        return {
+            'data': trace1,
+            'layout': go.Layout(
+                title = '{} COUNTY REVENUE BY YEAR'.format(clickData['points'][-1]['text'])
+            ),
+        }
+    
 
 @app.callback(
             Output('rev-scatter', 'figure'),
