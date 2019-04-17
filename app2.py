@@ -19,6 +19,8 @@ mapbox_access_token = 'pk.eyJ1IjoidHl0ZWNob3J0eiIsImEiOiJjanN1emtuc2cwMXNhNDNuej
 counties = gpd.read_file('./Colorado_County_Boundaries.geojson')
 counties.sort_values(by=['US_FIPS'])
 pop_rev = gpd.read_file('./per_cap_joined.geojson')
+# per_rev = pd.read_csv('./revenue_pop_data.csv',header=0, delim_whitespace=False)
+rpd = pop_rev.set_index('COUNTY', drop=False)
 df = gpd.read_file('./cannabis_business.geojson')
 df_revenue = pd.read_csv('https://data.colorado.gov/resource/j7a3-jgd3.csv?$limit=5000&$$app_token=Uwt19jYZWTc9a2UPr7tB6x2k1')
 df_taxes = pd.read_csv('https://data.colorado.gov/resource/3sm5-jtur.csv')
@@ -40,13 +42,13 @@ with open('./Colorado_County_Boundaries.json') as json_file:
 sources=[]
 for feat in topoJSON['features']: 
         sources.append({"type": "FeatureCollection", 'features': [feat]})
-print(type(sources))
-# print(df_revenue)
-# print(counties)
+
+
 
 # counties_s = counties.sort_values(by=['US_FIPS'])
 dfinal = df_revenue.merge(counties, how='inner', left_on='county', right_on='COUNTY')
-# print(dfinal.loc[0])
+
+
 
 
 county_revenue_df = df_revenue.groupby(['county', 'year'])
@@ -90,34 +92,6 @@ categories_table = pd.DataFrame({'Category':df['Category'].unique()})
 
 colors = dict(zip(categories, color_list))
 
-# print(df_revenue)
-# print(df_revenue.loc[0])
-
-
-
-
-
-
-# def color_maker():
-
-
-
-
-# county_rev_list = df_revenue.loc[df_revenue['tot_sales'] >0]
-# print(county_rev_list.loc[0])
-
-
-# crl = county_rev_list['county'].tolist()
-# print(crl)
-
-# layers=[dict(sourcetype = 'geojson',
-#             source =sources[k],
-#             below="water", 
-#             type = 'fill',
-#             # color = sources[k]['features'][0]['properties']['COLOR'],
-#             color = dfinal.loc[k]['color'],
-#             opacity = 0.2
-#             ) for k in range(len(sources))]
 
 body = dbc.Container([
     dbc.Row([
@@ -125,7 +99,7 @@ body = dbc.Container([
             html.Div(
                 className='app-header',
                 children=[
-                    html.Div('COLORADO CANNABIS BUSINESSES', className="app-header--title"),
+                    html.Div('COLORADO CANNABIS', className="app-header--title"),
                 ]
             ),
         ),
@@ -166,27 +140,27 @@ body = dbc.Container([
             dbc.Col(
                 html.Div([
                     html.Table ([
-                    html.Tr(html.Div('All License Types', id='lics-num9', style={'font-size':17.5})),
-                    html.Tr(html.Div('Transporters', id='lics-num10', style={'font-size':17.5})),
-                    html.Tr(html.Div('Center', id='lics-num11', style={'font-size':17.5})),
-                    html.Tr(html.Div('Cultivator', id='lics-num12', style={'font-size':17.5})),
-                    html.Tr(html.Div('Infused Product Mfg.', id='lics-num13', style={'font-size':17.5})),
-                    html.Tr(html.Div('R&D Cultivation', id='lics-num1', style={'font-size':17.5})),
-                    html.Tr(html.Div('Retail Operator', id='lics-num2', style={'font-size':17.5})),
-                    html.Tr(html.Div('Testing Facility', id='lics-num3', style={'font-size':17.5})),
-                    html.Tr(html.Div('Retail Marijuana Product Mfg.', id='lics-num4', style={'font-size':17.5})),
-                    html.Tr(html.Div('Retail Cultivator', id='lics-num5', style={'font-size':17.5})),
-                    html.Tr(html.Div('Retail Testing Facility', id='lics-num6', style={'font-size':17.5})),
-                    html.Tr(html.Div('Retail Transporter', id='lics-num7', style={'font-size':17.5})),
-                    html.Tr(html.Div('Retail Marijuana Store', id='lics-num8', style={'font-size':17.5})),
-                    html.Tr([html.Th('Business Info')]),
-                    html.Tr(html.Div(id='lic-name', style={'height':30, 'text-align': 'left', 'font-size': '1em'})),
-                    html.Tr(html.Div(id='biz-name', style={'height':30, 'text-align': 'left'})),
-                    html.Tr(html.Div(id='biz-type', style={'height':30, 'text-align': 'left'})),
-                    html.Tr(html.Div(id='city', style={'height':30, 'text-align': 'left'})),
-                    html.Tr(html.Div(id='address', style={'height':30, 'text-align': 'left'})),
-                    html.Tr(html.Div(id='lic-num', style={'height':30, 'text-align': 'left'})),
-                ]),
+                        html.Tr(html.Div('All License Types', id='lics-num9', style={'font-size':17.5})),
+                        html.Tr(html.Div('Transporters', id='lics-num10', style={'font-size':17.5})),
+                        html.Tr(html.Div('Center', id='lics-num11', style={'font-size':17.5})),
+                        html.Tr(html.Div('Cultivator', id='lics-num12', style={'font-size':17.5})),
+                        html.Tr(html.Div('Infused Product Mfg.', id='lics-num13', style={'font-size':17.5})),
+                        html.Tr(html.Div('R&D Cultivation', id='lics-num1', style={'font-size':17.5})),
+                        html.Tr(html.Div('Retail Operator', id='lics-num2', style={'font-size':17.5})),
+                        html.Tr(html.Div('Testing Facility', id='lics-num3', style={'font-size':17.5})),
+                        html.Tr(html.Div('Retail Marijuana Product Mfg.', id='lics-num4', style={'font-size':17.5})),
+                        html.Tr(html.Div('Retail Cultivator', id='lics-num5', style={'font-size':17.5})),
+                        html.Tr(html.Div('Retail Testing Facility', id='lics-num6', style={'font-size':17.5})),
+                        html.Tr(html.Div('Retail Transporter', id='lics-num7', style={'font-size':17.5})),
+                        html.Tr(html.Div('Retail Marijuana Store', id='lics-num8', style={'font-size':17.5})),
+                        html.Tr([html.Th('Business Info')]),
+                        html.Tr(html.Div(id='lic-name', style={'height':30, 'text-align': 'left', 'font-size': '1em'})),
+                        html.Tr(html.Div(id='biz-name', style={'height':30, 'text-align': 'left'})),
+                        html.Tr(html.Div(id='biz-type', style={'height':30, 'text-align': 'left'})),
+                        html.Tr(html.Div(id='city', style={'height':30, 'text-align': 'left'})),
+                        html.Tr(html.Div(id='address', style={'height':30, 'text-align': 'left'})),
+                        html.Tr(html.Div(id='lic-num', style={'height':30, 'text-align': 'left'})),
+                    ]),
                 ],
                 style = {'overflow-x':'scroll'}
                 ),
@@ -327,11 +301,14 @@ body = dbc.Container([
 def update_figure(year,map,selected_values):
     year1 = str(year)
     year2 = year1[-2:]
-  
+    rpd_s = rpd.sort_values(by=['RId2'])
     counties_s = counties.sort_values(by=['US_FIPS'])
-
-    selected_med_rev = pop_rev.loc[ : ,'Rrev_med_'+year2+'']
-    selected_rec_rev = pop_rev.loc[ : ,'Rrev_rec_'+year2+'']
+  
+    selected_med_rev = rpd_s.loc[ : ,'Rper_cap_med_'+year2+'']
+    selected_rec_rev = rpd_s.loc[ : ,'Rper_cap_rec_'+year2+'']
+    print(selected_med_rev)
+    df_smr = pd.DataFrame({'name': selected_med_rev.index, 'med_rev': selected_med_rev.values, 'rec_rev': selected_rec_rev.values, 'tot_rev': selected_med_rev.values + selected_rec_rev.values,'CENT_LAT':counties_s['CENT_LAT'], 'CENT_LON':counties_s['CENT_LONG'], 'marker_size': 25 })#(selected_med_rev.values + selected_rec_rev.values)*.05})
+    print(df_smr)
 
 
     df_year = df_revenue.loc[df_revenue['year'] == year]
@@ -360,13 +337,14 @@ def update_figure(year,map,selected_values):
 
     if map == 'rev-map':
         data = [dict(
-            lat = dfinal['CENT_LAT'],
-            lon = dfinal['CENT_LONG'],
-            text = dfinal['COUNTY'],
+            lat = df_smr['CENT_LAT'],
+            lon = df_smr['CENT_LON'],
+            text = df_smr['name'],
             hoverinfo = 'text',
             type = 'scattermapbox',
             customdata = df['uid'],
-            marker = dict(size=5,color='black',opacity=.5),
+            # marker = dict(size=5)
+            marker = dict(size=df_smr['marker_size'],color=counties['COLOR'],opacity=.5),
             )]
         layout = dict(
             mapbox = dict(
