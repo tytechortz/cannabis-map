@@ -302,12 +302,20 @@ def update_figure(year,map,selected_values):
     year1 = str(year)
     year2 = year1[-2:]
     rpd_s = rpd.sort_values(by=['RId2'])
+    # print(type(rpd_s))
+    # print(rpd_s)
+    rpd_s[['Rrev_med_14','Rrev_rec_14','Rper_cap_med_14','Rper_cap_rec_14','Rrev_med_15','Rrev_rec_15','Rper_cap_med_15','Rper_cap_rec_15','Rrev_med_16','Rrev_rec_16','Rper_cap_med_16','Rper_cap_rec_16','Rrev_med_17','Rrev_rec_17','Rper_cap_med_17','Rper_cap_rec_17','Rrev_med_18','Rrev_rec_18','Rper_cap_med_18','Rper_cap_rec_18']] = rpd_s[['Rrev_med_14','Rrev_rec_14','Rper_cap_med_14','Rper_cap_rec_14','Rrev_med_15','Rrev_rec_15','Rper_cap_med_15','Rper_cap_rec_15','Rrev_med_16','Rrev_rec_16','Rper_cap_med_16','Rper_cap_rec_16','Rrev_med_17','Rrev_rec_17','Rper_cap_med_17','Rper_cap_rec_17','Rrev_med_18','Rrev_rec_18','Rper_cap_med_18','Rper_cap_rec_18']].apply(pd.to_numeric)
+    print(type(rpd_s['Rrev_med_14'][0]))
     counties_s = counties.sort_values(by=['US_FIPS'])
   
     selected_med_rev = rpd_s.loc[ : ,'Rper_cap_med_'+year2+'']
     selected_rec_rev = rpd_s.loc[ : ,'Rper_cap_rec_'+year2+'']
-    print(selected_med_rev)
-    df_smr = pd.DataFrame({'name': selected_med_rev.index, 'med_rev': selected_med_rev.values, 'rec_rev': selected_rec_rev.values, 'tot_rev': selected_med_rev.values + selected_rec_rev.values,'CENT_LAT':counties_s['CENT_LAT'], 'CENT_LON':counties_s['CENT_LONG'], 'marker_size': 25 })#(selected_med_rev.values + selected_rec_rev.values)*.05})
+    # selected_med_rev = pd.to_numeric(selected_med_rev)
+    print(type(selected_med_rev))
+    print(type(selected_med_rev.values[0]))
+    # print(selected_med_rev.values[0])
+
+    df_smr = pd.DataFrame({'name': selected_med_rev.index, 'med_rev': selected_med_rev.values, 'rec_rev': selected_rec_rev.values, 'tot_rev': selected_med_rev.values + selected_rec_rev.values,'CENT_LAT':counties_s['CENT_LAT'], 'CENT_LON':counties_s['CENT_LONG'], 'marker_size': (selected_med_rev.values + selected_rec_rev.values)*.05})
     print(df_smr)
 
 

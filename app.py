@@ -260,7 +260,8 @@ def update_figure(year):
     
     print(rpd_s)
     print(counties_s)
-    df_smr = pd.DataFrame({'name': selected_med_rev.index, 'med_rev': selected_med_rev.values, 'rec_rev': selected_rec_rev.values, 'tot_rev': selected_med_rev.values + selected_rec_rev.values, 'CENT_LAT':counties_s['CENT_LAT'], 'CENT_LON':counties_s['CENT_LONG'], 'marker_size': (selected_med_rev.values + selected_rec_rev.values)*.05})
+    df_smr = pd.DataFrame({'name': selected_med_rev.index, 'med_rev': selected_med_rev.values, 'rec_rev': selected_rec_rev.values, 'tot_rev': selected_med_rev.values + selected_rec_rev.values,\
+        CENT_LAT':counties_s['CENT_LAT'], 'CENT_LON':counties_s['CENT_LONG'], 'marker_size': (selected_med_rev.values + selected_rec_rev.values)*.05})
     print(df_smr)
 
 
