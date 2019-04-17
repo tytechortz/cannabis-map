@@ -304,18 +304,28 @@ def update_figure(year,map,selected_values):
     rpd_s = rpd.sort_values(by=['RId2'])
     # print(type(rpd_s))
     # print(rpd_s)
-    rpd_s[['Rrev_med_14','Rrev_rec_14','Rper_cap_med_14','Rper_cap_rec_14','Rrev_med_15','Rrev_rec_15','Rper_cap_med_15','Rper_cap_rec_15','Rrev_med_16','Rrev_rec_16','Rper_cap_med_16','Rper_cap_rec_16','Rrev_med_17','Rrev_rec_17','Rper_cap_med_17','Rper_cap_rec_17','Rrev_med_18','Rrev_rec_18','Rper_cap_med_18','Rper_cap_rec_18']] = rpd_s[['Rrev_med_14','Rrev_rec_14','Rper_cap_med_14','Rper_cap_rec_14','Rrev_med_15','Rrev_rec_15','Rper_cap_med_15','Rper_cap_rec_15','Rrev_med_16','Rrev_rec_16','Rper_cap_med_16','Rper_cap_rec_16','Rrev_med_17','Rrev_rec_17','Rper_cap_med_17','Rper_cap_rec_17','Rrev_med_18','Rrev_rec_18','Rper_cap_med_18','Rper_cap_rec_18']].apply(pd.to_numeric)
-    print(type(rpd_s['Rrev_med_14'][0]))
+    rpd_s = rpd_s.apply(pd.to_numeric, errors='ignore')
+    rpd_s = rpd_s.fillna(0)
+    # rpd_s[['Rrev_med_14','Rrev_rec_14','Rper_cap_med_14','Rper_cap_rec_14','Rrev_med_15','Rrev_rec_15',
+    # 'Rper_cap_med_15','Rper_cap_rec_15','Rrev_med_16','Rrev_rec_16','Rper_cap_med_16','Rper_cap_rec_16',
+    # 'Rrev_med_17','Rrev_rec_17','Rper_cap_med_17','Rper_cap_rec_17','Rrev_med_18','Rrev_rec_18',
+    # 'Rper_cap_med_18','Rper_cap_rec_18']] = rpd_s[['Rrev_med_14','Rrev_rec_14','Rper_cap_med_14',
+    # 'Rper_cap_rec_14','Rrev_med_15','Rrev_rec_15','Rper_cap_med_15','Rper_cap_rec_15','Rrev_med_16',
+    # 'Rrev_rec_16','Rper_cap_med_16','Rper_cap_rec_16','Rrev_med_17','Rrev_rec_17','Rper_cap_med_17',
+    # 'Rper_cap_rec_17','Rrev_med_18','Rrev_rec_18','Rper_cap_med_18','Rper_cap_rec_18']].apply(pd.to_numeric)
+    # print(type(rpd_s['Rrev_med_14'][0]))
     counties_s = counties.sort_values(by=['US_FIPS'])
   
     selected_med_rev = rpd_s.loc[ : ,'Rper_cap_med_'+year2+'']
     selected_rec_rev = rpd_s.loc[ : ,'Rper_cap_rec_'+year2+'']
     # selected_med_rev = pd.to_numeric(selected_med_rev)
-    print(type(selected_med_rev))
-    print(type(selected_med_rev.values[0]))
+    # print(type(selected_med_rev))
+    # print(type(selected_med_rev.values[0]))
     # print(selected_med_rev.values[0])
 
-    df_smr = pd.DataFrame({'name': selected_med_rev.index, 'med_rev': selected_med_rev.values, 'rec_rev': selected_rec_rev.values, 'tot_rev': selected_med_rev.values + selected_rec_rev.values,'CENT_LAT':counties_s['CENT_LAT'], 'CENT_LON':counties_s['CENT_LONG'], 'marker_size': (selected_med_rev.values + selected_rec_rev.values)*.05})
+    df_smr = pd.DataFrame({'name': selected_med_rev.index, 'med_rev': selected_med_rev.values, 'rec_rev': 
+        selected_rec_rev.values, 'tot_rev': selected_med_rev.values + selected_rec_rev.values,'CENT_LAT':counties_s['CENT_LAT'],
+             'CENT_LON':counties_s['CENT_LONG'], 'marker_size':(selected_med_rev.values + selected_rec_rev.values)*(.3**3)})
     print(df_smr)
 
 
@@ -328,8 +338,8 @@ def update_figure(year,map,selected_values):
     def color_maker():
         for k in range(len(sources)):
             if sources[k]['features'][0]['properties']['COUNTY'] in color_counties:
-                sources[k]['features'][0]['properties']['COLOR'] = 'green'
-            else: sources[k]['features'][0]['properties']['COLOR'] = 'red'                 
+                sources[k]['features'][0]['properties']['COLOR'] = 'lightgreen'
+            else: sources[k]['features'][0]['properties']['COLOR'] = 'white'                 
     color_maker()
 
     layers=[dict(sourcetype = 'json',
@@ -338,7 +348,7 @@ def update_figure(year,map,selected_values):
              type = 'fill',
             #  color = sources[k]['features'][0]['properties']['COLOR'],
              color = sources[k]['features'][0]['properties']['COLOR'],
-             opacity = 0.2
+             opacity = 0.5
             ) for k in range(len(sources))]
 
     
@@ -352,7 +362,7 @@ def update_figure(year,map,selected_values):
             type = 'scattermapbox',
             customdata = df['uid'],
             # marker = dict(size=5)
-            marker = dict(size=df_smr['marker_size'],color=counties['COLOR'],opacity=.5),
+            marker = dict(size=df_smr['marker_size'],color='green',opacity=.5),
             )]
         layout = dict(
             mapbox = dict(
