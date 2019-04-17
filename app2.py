@@ -8,9 +8,6 @@ import plotly.graph_objs as go
 import json
 import numpy as np
 from dash.dependencies import Input, Output, State
-# from plotly import graph_objs as go
-# from plotly.graph_objs import *
-
 
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
@@ -20,44 +17,41 @@ app.config['suppress_callback_exceptions']=True
 mapbox_access_token = 'pk.eyJ1IjoidHl0ZWNob3J0eiIsImEiOiJjanN1emtuc2cwMXNhNDNuejdrMnN2aHYyIn0.kY0fOoozCTY-4IUzcLx22w'
 
 counties = gpd.read_file('./Colorado_County_Boundaries.geojson')
+counties.sort_values(by=['US_FIPS'])
 pop_rev = gpd.read_file('./per_cap_joined.geojson')
 df = gpd.read_file('./cannabis_business.geojson')
-df_revenue = pd.read_csv('https://data.colorado.gov/resource/j7a3-jgd3.csv?$limit=4000&$$app_token=Uwt19jYZWTc9a2UPr7tB6x2k1')
+df_revenue = pd.read_csv('https://data.colorado.gov/resource/j7a3-jgd3.csv?$limit=5000&$$app_token=Uwt19jYZWTc9a2UPr7tB6x2k1')
 df_taxes = pd.read_csv('https://data.colorado.gov/resource/3sm5-jtur.csv')
 df_biz = pd.read_csv('https://data.colorado.gov/resource/sqs8-2un5.csv')
 
-# df_revenue = pd.read_csv('./weed_stats.csv')
 
-# df_revenue1 = pd.read_csv('./weed_stats.csv')
 df_revenue['county'] = df_revenue['county'].str.upper()
 
 
 df_revenue.fillna(0, inplace=True)
 df_revenue['tot_sales'] = df_revenue['med_sales'] + df_revenue['rec_sales']
-print(df_revenue)# print(df_revenue)
-# pop_rev.set_index('RId2', drop=False)
-# print(pop_rev.loc[0]['Rrev_med_14'])
+df_revenue.loc[df_revenue['tot_sales'] > 0, 'color'] = 'red'
+df_revenue.loc[df_revenue['tot_sales'] == 0, 'color'] = 'blue'
 
 with open('./Colorado_County_Boundaries.json') as json_file:
     jdata = json_file.read()
     topoJSON = json.loads(jdata)
-
+    
 sources=[]
 for feat in topoJSON['features']: 
         sources.append({"type": "FeatureCollection", 'features': [feat]})
-# print(sources[63]['features'][0]['properties']['US_FIPS'])
+print(type(sources))
+# print(df_revenue)
+# print(counties)
+
+# counties_s = counties.sort_values(by=['US_FIPS'])
+dfinal = df_revenue.merge(counties, how='inner', left_on='county', right_on='COUNTY')
+# print(dfinal.loc[0])
+
+
 county_revenue_df = df_revenue.groupby(['county', 'year'])
 crat = county_revenue_df.sum()
 crat.reset_index(inplace=True)
-
-layers=[dict(sourcetype = 'geojson',
-             source =sources[k],
-             below="water", 
-             type = 'fill',
-             color = sources[k]['features'][0]['properties']['COLOR'],
-             opacity = 0.2
-            ) for k in range(len(sources))]
-
 
 color_list = ['purple', 'darkblue', 'dodgerblue', 'darkgreen','black','lightgreen','yellow','orange', 'darkorange','red','darkred','violet']
 
@@ -92,25 +86,38 @@ for i in df['Category'].unique():
 
 categories_table = pd.DataFrame({'Category':df['Category'].unique()})
 
-# def license_count():
+
 
 colors = dict(zip(categories, color_list))
+
+# print(df_revenue)
+# print(df_revenue.loc[0])
+
+
+
+
+
+
 # def color_maker():
-#     for i in pop_rev:
-#         if pop_rev.loc[i]['Rrev_med_14'] is not None:
-#             print(true)
-#         else: print(false)
 
-# color_maker()
 
-layers=[dict(sourcetype = 'geojson',
-            source =sources[k],
-            below="water", 
-            type = 'fill',
-            #  color = sources[k]['features'][0]['properties']['COLOR'],
-            color = 'white',
-            opacity = 0.2
-            ) for k in range(len(sources))]
+
+
+# county_rev_list = df_revenue.loc[df_revenue['tot_sales'] >0]
+# print(county_rev_list.loc[0])
+
+
+# crl = county_rev_list['county'].tolist()
+# print(crl)
+
+# layers=[dict(sourcetype = 'geojson',
+#             source =sources[k],
+#             below="water", 
+#             type = 'fill',
+#             # color = sources[k]['features'][0]['properties']['COLOR'],
+#             color = dfinal.loc[k]['color'],
+#             opacity = 0.2
+#             ) for k in range(len(sources))]
 
 body = dbc.Container([
     dbc.Row([
@@ -313,23 +320,59 @@ body = dbc.Container([
             Input('map-radio', 'value'),
             Input('categories', 'value')])         
 def update_figure(year,map,selected_values):
-    year = str(year)
-    year = year[-2:]
+    year1 = str(year)
+    year2 = year1[-2:]
     # print(map)
     counties_s = counties.sort_values(by=['US_FIPS'])
 
-    selected_med_rev = pop_rev.loc[ : ,'Rrev_med_'+year+'']
-    selected_rec_rev = pop_rev.loc[ : ,'Rrev_rec_'+year+'']
+    selected_med_rev = pop_rev.loc[ : ,'Rrev_med_'+year2+'']
+    selected_rec_rev = pop_rev.loc[ : ,'Rrev_rec_'+year2+'']
+
+
+    df_year = df_revenue.loc[df_revenue['year'] == year]
+    print(type(sources))
+    # df_year.set_index('county')
+   
+    # print(sources[0])
+    # print(df_revenue)
+    # print(type(df_revenue))
+    # color_counties = []
+    df_year_filtered = df_year.loc[df_year['color'] == 'red']
+    print(df_year_filtered)
+    color_counties = df_year_filtered['county'].unique().tolist()
+    print(color_counties)
+
+    print(sources[0]['features'][0]['properties']['COUNTY'])
+    def color_maker():
+        for k in range(len(sources)):
+            if sources[k]['features'][0]['properties']['COUNTY'] in color_counties:
+                print(sources[k]['features'][0]['properties']['COUNTY'])
+                sources[k]['features'][0]['properties']['COLOR'] = 'green'
+            # if sources[k]['features'][0]['properties']['COUNTY'].isin(color_counties):
+            #     sources[k]['features'][0]['properties']['COLOR'] = 'red'
+            else: sources[k]['features'][0]['properties']['COLOR'] = 'red'                 
+    color_maker()
+
+    layers=[dict(sourcetype = 'json',
+             source =sources[k],
+             below="water", 
+             type = 'fill',
+            #  color = sources[k]['features'][0]['properties']['COLOR'],
+             color = sources[k]['features'][0]['properties']['COLOR'],
+             opacity = 0.2
+            ) for k in range(len(sources))]
+
     
+
     if map == 'rev-map':
         data = [dict(
-            lat = counties_s['CENT_LAT'],
-            lon = counties_s['CENT_LONG'],
-            text = counties_s['COUNTY'],
+            lat = dfinal['CENT_LAT'],
+            lon = dfinal['CENT_LONG'],
+            text = dfinal['COUNTY'],
             hoverinfo = 'text',
             type = 'scattermapbox',
             customdata = df['uid'],
-            marker = dict(size=5,color='red',opacity=.5),
+            marker = dict(size=5,color='black',opacity=.5),
             )]
         layout = dict(
             mapbox = dict(
