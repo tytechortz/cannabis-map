@@ -84,6 +84,10 @@ categories_table = pd.DataFrame({'Category':df['Category'].unique()})
 
 colors = dict(zip(categories, color_list))
 
+
+
+
+
 body = dbc.Container([
     dbc.Row([
         dbc.Col(
@@ -98,6 +102,7 @@ body = dbc.Container([
                 html.Table([
                     html.Tr(html.Div(html.Button('All License Types', id='button-all'))),
                     html.Tr(html.Div(html.Button('Transporters', id='button-transporters'))),
+                    html.Tr(html.Div(html.Button('Center', id='button-center'))),
                 ])
             ])
         )       
@@ -126,7 +131,7 @@ body = dbc.Container([
                         {'label':'Biz Map','value':'biz-map'},
                     ],
                 labelStyle={'display':'inline-block', 'margin': 0, 'padding': 1},
-                value = 'biz-map'
+                value = 'rev-map'
                     ),
                 ]
             ),
@@ -154,20 +159,91 @@ body = dbc.Container([
 @app.callback(
             Output('map', 'figure'),
             [Input('map-radio', 'value'),
+            Input('year-selector', 'value'),
             Input('button-all', 'n_clicks'),
-            Input('button-transporters','n_clicks')])         
-def update_figure(map,all_clicks,trans_clicks):
-    print(trans_clicks)
-    print(all_clicks)
+            Input('button-transporters','n_clicks'),
+            Input('button-center','n_clicks'),
+            ])         
+def update_figure(map,year,all_clicks,trans_clicks,center_clicks):
+    year1 = str(year)
+    year2 = year1[-2:]
+    rpd_s = rpd.sort_values(by=['RId2'])
+  
+    rpd_s = rpd_s.apply(pd.to_numeric, errors='ignore')
+    rpd_s = rpd_s.fillna(0)
 
-    if map == 'biz-map':
+    counties_s = counties.sort_values(by=['US_FIPS'])
+  
+    selected_med_rev = rpd_s.loc[ : ,'Rper_cap_med_'+year2+'']
+    selected_rec_rev = rpd_s.loc[ : ,'Rper_cap_rec_'+year2+'']
+  
+    df_smr = pd.DataFrame({'name': selected_med_rev.index, 'med_rev': selected_med_rev.values, 'rec_rev': 
+        selected_rec_rev.values, 'tot_rev': selected_med_rev.values + selected_rec_rev.values,'CENT_LAT':counties_s['CENT_LAT'],
+             'CENT_LON':counties_s['CENT_LONG'], 'marker_size':(selected_med_rev.values + selected_rec_rev.values)*(.3**3)})
+
+    df_year = df_revenue.loc[df_revenue['year'] == year]
+ 
+    df_year_filtered = df_year.loc[df_year['color'] == 'red']
+
+    color_counties = df_year_filtered['county'].unique().tolist()
+
+    def fill_color():
+        for k in range(len(sources)):
+            if sources[k]['features'][0]['properties']['COUNTY'] in color_counties:
+                sources[k]['features'][0]['properties']['COLOR'] = 'lightgreen'
+            else: sources[k]['features'][0]['properties']['COLOR'] = 'white'                 
+    fill_color()
+
+    layers=[dict(sourcetype = 'json',
+             source =sources[k],
+             below="water", 
+             type = 'fill',
+             color = sources[k]['features'][0]['properties']['COLOR'],
+             opacity = 0.5
+            ) for k in range(len(sources))]
+
+
+    if map == 'rev-map':
+        data = [dict(
+            lat = df_smr['CENT_LAT'],
+            lon = df_smr['CENT_LON'],
+            text = df_smr['name'],
+            hoverinfo = 'text',
+            type = 'scattermapbox',
+            customdata = df['uid'],
+            marker = dict(size=df_smr['marker_size'],color='forestgreen',opacity=.5),
+            )]
+        layout = dict(
+            mapbox = dict(
+                accesstoken = mapbox_access_token,
+                center = dict(lat=39, lon=-105.5),
+                zoom = 6,
+                style = 'light',
+                layers = layers
+            ),
+            hovermode = 'closest',
+            height = 600,
+            margin = dict(r=0, l=0, t=0, b=0)
+        )
+    elif map == 'biz-map':
+        # all_clicks = 1
+        print(all_clicks)
         df1 = pd.DataFrame(df.loc[df['Category'] == 'all'])
         data = [dict(
             type = 'scattermapbox',
         )]
-        
-    
-    layout = dict(
+        if all_clicks % 2 == 1:
+            filtered_df = df
+            data = [dict(
+                lat = df['lat'],
+                lon = df['long'],
+                text = text,
+                hoverinfo = 'text',
+                type = 'scattermapbox',
+                customdata = df['uid'],
+                marker = dict(size=10,color=df['color'],opacity=.6)
+            )]
+        layout = dict(
             mapbox = dict(
                 accesstoken = mapbox_access_token,
                 center = dict(lat=39, lon=-105.5),
@@ -178,10 +254,44 @@ def update_figure(map,all_clicks,trans_clicks):
             height = 600,
             margin = dict(r=0, l=0, t=0, b=0),
             clickmode = 'event+select'
-        ) 
+        )    
+  
         
     fig = dict(data=data, layout=layout)
     return fig
+    
+
+        # elif trans_clicks %2 != 0:
+        #     df1 = pd.DataFrame(df.loc[df['Category'] == 'MED Licensed Transporters']) 
+        #     data = [dict(
+        #         lat = df1['lat'],
+        #         lon = df1['long'],
+        #         text = text,
+        #         hoverinfo = 'text',
+        #         type = 'scattermapbox',
+        #         customdata = df1['uid'],
+        #         marker = dict(size=10,color=df['color'],opacity=.6)
+        #     )]
+        # elif center_clicks %2 == 0:
+        #     df1 = pd.DataFrame(df.loc[df['Category'] == 'MED Licensed Center']) 
+        #     data = [dict(
+        #         lat = df1['lat'],
+        #         lon = df1['long'],
+        #         text = text,
+        #         hoverinfo = 'text',
+        #         type = 'scattermapbox',
+        #         customdata = df1['uid'],
+        #         marker = dict(size=10,color=df['color'],opacity=.6)
+        #     )]
+        # else: data = [dict(
+        #     type = 'scattermapbox',
+        #     )]
+       
+
+
+    
+        
+    
 
 app.layout = html.Div(body)
 
