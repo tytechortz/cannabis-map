@@ -173,7 +173,7 @@ body = dbc.Container([
                     value = 2014
                 ),
             ),
-            width = {'size':4, 'offset':2},
+            width = {'size':4, 'offset':1},
             style = {'height': 50}
         ),
         dbc.Col(
@@ -206,85 +206,33 @@ body = dbc.Container([
                 ]
             ),
             width = {'size': 4}
-        ),
+        ), 
     ]),
-    dbc.Row([
-        dbc.Col(
-            dcc.Graph(id='rev-bar',
-            ),
-            width = {'size': 6}
-        ),
-        dbc.Col(
-            dcc.Graph(id='rev-scatter',
-            ),
-            width = {'size': 6}
-        ),
-    ]),
-    # dbc.Row([
-    #         dbc.Col(
-    #             html.Div(
-    #                 className='radio',
-    #                 children=[ 
-    #                 dcc.RadioItems(id='categories', options=[
-    #                     {'label':'', 'value':'all'},
-    #                     {'label':'','value':'MED Licensed Transporters'},
-    #                     {'label':'','value':'MED Licensed Center'},
-    #                     {'label':'','value':'MED Licensed Cultivator'},
-    #                     {'label':'','value':'MED Licensed Infused Product Manufacturer'},
-    #                     {'label':'','value':'MED Licensed R&D Cultivation'},
-    #                     {'label':'','value':'MED Licensed Retail Operator'},
-    #                     {'label':'','value':'MED Licensed Testing Facility'},
-    #                     {'label':'','value':'MED Licensed Retail Marijuana Product Manufacturer'},
-    #                     {'label':'','value':'MED Licensed Retail Cultivator'},
-    #                     {'label':'','value':'MED Licensed Retail Testing Facility'},
-    #                     {'label':'','value':'MED Licensed Retail Transporter'},
-    #                     {'label':'','value':'MED Licensed Retail Marijuana Store'},
-    #                 ],
-    #                 labelStyle={'display':'block', 'margin': 0, 'padding': 1}
-    #                 ),
-    #             ]),
-    #             width = {'size':.1}
-    #         ),
-    #         dbc.Col(
-    #             html.Table ([
-    #                 html.Tr(html.Div('All License Types', id='lics-num9', style={'font-size':17.5})),
-    #                 html.Tr(html.Div('Licensed Transporters', id='lics-num10', style={'font-size':17.5})),
-    #                 html.Tr(html.Div('Licensed Center', id='lics-num11', style={'font-size':17.5})),
-    #                 html.Tr(html.Div('Licensed Cultivator', id='lics-num12', style={'font-size':17.5})),
-    #                 html.Tr(html.Div('Licensed Infused Product Manufacturer', id='lics-num13', style={'font-size':17.5})),
-    #                 html.Tr(html.Div('Licensed R&D Cultivation', id='lics-num1', style={'font-size':17.5})),
-    #                 html.Tr(html.Div('Licensed Retail Operator', id='lics-num2', style={'font-size':17.5})),
-    #                 html.Tr(html.Div('Licensed Testing Facility', id='lics-num3', style={'font-size':17.5})),
-    #                 html.Tr(html.Div('Licensed Retail Marijuana Product Manufacturer', id='lics-num4', style={'font-size':17.5})),
-    #                 html.Tr(html.Div('Licensed Retail Cultivator', id='lics-num5', style={'font-size':17.5})),
-    #                 html.Tr(html.Div('Licensed Retail Testing Facility', id='lics-num6', style={'font-size':17.5})),
-    #                 html.Tr(html.Div('Licensed Retail Transporter', id='lics-num7', style={'font-size':17.5})),
-    #                 html.Tr(html.Div('Licensed Retail Marijuana Store', id='lics-num8', style={'font-size':17.5})),
-    #             ]),
-    #             width = {'size':4}
-    #         ),
-    #     ]),
-        dbc.Row([
-            # dbc.Col(
-            #     html.Table ([
-            #         html.Tr([html.Th('Business Info')]),
-            #         html.Tr(html.Div(id='lic-name', style={'height':30, 'text-align': 'center', 'font-size': '1em'})),
-            #         html.Tr(html.Div(id='biz-name', style={'height':30, 'text-align': 'center'})),
-            #         html.Tr(html.Div(id='biz-type', style={'height':30, 'text-align': 'center'})),
-            #         html.Tr(html.Div(id='city', style={'height':30, 'text-align': 'center'})),
-            #         html.Tr(html.Div(id='address', style={'height':30, 'text-align': 'center'})),
-            #         html.Tr(html.Div(id='lic-num', style={'height':30, 'text-align': 'center'})),
-            #     ]),
-            #     width = {'size':4, 'offset':1}
-            # ),
-            dbc.Col(
-                dcc.Graph(id='stats-bar',
-                ),
-                width = {'size':5},
-                style = {'height': 200}
-            ),
-        ]), 
+    html.Div(id='output')
 ])
+
+@app.callback(
+            Output('output', 'children'),
+            [Input('map-radio', 'value')])
+def display_graphs(selected_values):
+    graphs = []
+    if selected_values == 'rev-map':
+        graphs.append(
+            dbc.Row([
+                dbc.Col(
+                    dcc.Graph(id='rev-bar',
+                    ),
+                    width = {'size': 6}
+                ),
+                dbc.Col(
+                    dcc.Graph(id='rev-scatter',
+                    ),
+                    width = {'size': 6}
+                ),
+            ]),
+        )  
+        return graphs
+
 
 @app.callback(
             Output('map', 'figure'),
@@ -295,32 +243,18 @@ def update_figure(year,map,selected_values):
     year1 = str(year)
     year2 = year1[-2:]
     rpd_s = rpd.sort_values(by=['RId2'])
-    # print(type(rpd_s))
-    # print(rpd_s)
+  
     rpd_s = rpd_s.apply(pd.to_numeric, errors='ignore')
     rpd_s = rpd_s.fillna(0)
-    # rpd_s[['Rrev_med_14','Rrev_rec_14','Rper_cap_med_14','Rper_cap_rec_14','Rrev_med_15','Rrev_rec_15',
-    # 'Rper_cap_med_15','Rper_cap_rec_15','Rrev_med_16','Rrev_rec_16','Rper_cap_med_16','Rper_cap_rec_16',
-    # 'Rrev_med_17','Rrev_rec_17','Rper_cap_med_17','Rper_cap_rec_17','Rrev_med_18','Rrev_rec_18',
-    # 'Rper_cap_med_18','Rper_cap_rec_18']] = rpd_s[['Rrev_med_14','Rrev_rec_14','Rper_cap_med_14',
-    # 'Rper_cap_rec_14','Rrev_med_15','Rrev_rec_15','Rper_cap_med_15','Rper_cap_rec_15','Rrev_med_16',
-    # 'Rrev_rec_16','Rper_cap_med_16','Rper_cap_rec_16','Rrev_med_17','Rrev_rec_17','Rper_cap_med_17',
-    # 'Rper_cap_rec_17','Rrev_med_18','Rrev_rec_18','Rper_cap_med_18','Rper_cap_rec_18']].apply(pd.to_numeric)
-    # print(type(rpd_s['Rrev_med_14'][0]))
+
     counties_s = counties.sort_values(by=['US_FIPS'])
   
     selected_med_rev = rpd_s.loc[ : ,'Rper_cap_med_'+year2+'']
     selected_rec_rev = rpd_s.loc[ : ,'Rper_cap_rec_'+year2+'']
-    # selected_med_rev = pd.to_numeric(selected_med_rev)
-    # print(type(selected_med_rev))
-    # print(type(selected_med_rev.values[0]))
-    # print(selected_med_rev.values[0])
-
+  
     df_smr = pd.DataFrame({'name': selected_med_rev.index, 'med_rev': selected_med_rev.values, 'rec_rev': 
         selected_rec_rev.values, 'tot_rev': selected_med_rev.values + selected_rec_rev.values,'CENT_LAT':counties_s['CENT_LAT'],
              'CENT_LON':counties_s['CENT_LONG'], 'marker_size':(selected_med_rev.values + selected_rec_rev.values)*(.3**3)})
-    print(df_smr)
-
 
     df_year = df_revenue.loc[df_revenue['year'] == year]
  
@@ -339,7 +273,6 @@ def update_figure(year,map,selected_values):
              source =sources[k],
              below="water", 
              type = 'fill',
-            #  color = sources[k]['features'][0]['properties']['COLOR'],
              color = sources[k]['features'][0]['properties']['COLOR'],
              opacity = 0.5
             ) for k in range(len(sources))]
@@ -354,8 +287,7 @@ def update_figure(year,map,selected_values):
             hoverinfo = 'text',
             type = 'scattermapbox',
             customdata = df['uid'],
-            # marker = dict(size=5)
-            marker = dict(size=df_smr['marker_size'],color='green',opacity=.5),
+            marker = dict(size=df_smr['marker_size'],color='forestgreen',opacity=.5),
             )]
         layout = dict(
             mapbox = dict(
@@ -380,7 +312,7 @@ def update_figure(year,map,selected_values):
                 hoverinfo = 'text',
                 type = 'scattermapbox',
                 customdata = df['uid'],
-                marker = dict(size=7,color=df['color'],opacity=.6)
+                marker = dict(size=10,color=df['color'],opacity=.6)
             )]
         else: 
             filtered_df = df1
@@ -403,7 +335,8 @@ def update_figure(year,map,selected_values):
             ),
             hovermode = 'closest',
             height = 600,
-            margin = dict(r=0, l=0, t=0, b=0)
+            margin = dict(r=0, l=0, t=0, b=0),
+            clickmode = 'event+select'
         )    
     fig = dict(data=data, layout=layout)
     return fig
@@ -412,12 +345,12 @@ def update_figure(year,map,selected_values):
             Output('rev-bar', 'figure'),
             [Input('rev', 'value'),
             Input('map', 'clickData'),
-            Input('map-radio', 'value')])
-def create_rev_bar(selected_values,clickData,map):
+            Input('map-radio', 'value'),
+            Input('map', 'selectedData')])
+def create_rev_bar(selected_values,clickData,map,selectedData):
     filtered_county = crat['county'] ==  clickData['points'][-1]['text']
-    # filtered_county = crat['County'] == 'ADAMS'
     selected_county = crat[filtered_county]
-    # print(selected_county)
+
     traces = []
     trace1 = [
         {'x': selected_county['year'], 'y': selected_county['med_sales'], 'type': 'bar', 'name': 'Med Sales' },
@@ -432,6 +365,13 @@ def create_rev_bar(selected_values,clickData,map):
                 title = '{} COUNTY REVENUE BY YEAR'.format(clickData['points'][-1]['text'])
             ),
         }
+    elif map == 'biz-map':
+        count = []
+        print(selectedData)
+        print(type(selectedData))
+        print(len(selectedData))
+        return json.dumps(selectedData, indent=2)
+        
     
 
 @app.callback(
@@ -535,50 +475,50 @@ def update_text_f(hoverData,map):
         s = df[df['uid'] == hoverData['points'][0]['customdata']]
         return  'License Number: {}'.format(s.iloc[0]['License_No'])
 
-@app.callback(Output('stats-bar', 'figure'),
-             [Input('categories', 'value')])
-            #  Input('years', 'value')])
-def update_figure_b(selected_values):
-    df1 = pd.DataFrame(df.loc[df['Category'] == selected_values])
-    if selected_values == 'all':
-        type_count = df['Category'].count()
-        count_year = []
-        count_year.append(type_count)
-        data = [
-            go.Bar(
-                x=df['Year'],
-                y=count_year,
-            )
-        ]
-        layout = go.Layout(
-            xaxis={'title': 'Year', 'range':[2014,2019]},
-            yaxis={'title': 'Count'},
-            title='License Count By Year',
-            plot_bgcolor = 'rgb(255,255,255,.5)',
-            paper_bgcolor = 'rgb(255,255,255,.7)',
-            height = 250  
-        )
-        return {'data': data, 'layout': layout}
-    else: 
+# @app.callback(Output('stats-bar', 'figure'),
+#              [Input('categories', 'value')])
+#             #  Input('years', 'value')])
+# def update_figure_b(selected_values):
+#     df1 = pd.DataFrame(df.loc[df['Category'] == selected_values])
+#     if selected_values == 'all':
+#         type_count = df['Category'].count()
+#         count_year = []
+#         count_year.append(type_count)
+#         data = [
+#             go.Bar(
+#                 x=df['Year'],
+#                 y=count_year,
+#             )
+#         ]
+#         layout = go.Layout(
+#             xaxis={'title': 'Year', 'range':[2014,2019]},
+#             yaxis={'title': 'Count'},
+#             title='License Count By Year',
+#             plot_bgcolor = 'rgb(255,255,255,.5)',
+#             paper_bgcolor = 'rgb(255,255,255,.7)',
+#             height = 250  
+#         )
+#         return {'data': data, 'layout': layout}
+#     else: 
         
-        type_count1 = df1['Category'].count()
-        count_year1 = []
-        count_year1.append(type_count1)
-        data = [
-            go.Bar(
-                x=df1['Year'],
-                y=count_year1,
-            )
-        ]
-        layout = go.Layout(
-            xaxis={'title': 'Year', 'range':[2014,2019]},
-            yaxis={'title': 'Count'},
-            title='License Count By Year',
-            plot_bgcolor = 'rgb(255,255,255,.5)',
-            paper_bgcolor = 'rgb(255,255,255,.7)',
-            height = 250  
-        )
-        return {'data': data, 'layout': layout}
+#         type_count1 = df1['Category'].count()
+#         count_year1 = []
+#         count_year1.append(type_count1)
+#         data = [
+#             go.Bar(
+#                 x=df1['Year'],
+#                 y=count_year1,
+#             )
+#         ]
+#         layout = go.Layout(
+#             xaxis={'title': 'Year', 'range':[2014,2019]},
+#             yaxis={'title': 'Count'},
+#             title='License Count By Year',
+#             plot_bgcolor = 'rgb(255,255,255,.5)',
+#             paper_bgcolor = 'rgb(255,255,255,.7)',
+#             height = 250  
+#         )
+#         return {'data': data, 'layout': layout}
 
 app.layout = html.Div(body)
 
