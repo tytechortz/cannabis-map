@@ -161,18 +161,16 @@ def update_figure(map,all_clicks,trans_clicks):
     print(all_clicks)
 
     if map == 'biz-map':
-        if all_clicks %2 == 0:
-            df1 = pd.DataFrame(df.loc[df['Category'] == 'all'])
-            filtered_df = df
-            data = [dict(
-                lat = df['lat'],
-                lon = df['long'],
-                text = text,
-                hoverinfo = 'text',
-                type = 'scattermapbox',
-                customdata = df['uid'],
-                marker = dict(size=10,color=df['color'],opacity=.6)
-            )]
+        df1 = pd.DataFrame(df.loc[df['Category'] == 'all'])
+        data = [dict(
+            lat = df['lat'],
+            lon = df['long'],
+            text = text,
+            hoverinfo = 'text',
+            type = 'scattermapbox',
+            customdata = df['uid'],
+            marker = dict(size=10,color=df['color'],opacity=.6)
+        )]
     
     layout = dict(
             mapbox = dict(
