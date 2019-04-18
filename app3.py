@@ -100,9 +100,9 @@ body = dbc.Container([
         dbc.Col(
             html.Div([
                 html.Table([
-                    html.Tr(html.Div(html.Button('All License Types', id='button-all'))),
-                    html.Tr(html.Div(html.Button('Transporters', id='button-transporters'))),
-                    html.Tr(html.Div(html.Button('Center', id='button-center'))),
+                    html.Tr(html.Div(html.Button('All License Types', id='button-all', n_clicks=0))),
+                    html.Tr(html.Div(html.Button('Transporters', id='button-transporters', n_clicks=0))),
+                    html.Tr(html.Div(html.Button('Center', id='button-center', n_clicks=0))),
                 ])
             ])
         )       
@@ -226,14 +226,14 @@ def update_figure(map,year,all_clicks,trans_clicks,center_clicks):
             margin = dict(r=0, l=0, t=0, b=0)
         )
     elif map == 'biz-map':
-        # all_clicks = 1
+       
+        
         print(all_clicks)
-        df1 = pd.DataFrame(df.loc[df['Category'] == 'all'])
+        # all_clicks = None
         data = [dict(
             type = 'scattermapbox',
         )]
-        if all_clicks % 2 == 1:
-            filtered_df = df
+        if all_clicks % 2 == 0:
             data = [dict(
                 lat = df['lat'],
                 lon = df['long'],
@@ -243,6 +243,40 @@ def update_figure(map,year,all_clicks,trans_clicks,center_clicks):
                 customdata = df['uid'],
                 marker = dict(size=10,color=df['color'],opacity=.6)
             )]
+           
+        elif trans_clicks % 2 == 1:
+            df1 = pd.DataFrame(df.loc[df['Category'] == 'MED Licensed Transporters'])
+            data = [dict(
+                lat = df1['lat'],
+                lon = df1['long'],
+                text = text,
+                hoverinfo = 'text',
+                type = 'scattermapbox',
+                customdata = df['uid'],
+                marker = dict(size=10,color=df['color'],opacity=.6)
+            )]
+        elif center_clicks % 2 == 1:
+            df2 = pd.DataFrame(df.loc[df['Category'] == 'MED Licensed Center'])
+            data = [dict(
+                lat = df2['lat'],
+                lon = df2['long'],
+                text = text,
+                hoverinfo = 'text',
+                type = 'scattermapbox',
+                customdata = df['uid'],
+                marker = dict(size=10,color=df['color'],opacity=.6)
+            )]
+        # elif center_clicks % 2 == 1:
+        #     df1 = pd.DataFrame(df.loc[df['Category'] == 'MED Licensed Ce'])
+        #     data = [dict(
+        #         lat = df1['lat'],
+        #         lon = df1['long'],
+        #         text = text,
+        #         hoverinfo = 'text',
+        #         type = 'scattermapbox',
+        #         customdata = df['uid'],
+        #         marker = dict(size=10,color=df['color'],opacity=.6)
+        #     )]
         layout = dict(
             mapbox = dict(
                 accesstoken = mapbox_access_token,
