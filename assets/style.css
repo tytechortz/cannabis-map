@@ -128,7 +128,7 @@ tr:nth-child(1) {
     color: white;
     font-size: 15px;
     border-radius: 12px;
-    height:40px;
+    height:50px;
     width:150px;
     transition-duration: 0.4s;
 }
@@ -146,6 +146,91 @@ tr:nth-child(1) {
 }
 #button-rdc:hover {background-color: white; color: black}
 #button-rdc:focus {border-color: red; border-width: 5px}
+
+#button-operator {
+    background-color:lightgreen ;
+    color: black;
+    font-size: 15px;
+    border-radius: 12px;
+    height:40px;
+    width:150px;
+    transition-duration: 0.4s;
+}
+#button-operator:hover {background-color: black; color: lightgreen}
+#button-operator:focus {border-color: red; border-width: 5px}
+
+#button-testing {
+    background-color: yellow;
+    color: black;
+    font-size: 15px;
+    border-radius: 12px;
+    height:40px;
+    width:150px;
+    transition-duration: 0.4s;
+}
+#button-testing:hover {background-color: black; color: yellow}
+#button-testing:focus {border-color: red; border-width: 5px}
+
+#button-rmpm {
+    background-color:orange;
+    color: black;
+    font-size: 15px;
+    border-radius: 12px;
+    height:50px;
+    width:150px;
+    transition-duration: 0.4s;
+}
+#button-rmpm:hover {background-color: black; color: orange}
+#button-rmpm:focus {border-color: red; border-width: 5px}
+
+#button-ret-cult {
+    background-color:darkorange;
+    color: black;
+    font-size: 15px;
+    border-radius: 12px;
+    height:40px;
+    width:150px;
+    transition-duration: 0.4s;
+}
+#button-ret-cult:hover {background-color: black; color: darkorange}
+#button-ret-cult:focus {border-color: red; border-width: 5px}
+
+#button-ret-test {
+    background-color:red;
+    color: white;
+    font-size: 15px;
+    border-radius: 12px;
+    height:50px;
+    width:150px;
+    transition-duration: 0.4s;
+}
+#button-ret-test:hover {background-color: white; color: red}
+#button-ret-test:focus {border-color: red; border-width: 5px}
+
+#button-ret-trans {
+    background-color:darkred;
+    color: white;
+    font-size: 15px;
+    border-radius: 12px;
+    height:40px;
+    width:150px;
+    transition-duration: 0.4s;
+}
+#button-ret-trans:hover {background-color: white; color: darkred}
+#button-ret-trans:focus {border-color: red; border-width: 5px}
+
+#button-ret-store {
+    background-color:violet;
+    color: black;
+    font-size: 15px;
+    border-radius: 12px;
+    height:50px;
+    width:150px;
+    transition-duration: 0.4s;
+}
+#button-ret-store:hover {background-color: black; color: violet}
+#button-ret-store:focus {border-color: red; border-width: 5px}
+
 
 tr:nth-child(3) {
     background-color: darkblue;
