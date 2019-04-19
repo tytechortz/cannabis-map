@@ -117,25 +117,24 @@ body = dbc.Container([
         ),
     ]),
     dbc.Row([
-        html.Div(id='output-buttons')
-        # dbc.Col(
-        #     html.Div([
-        #         html.Div(html.Button('All License Types',id='button-all', n_clicks=0)),
-        #         html.Div(html.Button('Transporters', id='button-transporters', n_clicks=0)),
-        #         html.Div(html.Button('Center', id='button-center', n_clicks=0)),
-        #         html.Div(html.Button('Cultivator', id='button-cultivator', n_clicks=0)),
-        #         html.Div(html.Button('Infused Product Manufacturer', id='button-ipm', n_clicks=0)),
-        #         html.Div(html.Button('R&D Cultivation', id='button-rdc', n_clicks=0)),
-        #         html.Div(html.Button('Retail Operator', id='button-operator', n_clicks=0)),
-        #         html.Div(html.Button('Testing Facility', id='button-testing', n_clicks=0)),
-        #         html.Div(html.Button('Retail Marijuana Product Manufacturer', id='button-rmpm', n_clicks=0)),
-        #         html.Div(html.Button('Retail Cultivator', id='button-ret-cult', n_clicks=0)),
-        #         html.Div(html.Button('Retail Testing Facility', id='button-ret-test', n_clicks=0)),
-        #         html.Div(html.Button('Retail Transporter', id='button-ret-trans', n_clicks=0)),
-        #         html.Div(html.Button('Retail Marijuana Store', id='button-ret-store', n_clicks=0)),
-        #         ]),
-        #     width = {'size':2}
-        # ),
+        dbc.Col(
+            html.Div([
+                html.Div(html.Button('All License Types',id='button-all', n_clicks=0)),
+                html.Div(html.Button('Transporters', id='button-transporters', n_clicks=0)),
+                html.Div(html.Button('Center', id='button-center', n_clicks=0)),
+                html.Div(html.Button('Cultivator', id='button-cultivator', n_clicks=0)),
+                html.Div(html.Button('Infused Product Manufacturer', id='button-ipm', n_clicks=0)),
+                html.Div(html.Button('R&D Cultivation', id='button-rdc', n_clicks=0)),
+                html.Div(html.Button('Retail Operator', id='button-operator', n_clicks=0)),
+                html.Div(html.Button('Testing Facility', id='button-testing', n_clicks=0)),
+                html.Div(html.Button('Retail Marijuana Product Manufacturer', id='button-rmpm', n_clicks=0)),
+                html.Div(html.Button('Retail Cultivator', id='button-ret-cult', n_clicks=0)),
+                html.Div(html.Button('Retail Testing Facility', id='button-ret-test', n_clicks=0)),
+                html.Div(html.Button('Retail Transporter', id='button-ret-trans', n_clicks=0)),
+                html.Div(html.Button('Retail Marijuana Store', id='button-ret-store', n_clicks=0)),
+                ]),
+            width = {'size':2}
+        ),
         dbc.Col(
             dcc.Graph(id='map',
             config={

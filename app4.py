@@ -105,7 +105,7 @@ body = dbc.Container([
                         {'label':'Business Map','value':'biz-map'},
                     ],
                 labelStyle={'display':'inline-block', 'margin': 0, 'padding': 1},
-                value = 'rev-map'
+                value = ''
                     ),
                 ]
             ),
@@ -114,7 +114,9 @@ body = dbc.Container([
     ]),
     html.Div(id='biz-stuff'),
     html.Div(id='rev-stuff'),
-        # html.Div(id='output-biz-data')              
+    html.Div(id='rev-stuff-2'),
+    html.Div(id='rev-stuff-3'),
+                  
 ])
 
 @app.callback(
@@ -174,9 +176,9 @@ def display_biz_page(selected_values):
             Output('rev-stuff', 'children'),
             [Input('map-radio', 'value')])
 def display_rev_page(selected_values):
-    rev_page = []
+    rev_page_map = []
     if selected_values == 'rev-map':
-        rev_page.append(
+        rev_page_map.append(
             dbc.Row([
                 dbc.Col(
                     dcc.Graph(id='rev-map',
@@ -186,8 +188,223 @@ def display_rev_page(selected_values):
                     width={'size':8, 'offset':2},
                 ),
             ]),
-        )  
-        return rev_page
+        )
+        return rev_page_map
+
+@app.callback(
+            Output('rev-stuff-2', 'children'),
+            [Input('map-radio', 'value')])
+def display_rev_page_a(selected_values):
+    rev_page_selectors = []
+    if selected_values == 'rev-map':
+        rev_page_selectors.append(
+            dbc.Row([
+                dbc.Col(
+                    html.Div(
+                        dcc.Slider(
+                            id='year-selector',
+                            min = 2014,
+                            max = 2018,
+                            marks={i: '{}'.format(i) for i in range(2014,2019)}, 
+                            step = 1,
+                            value = 2018
+                        ),
+                    ),
+                    width = {'size':4, 'offset':1},
+                    style = {'height': 50}
+                ),
+                dbc.Col(
+                    html.Div(
+                        className='rev-radio',
+                        children=[ 
+                            dcc.RadioItems(id='rev', options=[
+                                {'label':'Total Sales', 'value':'TOTAL'},
+                                {'label':'Rec Sales','value':'REC'},
+                                {'label':'Med Sales','value':'MED'},
+                            ],
+                        labelStyle={'display':'inline-block', 'margin': 0, 'padding': 1},
+                        value = 'TOTAL'
+                            ),
+                        ]
+                    ),
+                    width = {'size': 4}
+                ), 
+            ]),
+        )
+        return rev_page_selectors
+
+@app.callback(
+            Output('rev-stuff-3', 'children'),
+            [Input('map-radio', 'value')])
+def display_rev_page_b(selected_values):
+    rev_page_graphs = []
+    if selected_values == 'rev-map':
+        rev_page_graphs.append(
+           dbc.Row([
+                dbc.Col(
+                    dcc.Graph(id='rev-bar',
+                    ),
+                    width = {'size': 6}
+                ),
+                dbc.Col(
+                    dcc.Graph(id='rev-scatter',
+                    ),
+                    width = {'size': 6}
+                ),
+            ]), 
+        )
+        return rev_page_graphs  
+        
+
+
+
+
+
+@app.callback(
+            Output('rev-map', 'figure'),
+            [Input('map-radio', 'value'),
+            Input('year-selector', 'value')])         
+def update_figure(map,year):
+    year1 = str(year)
+    year2 = year1[-2:]
+    rpd_s = rpd.sort_values(by=['RId2'])
+  
+    rpd_s = rpd_s.apply(pd.to_numeric, errors='ignore')
+    rpd_s = rpd_s.fillna(0)
+
+    counties_s = counties.sort_values(by=['US_FIPS'])
+  
+    selected_med_rev = rpd_s.loc[ : ,'Rper_cap_med_'+year2+'']
+    selected_rec_rev = rpd_s.loc[ : ,'Rper_cap_rec_'+year2+'']
+  
+    df_smr = pd.DataFrame({'name': selected_med_rev.index, 'med_rev': selected_med_rev.values, 'rec_rev': 
+        selected_rec_rev.values, 'tot_rev': selected_med_rev.values + selected_rec_rev.values,'CENT_LAT':counties_s['CENT_LAT'],
+             'CENT_LON':counties_s['CENT_LONG'], 'marker_size':(selected_med_rev.values + selected_rec_rev.values)*(.3**3)})
+
+    df_year = df_revenue.loc[df_revenue['year'] == year]
+ 
+    df_year_filtered = df_year.loc[df_year['color'] == 'red']
+
+    color_counties = df_year_filtered['county'].unique().tolist()
+
+    data = [dict(
+            type = 'scattermapbox',
+        )]
+
+    def fill_color():
+        for k in range(len(sources)):
+            if sources[k]['features'][0]['properties']['COUNTY'] in color_counties:
+                sources[k]['features'][0]['properties']['COLOR'] = 'lightgreen'
+            else: sources[k]['features'][0]['properties']['COLOR'] = 'white'                 
+    fill_color()
+
+    
+
+    if map == 'rev-map':
+        layers=[dict(sourcetype = 'json',
+             source =sources[k],
+             below="water", 
+             type = 'fill',
+             color = sources[k]['features'][0]['properties']['COLOR'],
+             opacity = 0.5
+            ) for k in range(len(sources))]
+
+        data = [dict(
+                lat = df_smr['CENT_LAT'],
+                lon = df_smr['CENT_LON'],
+                text = df_smr['name'],
+                hoverinfo = 'text',
+                type = 'scattermapbox',
+                customdata = df['uid'],
+                marker = dict(size=df_smr['marker_size'],color='forestgreen',opacity=.5),
+                )]
+    layout = dict(
+        mapbox = dict(
+            accesstoken = mapbox_access_token,
+            center = dict(lat=39, lon=-105.5),
+            zoom = 6.25,
+            style = 'light',
+            layers = layers
+        ),
+        hovermode = 'closest',
+        height = 600,
+        margin = dict(r=0, l=0, t=0, b=0)
+    )
+    fig = dict(data=data, layout=layout)
+    return fig
+
+@app.callback(
+            Output('rev-scatter', 'figure'),
+            [Input('rev', 'value'),
+            Input('rev-map', 'clickData'),
+            Input('year-selector','value'),
+            Input('map-radio', 'value')])
+def create_rev_scat(rev,clickData,year,map):
+  
+    year_df = df_revenue[df_revenue['year'] == year]
+    filtered_df = year_df[year_df['county'] == clickData['points'][-1]['text']]
+
+    if map == 'rev-map':
+
+        traces = []
+
+        if rev == 'TOTAL':
+            traces.append(go.Scatter(
+            x = filtered_df['month'],
+            y = filtered_df['tot_sales'],
+            name = rev,
+            line = {'color':'red'} 
+            ))
+        elif rev == 'REC':  
+            traces.append(go.Scatter(
+            x = filtered_df['month'],
+            y = filtered_df['rec_sales'],
+            name = rev,
+            line = {'color':'dodgerblue'}
+            ))
+        elif rev == 'MED':  
+            traces.append(go.Scatter(
+            x = filtered_df['month'],
+            y = filtered_df['med_sales'],
+            name = rev,
+            line = {'color':'black'}
+            ))
+        return {
+            'data': traces,
+            'layout': go.Layout(
+                xaxis = {'title': 'Month'},
+                yaxis = {'title': 'Revenue'},
+                hovermode = 'closest',
+                title = '{} COUNTY {} REVENUE'.format(clickData['points'][-1]['text'],rev),
+                height = 450,
+            )
+        }
+
+@app.callback(
+            Output('rev-bar', 'figure'),
+            [Input('rev', 'value'),
+            Input('rev-map', 'clickData'),
+            Input('map-radio', 'value'),
+            Input('rev-map', 'selectedData')])
+def create_rev_bar(selected_values,clickData,map,selectedData):
+    filtered_county = crat['county'] ==  clickData['points'][-1]['text']
+    selected_county = crat[filtered_county]
+
+    traces = []
+    trace1 = [
+        {'x': selected_county['year'], 'y': selected_county['med_sales'], 'type': 'bar', 'name': 'Med Sales' },
+        {'x': selected_county['year'], 'y': selected_county['rec_sales'], 'type': 'bar', 'name': 'Rec Sales' },
+        {'x': selected_county['year'], 'y': selected_county['tot_sales'], 'type': 'bar', 'name': 'Tot Sales' },
+    ]
+    traces.append(trace1)
+    if map == 'rev-map':
+        return {
+            'data': trace1,
+            'layout': go.Layout(
+                title = '{} COUNTY REVENUE BY YEAR'.format(clickData['points'][-1]['text'])
+            ),
+        }
+
 
 @app.callback(
             Output('biz-map', 'figure'),
@@ -205,10 +422,9 @@ def display_rev_page(selected_values):
             Input('button-ret-test','n_clicks'),
             Input('button-ret-trans','n_clicks'),
             Input('button-ret-store','n_clicks'),])
-def update_figure(map,all_clicks,trans_clicks,center_clicks,cultivator_clicks,
+def update_figure_a(map,all_clicks,trans_clicks,center_clicks,cultivator_clicks,
 ipm_clicks,rdc_clicks,operator_clicks,testing_clicks,rmpm_clicks,ret_cult_clicks,ret_test_clicks,ret_trans_clicks,ret_store_clicks):
-    # year1 = str(year)
-    # year2 = year1[-2:]
+    
     rpd_s = rpd.sort_values(by=['RId2'])
   
     rpd_s = rpd_s.apply(pd.to_numeric, errors='ignore')
@@ -216,18 +432,6 @@ ipm_clicks,rdc_clicks,operator_clicks,testing_clicks,rmpm_clicks,ret_cult_clicks
 
     counties_s = counties.sort_values(by=['US_FIPS'])
   
-    # selected_med_rev = rpd_s.loc[ : ,'Rper_cap_med_'+year2+'']
-    # selected_rec_rev = rpd_s.loc[ : ,'Rper_cap_rec_'+year2+'']
-  
-    # df_smr = pd.DataFrame({'name': selected_med_rev.index, 'med_rev': selected_med_rev.values, 'rec_rev': 
-        # selected_rec_rev.values, 'tot_rev': selected_med_rev.values + selected_rec_rev.values,'CENT_LAT':counties_s['CENT_LAT'],
-            #  'CENT_LON':counties_s['CENT_LONG'], 'marker_size':(selected_med_rev.values + selected_rec_rev.values)*(.3**3)})
-
-    # df_year = df_revenue.loc[df_revenue['year'] == year]
- 
-    # df_year_filtered = df_year.loc[df_year['color'] == 'red']
-
-    # color_counties = df_year_filtered['county'].unique().tolist()
 
     data = [dict(
             type = 'scattermapbox',
@@ -392,7 +596,59 @@ ipm_clicks,rdc_clicks,operator_clicks,testing_clicks,rmpm_clicks,ret_cult_clicks
     fig = dict(data=data, layout=layout)
     return fig
 
+@app.callback(
+    Output('lic-name', 'children'),
+    [Input('biz-map', 'hoverData'),
+    Input('map-radio', 'value')])
+def update_text_a(hoverData,map):
+    if map == 'biz-map':
+        s = df[df['uid'] == hoverData['points'][0]['customdata']]
+        return  'Licensee: {}'.format(s.iloc[0]['Licensee'])
 
+@app.callback(
+    Output('biz-name', 'children'),
+    [Input('biz-map', 'hoverData'),
+    Input('map-radio', 'value')])
+def update_text_b(hoverData,map):
+    if map == 'biz-map':
+        s = df[df['uid'] == hoverData['points'][0]['customdata']]
+        return  'Business: {}'.format(s.iloc[0]['DBA'])
+
+@app.callback(
+    Output('biz-type', 'children'),
+    [Input('biz-map', 'hoverData'),
+    Input('map-radio', 'value')])
+def update_text_c(hoverData,map):
+    if map == 'biz-map':
+        s = df[df['uid'] == hoverData['points'][0]['customdata']]
+        return  'Business Type: {}'.format(s.iloc[0]['Category'][13:])
+
+@app.callback(
+    Output('city', 'children'),
+    [Input('biz-map', 'hoverData'),
+    Input('map-radio', 'value')])
+def update_text_d(hoverData,map):
+    if map == 'biz-map':
+        s = df[df['uid'] == hoverData['points'][0]['customdata']]
+        return  'City: {}'.format(s.iloc[0]['City'])
+
+@app.callback(
+    Output('address', 'children'),
+    [Input('biz-map', 'hoverData'),
+    Input('map-radio', 'value')])
+def update_text_e(hoverData,map):
+    if map == 'biz-map':
+        s = df[df['uid'] == hoverData['points'][0]['customdata']]
+        return  'Address: {}'.format(s.iloc[0]['Street_Address'])
+        
+@app.callback(
+    Output('lic-num', 'children'),
+    [Input('biz-map', 'hoverData'),
+    Input('map-radio', 'value')])
+def update_text_f(hoverData,map):
+    if map == 'biz-map':
+        s = df[df['uid'] == hoverData['points'][0]['customdata']]
+        return  'License Number: {}'.format(s.iloc[0]['License_No'])
 
 
 
