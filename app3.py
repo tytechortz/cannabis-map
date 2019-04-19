@@ -113,8 +113,9 @@ body = dbc.Container([
                     html.Tr(html.Div(html.Button('Retail Testing Facility', id='button-ret-test', n_clicks=0))),
                     html.Tr(html.Div(html.Button('Retail Transporter', id='button-ret-trans', n_clicks=0))),
                     html.Tr(html.Div(html.Button('Retail Marijuana Store', id='button-ret-store', n_clicks=0))),
-                ])
-            ])
+                ]),
+            ]),
+            width = {'size':3}
         )       
     ]),
     dbc.Row([
