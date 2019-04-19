@@ -97,6 +97,22 @@ body = dbc.Container([
             ),
         ),
     ]),
+    dbc.Col(
+            html.Div(
+                className='map-radio',
+                children=[ 
+                    dcc.RadioItems(id='map-radio', options=[
+                        {'label':'Rev Map', 'value':'rev-map'},
+                        {'label':'Biz Map','value':'biz-map'},
+                    ],
+                labelStyle={'display':'inline-block', 'margin': 0, 'padding': 1},
+                value = 'rev-map'
+                    ),
+                ]
+            ),
+            width = {'size': 2}
+        ),
+    ])
     dbc.Row([
         dbc.Col(
             dcc.Graph(id='map',
@@ -105,6 +121,7 @@ body = dbc.Container([
             }),
             width={'size':7},
         ),
+    dbc.Row([
         dbc.Col(
                 html.Div(
                     className='radio',
@@ -175,21 +192,6 @@ body = dbc.Container([
             ),
             width = {'size':4, 'offset':1},
             style = {'height': 50}
-        ),
-        dbc.Col(
-            html.Div(
-                className='map-radio',
-                children=[ 
-                    dcc.RadioItems(id='map-radio', options=[
-                        {'label':'Rev Map', 'value':'rev-map'},
-                        {'label':'Biz Map','value':'biz-map'},
-                    ],
-                labelStyle={'display':'inline-block', 'margin': 0, 'padding': 1},
-                value = 'rev-map'
-                    ),
-                ]
-            ),
-            width = {'size': 2}
         ),
         dbc.Col(
             html.Div(
