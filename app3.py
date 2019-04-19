@@ -117,24 +117,25 @@ body = dbc.Container([
         ),
     ]),
     dbc.Row([
-        dbc.Col(
-            html.Div([
-                html.Div(html.Button('All License Types',id='button-all', n_clicks=0)),
-                html.Div(html.Button('Transporters', id='button-transporters', n_clicks=0)),
-                html.Div(html.Button('Center', id='button-center', n_clicks=0)),
-                html.Div(html.Button('Cultivator', id='button-cultivator', n_clicks=0)),
-                html.Div(html.Button('Infused Product Manufacturer', id='button-ipm', n_clicks=0)),
-                html.Div(html.Button('R&D Cultivation', id='button-rdc', n_clicks=0)),
-                html.Div(html.Button('Retail Operator', id='button-operator', n_clicks=0)),
-                html.Div(html.Button('Testing Facility', id='button-testing', n_clicks=0)),
-                html.Div(html.Button('Retail Marijuana Product Manufacturer', id='button-rmpm', n_clicks=0)),
-                html.Div(html.Button('Retail Cultivator', id='button-ret-cult', n_clicks=0)),
-                html.Div(html.Button('Retail Testing Facility', id='button-ret-test', n_clicks=0)),
-                html.Div(html.Button('Retail Transporter', id='button-ret-trans', n_clicks=0)),
-                html.Div(html.Button('Retail Marijuana Store', id='button-ret-store', n_clicks=0)),
-                ]),
-            width = {'size':2}
-        ),
+        html.Div(id='output-buttons')
+        # dbc.Col(
+        #     html.Div([
+        #         html.Div(html.Button('All License Types',id='button-all', n_clicks=0)),
+        #         html.Div(html.Button('Transporters', id='button-transporters', n_clicks=0)),
+        #         html.Div(html.Button('Center', id='button-center', n_clicks=0)),
+        #         html.Div(html.Button('Cultivator', id='button-cultivator', n_clicks=0)),
+        #         html.Div(html.Button('Infused Product Manufacturer', id='button-ipm', n_clicks=0)),
+        #         html.Div(html.Button('R&D Cultivation', id='button-rdc', n_clicks=0)),
+        #         html.Div(html.Button('Retail Operator', id='button-operator', n_clicks=0)),
+        #         html.Div(html.Button('Testing Facility', id='button-testing', n_clicks=0)),
+        #         html.Div(html.Button('Retail Marijuana Product Manufacturer', id='button-rmpm', n_clicks=0)),
+        #         html.Div(html.Button('Retail Cultivator', id='button-ret-cult', n_clicks=0)),
+        #         html.Div(html.Button('Retail Testing Facility', id='button-ret-test', n_clicks=0)),
+        #         html.Div(html.Button('Retail Transporter', id='button-ret-trans', n_clicks=0)),
+        #         html.Div(html.Button('Retail Marijuana Store', id='button-ret-store', n_clicks=0)),
+        #         ]),
+        #     width = {'size':2}
+        # ),
         dbc.Col(
             dcc.Graph(id='map',
             config={
@@ -192,6 +193,7 @@ body = dbc.Container([
             width = {'size': 4}
         ), 
     ]),
+    html.Div(id='output-graphs')
 ])
 
 @app.callback(
@@ -495,6 +497,108 @@ def update_text_f(hoverData,map):
     if map == 'biz-map':
         s = df[df['uid'] == hoverData['points'][0]['customdata']]
         return  'License Number: {}'.format(s.iloc[0]['License_No'])
+
+@app.callback(
+            Output('rev-bar', 'figure'),
+            [Input('rev', 'value'),
+            Input('map', 'clickData'),
+            Input('map-radio', 'value'),
+            Input('map', 'selectedData')])
+def create_rev_bar(selected_values,clickData,map,selectedData):
+    filtered_county = crat['county'] ==  clickData['points'][-1]['text']
+    selected_county = crat[filtered_county]
+
+    traces = []
+    trace1 = [
+        {'x': selected_county['year'], 'y': selected_county['med_sales'], 'type': 'bar', 'name': 'Med Sales' },
+        {'x': selected_county['year'], 'y': selected_county['rec_sales'], 'type': 'bar', 'name': 'Rec Sales' },
+        {'x': selected_county['year'], 'y': selected_county['tot_sales'], 'type': 'bar', 'name': 'Tot Sales' },
+    ]
+    traces.append(trace1)
+    if map == 'rev-map':
+        return {
+            'data': trace1,
+            'layout': go.Layout(
+                title = '{} COUNTY REVENUE BY YEAR'.format(clickData['points'][-1]['text'])
+            ),
+        }
+    elif map == 'biz-map':
+        count = []
+        print(selectedData)
+        print(type(selectedData))
+        print(len(selectedData))
+        return json.dumps(selectedData, indent=2)
+        
+    
+
+@app.callback(
+            Output('rev-scatter', 'figure'),
+            [Input('rev', 'value'),
+            Input('map', 'clickData'),
+            Input('year-selector','value'),
+            Input('map-radio', 'value')])
+def create_rev_scat(rev,clickData,year,map):
+  
+    year_df = df_revenue[df_revenue['year'] == year]
+    filtered_df = year_df[year_df['county'] == clickData['points'][-1]['text']]
+
+    if map == 'rev-map':
+
+        traces = []
+
+        if rev == 'TOTAL':
+            traces.append(go.Scatter(
+            x = filtered_df['month'],
+            y = filtered_df['tot_sales'],
+            name = rev,
+            line = {'color':'red'} 
+            ))
+        elif rev == 'REC':  
+            traces.append(go.Scatter(
+            x = filtered_df['month'],
+            y = filtered_df['rec_sales'],
+            name = rev,
+            line = {'color':'dodgerblue'}
+            ))
+        elif rev == 'MED':  
+            traces.append(go.Scatter(
+            x = filtered_df['month'],
+            y = filtered_df['med_sales'],
+            name = rev,
+            line = {'color':'black'}
+            ))
+        return {
+            'data': traces,
+            'layout': go.Layout(
+                xaxis = {'title': 'Month'},
+                yaxis = {'title': 'Revenue'},
+                hovermode = 'closest',
+                title = '{} COUNTY {} REVENUE'.format(clickData['points'][-1]['text'],rev),
+                height = 450,
+            )
+        }
+
+@app.callback(
+            Output('output-graphs', 'children'),
+            [Input('map-radio', 'value')])
+def display_graphs(selected_values):
+    graphs = []
+    if selected_values == 'rev-map':
+        graphs.append(
+            dbc.Row([
+                dbc.Col(
+                    dcc.Graph(id='rev-bar',
+                    ),
+                    width = {'size': 6}
+                ),
+                dbc.Col(
+                    dcc.Graph(id='rev-scatter',
+                    ),
+                    width = {'size': 6}
+                ),
+            ]),
+        )  
+        return graphs
     
 app.layout = html.Div(body)
 
