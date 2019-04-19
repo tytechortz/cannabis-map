@@ -144,7 +144,7 @@ def display_biz_page(selected_values):
                     width = {'size':2}
                 ),
                 dbc.Col(
-                    dcc.Graph(id='map',
+                    dcc.Graph(id='biz-map',
                     config={
                         'scrollZoom': True
                     }),
@@ -189,8 +189,208 @@ def display_rev_page(selected_values):
         )  
         return rev_page
 
+@app.callback(
+            Output('biz-map', 'figure'),
+            [Input('map-radio', 'value'),
+            Input('button-all', 'n_clicks'),
+            Input('button-transporters','n_clicks'),
+            Input('button-center','n_clicks'),
+            Input('button-cultivator','n_clicks'),
+            Input('button-ipm','n_clicks'),
+            Input('button-rdc','n_clicks'),
+            Input('button-operator','n_clicks'),
+            Input('button-testing','n_clicks'),
+            Input('button-rmpm','n_clicks'),
+            Input('button-ret-cult','n_clicks'),
+            Input('button-ret-test','n_clicks'),
+            Input('button-ret-trans','n_clicks'),
+            Input('button-ret-store','n_clicks'),])
+def update_figure(map,all_clicks,trans_clicks,center_clicks,cultivator_clicks,
+ipm_clicks,rdc_clicks,operator_clicks,testing_clicks,rmpm_clicks,ret_cult_clicks,ret_test_clicks,ret_trans_clicks,ret_store_clicks):
+    # year1 = str(year)
+    # year2 = year1[-2:]
+    rpd_s = rpd.sort_values(by=['RId2'])
+  
+    rpd_s = rpd_s.apply(pd.to_numeric, errors='ignore')
+    rpd_s = rpd_s.fillna(0)
 
+    counties_s = counties.sort_values(by=['US_FIPS'])
+  
+    # selected_med_rev = rpd_s.loc[ : ,'Rper_cap_med_'+year2+'']
+    # selected_rec_rev = rpd_s.loc[ : ,'Rper_cap_rec_'+year2+'']
+  
+    # df_smr = pd.DataFrame({'name': selected_med_rev.index, 'med_rev': selected_med_rev.values, 'rec_rev': 
+        # selected_rec_rev.values, 'tot_rev': selected_med_rev.values + selected_rec_rev.values,'CENT_LAT':counties_s['CENT_LAT'],
+            #  'CENT_LON':counties_s['CENT_LONG'], 'marker_size':(selected_med_rev.values + selected_rec_rev.values)*(.3**3)})
 
+    # df_year = df_revenue.loc[df_revenue['year'] == year]
+ 
+    # df_year_filtered = df_year.loc[df_year['color'] == 'red']
+
+    # color_counties = df_year_filtered['county'].unique().tolist()
+
+    data = [dict(
+            type = 'scattermapbox',
+        )]
+    if all_clicks % 2 == 1:
+        data = [dict(
+            lat = df['lat'],
+            lon = df['long'],
+            text = text,
+            hoverinfo = 'text',
+            type = 'scattermapbox',
+            customdata = df['uid'],
+            marker = dict(size=10,color=df['color'],opacity=.6)
+            )]
+           
+    elif trans_clicks % 2 == 1:
+        df1 = pd.DataFrame(df.loc[df['Category'] == 'MED Licensed Transporters'])
+        data = [dict(
+            lat = df1['lat'],
+            lon = df1['long'],
+            text = text,
+            hoverinfo = 'text',
+            type = 'scattermapbox',
+            customdata = df['uid'],
+            marker = dict(size=10,color=df1['color'],opacity=.6)
+        )]
+    elif center_clicks % 2 == 1:
+        df2 = pd.DataFrame(df.loc[df['Category'] == 'MED Licensed Center'])
+        data = [dict(
+            lat = df2['lat'],
+            lon = df2['long'],
+            text = text,
+            hoverinfo = 'text',
+            type = 'scattermapbox',
+            customdata = df['uid'],
+            marker = dict(size=10,color=df2['color'],opacity=.6)
+        )]
+    elif cultivator_clicks % 2 == 1:
+        df3 = pd.DataFrame(df.loc[df['Category'] == 'MED Licensed Cultivator'])
+        data = [dict(
+            lat = df3['lat'],
+            lon = df3['long'],
+            text = text,
+            hoverinfo = 'text',
+            type = 'scattermapbox',
+            customdata = df['uid'],
+            marker = dict(size=10,color=df3['color'],opacity=.6)
+        )]
+    elif ipm_clicks % 2 == 1:
+        df4 = pd.DataFrame(df.loc[df['Category'] == 'MED Licensed Infused Product Manufacturer'])
+        data = [dict(
+            lat = df4['lat'],
+            lon = df4['long'],
+            text = text,
+            hoverinfo = 'text',
+            type = 'scattermapbox',
+            customdata = df['uid'],
+            marker = dict(size=10,color=df4['color'],opacity=.6)
+        )]
+    elif rdc_clicks % 2 == 1:
+        df5 = pd.DataFrame(df.loc[df['Category'] == 'MED Licensed R&D Cultivation'])
+        data = [dict(
+            lat = df5['lat'],
+            lon = df5['long'],
+            text = text,
+            hoverinfo = 'text',
+            type = 'scattermapbox',
+            customdata = df['uid'],
+            marker = dict(size=10,color=df5['color'],opacity=.6)
+        )]
+    elif operator_clicks % 2 == 1:
+        df6 = pd.DataFrame(df.loc[df['Category'] == 'MED Licensed Retail Operator'])
+        data = [dict(
+            lat = df6['lat'],
+            lon = df6['long'],
+            text = text,
+            hoverinfo = 'text',
+            type = 'scattermapbox',
+            customdata = df['uid'],
+            marker = dict(size=10,color=df6['color'],opacity=.6)
+        )]
+    elif testing_clicks % 2 == 1:
+        df7 = pd.DataFrame(df.loc[df['Category'] == 'MED Licensed Testing Facility'])
+        data = [dict(
+            lat = df7['lat'],
+            lon = df7['long'],
+            text = text,
+            hoverinfo = 'text',
+            type = 'scattermapbox',
+            customdata = df['uid'],
+            marker = dict(size=10,color=df7['color'],opacity=.6)
+        )]
+    elif rmpm_clicks % 2 == 1:
+        df8 = pd.DataFrame(df.loc[df['Category'] == 'MED Licensed Retail Marijuana Product Manufacturer'])
+        data = [dict(
+            lat = df8['lat'],
+            lon = df8['long'],
+            text = text,
+            hoverinfo = 'text',
+            type = 'scattermapbox',
+            customdata = df['uid'],
+            marker = dict(size=10,color=df8['color'],opacity=.6)
+        )]
+    elif ret_cult_clicks % 2 == 1:
+        df9 = pd.DataFrame(df.loc[df['Category'] == 'MED Licensed Retail Cultivator'])
+        data = [dict(
+            lat = df9['lat'],
+            lon = df9['long'],
+            text = text,
+            hoverinfo = 'text',
+            type = 'scattermapbox',
+            customdata = df['uid'],
+            marker = dict(size=10,color=df9['color'],opacity=.6)
+        )]
+    elif ret_test_clicks % 2 == 1:
+        df10 = pd.DataFrame(df.loc[df['Category'] == 'MED Licensed Retail Testing Facility'])
+        data = [dict(
+            lat = df10['lat'],
+            lon = df10['long'],
+            text = text,
+            hoverinfo = 'text',
+            type = 'scattermapbox',
+            customdata = df['uid'],
+            marker = dict(size=10,color=df10['color'],opacity=.6)
+        )]
+    elif ret_trans_clicks % 2 == 1:
+        df11 = pd.DataFrame(df.loc[df['Category'] == 'MED Licensed Retail Transporter'])
+        data = [dict(
+            lat = df11['lat'],
+            lon = df11['long'],
+            text = text,
+            hoverinfo = 'text',
+            type = 'scattermapbox',
+            customdata = df['uid'],
+            marker = dict(size=10,color=df11['color'],opacity=.6)
+        )]
+    elif ret_store_clicks % 2 == 1:
+        df12 = pd.DataFrame(df.loc[df['Category'] == 'MED Licensed Retail Marijuana Store'])
+        data = [dict(
+            lat = df12['lat'],
+            lon = df12['long'],
+            text = text,
+            hoverinfo = 'text',
+            type = 'scattermapbox',
+            customdata = df['uid'],
+            marker = dict(size=10,color=df12['color'],opacity=.6)
+        )]
+    layout = dict(
+        mapbox = dict(
+            accesstoken = mapbox_access_token,
+            center = dict(lat=39, lon=-105.5),
+            zoom = 6.25,
+            style = 'light'
+        ),
+        hovermode = 'closest',
+        height = 600,
+        margin = dict(r=0, l=0, t=0, b=0),
+        clickmode = 'event+select'
+    )    
+  
+        
+    fig = dict(data=data, layout=layout)
+    return fig
 
 
 
