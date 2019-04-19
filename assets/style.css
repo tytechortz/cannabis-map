@@ -29,8 +29,8 @@ body {
 }
 
 .container {
-    max-width: 1500px;
-    min-width: 1500px;
+    max-width: 1600px;
+    min-width: 1600px;
 }
 .radio {
     /* background-color: lightgreen */
@@ -44,7 +44,7 @@ table {
     font-family: sans-serif;
     font-size: 15px;
     padding-left: 0px;
-    opacity: .9
+    /* opacity: .9 */
 }
 
 thead th:nth-child(1) {
@@ -58,21 +58,26 @@ thead th:nth-child(2) {
 th {
     /* padding: 20px; */
     text-align: center;
-    font-size: 1.3em;
+    font-size: 2em;
     background-color: green;
 }
 
 td {
     text-align: left;
-    font-size: 1 em;
+    font-size: 2 em;
     padding: 2px;
 }
 
-tr:nth-child(1) {
-    background-color: white;
-    color: black;
-    font-size: 10px
+#lic-name, #biz-type, #address {
+    background-color: mediumseagreen;
+    color: black
 }
+
+#biz-name, #city, #lic-num  {
+    background-color: seagreen;
+    color: black
+}
+
 
 #button-all {
     background-color:white;
@@ -232,6 +237,18 @@ tr:nth-child(1) {
 #button-ret-store:focus {border-color: red; border-width: 5px}
 
 
+/* tr:nth-child(1) {
+    background-color: white;
+    color: black;
+    font-size: 10px
+}
+
+tr:nth-child(2) {
+    background-color: white;
+    color: black;
+    font-size: 10px
+}
+
 tr:nth-child(3) {
     background-color: darkblue;
     color: white;
@@ -285,17 +302,8 @@ tr:nth-child(12) {
 tr:nth-child(13) {
     background-color: violet;
     color: black
-}
+} */
 
-#lic-name, #biz-type, #address {
-    background-color: mediumseagreen;
-    color: black
-}
-
-#biz-name, #city, #lic-num  {
-    background-color: seagreen;
-    color: black
-}
 
 
 

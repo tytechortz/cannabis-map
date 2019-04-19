@@ -140,8 +140,25 @@ body = dbc.Container([
             config={
                 'scrollZoom': True
             }),
-            width={'size':9},
-        ),       
+            width={'size':6},
+        ),
+        dbc.Col(
+                html.Div([
+                    html.Table ([
+                        html.Tr([html.Th('Business Info')]),
+                        html.Tr(html.Div(id='lic-name', style={'height':30, 'text-align': 'left'})),
+                        html.Tr(html.Div(id='biz-name', style={'height':30, 'text-align': 'left'})),
+                        html.Tr(html.Div(id='biz-type', style={'height':30, 'text-align': 'left'})),
+                        html.Tr(html.Div(id='city', style={'height':30, 'text-align': 'left'})),
+                        html.Tr(html.Div(id='address', style={'height':30, 'text-align': 'left'})),
+                        html.Tr(html.Div(id='lic-num', style={'height':30, 'text-align': 'left'})),
+                    ]),
+                ],
+                style = {'overflow-x':'scroll'}
+                ),
+                
+             width = {'size':4}
+        ),              
     ]),
     dbc.Row([
         dbc.Col(
@@ -424,6 +441,60 @@ ipm_clicks,rdc_clicks,operator_clicks,testing_clicks,rmpm_clicks,ret_cult_clicks
         
     fig = dict(data=data, layout=layout)
     return fig
+
+@app.callback(
+    Output('lic-name', 'children'),
+    [Input('map', 'hoverData'),
+    Input('map-radio', 'value')])
+def update_text_a(hoverData,map):
+    if map == 'biz-map':
+        s = df[df['uid'] == hoverData['points'][0]['customdata']]
+        return  'Licensee: {}'.format(s.iloc[0]['Licensee'])
+
+@app.callback(
+    Output('biz-name', 'children'),
+    [Input('map', 'hoverData'),
+    Input('map-radio', 'value')])
+def update_text_b(hoverData,map):
+    if map == 'biz-map':
+        s = df[df['uid'] == hoverData['points'][0]['customdata']]
+        return  'Business: {}'.format(s.iloc[0]['DBA'])
+
+@app.callback(
+    Output('biz-type', 'children'),
+    [Input('map', 'hoverData'),
+    Input('map-radio', 'value')])
+def update_text_c(hoverData,map):
+    if map == 'biz-map':
+        s = df[df['uid'] == hoverData['points'][0]['customdata']]
+        return  'Business Type: {}'.format(s.iloc[0]['Category'][13:])
+
+@app.callback(
+    Output('city', 'children'),
+    [Input('map', 'hoverData'),
+    Input('map-radio', 'value')])
+def update_text_d(hoverData,map):
+    if map == 'biz-map':
+        s = df[df['uid'] == hoverData['points'][0]['customdata']]
+        return  'City: {}'.format(s.iloc[0]['City'])
+
+@app.callback(
+    Output('address', 'children'),
+    [Input('map', 'hoverData'),
+    Input('map-radio', 'value')])
+def update_text_e(hoverData,map):
+    if map == 'biz-map':
+        s = df[df['uid'] == hoverData['points'][0]['customdata']]
+        return  'Address: {}'.format(s.iloc[0]['Street_Address'])
+        
+@app.callback(
+    Output('lic-num', 'children'),
+    [Input('map', 'hoverData'),
+    Input('map-radio', 'value')])
+def update_text_f(hoverData,map):
+    if map == 'biz-map':
+        s = df[df['uid'] == hoverData['points'][0]['customdata']]
+        return  'License Number: {}'.format(s.iloc[0]['License_No'])
     
 app.layout = html.Div(body)
 
