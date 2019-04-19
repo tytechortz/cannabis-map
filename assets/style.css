@@ -71,12 +71,81 @@ td {
 tr:nth-child(1) {
     background-color: white;
     color: black;
+    font-size: 10px
 }
 
-tr:nth-child(2) {
-    background-color: purple;
-    color: white;
+#button-all {
+    background-color:white;
+    color: black;
+    font-size: 15px;
+    border-radius: 12px;
+    height:40px;
+    width:150px;
+    transition-duration: 0.4s;
 }
+
+#button-all:hover {background-color: gray; color: white}
+#button-all:focus {border-color: red; border-width: 5px}
+
+#button-transporters {
+    background-color:purple;
+    color: white;
+    font-size: 15px;
+    border-radius: 12px;
+    height:40px;
+    width:150px;
+    transition-duration: 0.4s;
+}
+#button-center:hover {background-color: white; color: darkblue}
+#button-center:focus {border-color: red; border-width: 5px}
+
+#button-center {
+    background-color:darkblue;
+    color: white;
+    font-size: 15px;
+    border-radius: 12px;
+    height:40px;
+    width:150px;
+    transition-duration: 0.4s;
+}
+#button-transporters:hover {background-color: white; color: purple}
+#button-transporters:focus {border-color: red; border-width: 5px}
+
+#button-cultivator {
+    background-color:dodgerblue;
+    color: white;
+    font-size: 15px;
+    border-radius: 12px;
+    height:40px;
+    width:150px;
+    transition-duration: 0.4s;
+}
+#button-cultivator:hover {background-color: white; color: dodgerblue}
+#button-cultivator:focus {border-color: red; border-width: 5px}
+
+#button-ipm {
+    background-color:darkgreen;
+    color: white;
+    font-size: 15px;
+    border-radius: 12px;
+    height:40px;
+    width:150px;
+    transition-duration: 0.4s;
+}
+#button-ipm:hover {background-color: white; color: darkgreen}
+#button-ipm:focus {border-color: red; border-width: 5px}
+
+#button-rdc {
+    background-color:black;
+    color: white;
+    font-size: 15px;
+    border-radius: 12px;
+    height:40px;
+    width:150px;
+    transition-duration: 0.4s;
+}
+#button-rdc:hover {background-color: white; color: black}
+#button-rdc:focus {border-color: red; border-width: 5px}
 
 tr:nth-child(3) {
     background-color: darkblue;
