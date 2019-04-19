@@ -105,25 +105,18 @@ body = dbc.Container([
                 className='map-radio',
                 children=[ 
                     dcc.RadioItems(id='map-radio', options=[
-                        {'label':'Rev Map', 'value':'rev-map'},
-                        {'label':'Biz Map','value':'biz-map'},
+                        {'label':'Revenue Map', 'value':'rev-map'},
+                        {'label':'Business Map','value':'biz-map'},
                     ],
                 labelStyle={'display':'inline-block', 'margin': 0, 'padding': 1},
                 value = 'rev-map'
                     ),
                 ]
             ),
-            width = {'size': 2, 'offset':5}
+            width = {'size': 4, 'offset':5}
         ),
     ]),
     dbc.Row([
-        dbc.Col(
-            dcc.Graph(id='map',
-            config={
-                'scrollZoom': True
-            }),
-            width={'size':7},
-        ),
         dbc.Col(
             html.Div([
                 html.Div(html.Button('All License Types',id='button-all', n_clicks=0)),
@@ -140,8 +133,15 @@ body = dbc.Container([
                 html.Div(html.Button('Retail Transporter', id='button-ret-trans', n_clicks=0)),
                 html.Div(html.Button('Retail Marijuana Store', id='button-ret-store', n_clicks=0)),
                 ]),
-            width = {'size':3}
-        )       
+            width = {'size':2}
+        ),
+        dbc.Col(
+            dcc.Graph(id='map',
+            config={
+                'scrollZoom': True
+            }),
+            width={'size':9},
+        ),       
     ]),
     dbc.Row([
         dbc.Col(
@@ -249,7 +249,7 @@ ipm_clicks,rdc_clicks,operator_clicks,testing_clicks,rmpm_clicks,ret_cult_clicks
             mapbox = dict(
                 accesstoken = mapbox_access_token,
                 center = dict(lat=39, lon=-105.5),
-                zoom = 6,
+                zoom = 6.25,
                 style = 'light',
                 layers = layers
             ),
@@ -265,7 +265,7 @@ ipm_clicks,rdc_clicks,operator_clicks,testing_clicks,rmpm_clicks,ret_cult_clicks
         data = [dict(
             type = 'scattermapbox',
         )]
-        if all_clicks % 2 == 0:
+        if all_clicks % 2 == 1:
             data = [dict(
                 lat = df['lat'],
                 lon = df['long'],
@@ -412,7 +412,7 @@ ipm_clicks,rdc_clicks,operator_clicks,testing_clicks,rmpm_clicks,ret_cult_clicks
             mapbox = dict(
                 accesstoken = mapbox_access_token,
                 center = dict(lat=39, lon=-105.5),
-                zoom = 6,
+                zoom = 6.25,
                 style = 'light'
             ),
             hovermode = 'closest',

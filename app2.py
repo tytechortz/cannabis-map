@@ -97,7 +97,7 @@ body = dbc.Container([
             ),
         ),
     ]),
-    dbc.Col(
+        dbc.Col(
             html.Div(
                 className='map-radio',
                 children=[ 
@@ -112,7 +112,7 @@ body = dbc.Container([
             ),
             width = {'size': 2}
         ),
-    ])
+    ]),
     dbc.Row([
         dbc.Col(
             dcc.Graph(id='map',
