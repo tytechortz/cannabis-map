@@ -64,7 +64,7 @@ th {
 
 td {
     text-align: left;
-    font-size: 2 em;
+    font-size: 3em;
     padding: 2px;
 }
 
@@ -79,12 +79,12 @@ td {
 }
 
 
-#button-all {
+/* #button-all {
     background-color:white;
     color: black;
     font-size: 15px;
     border-radius: 12px;
-    height:45px;
+    height:50px;
     width:150px;
     transition-duration: 0.4s;
 }
@@ -234,19 +234,17 @@ td {
     transition-duration: 0.4s;
 }
 #button-ret-store:hover {background-color: black; color: violet}
-#button-ret-store:focus {border-color: red; border-width: 5px}
+#button-ret-store:focus {border-color: red; border-width: 5px} */
 
 
-/* tr:nth-child(1) {
+tr:nth-child(1) {
     background-color: white;
     color: black;
-    font-size: 10px
 }
 
 tr:nth-child(2) {
-    background-color: white;
+    background-color: purple;
     color: black;
-    font-size: 10px
 }
 
 tr:nth-child(3) {
@@ -302,7 +300,7 @@ tr:nth-child(12) {
 tr:nth-child(13) {
     background-color: violet;
     color: black
-} */
+}
 
 
 
