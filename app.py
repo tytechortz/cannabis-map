@@ -34,7 +34,7 @@ df_revenue['tot_sales'] = df_revenue['med_sales'] + df_revenue['rec_sales']
 df_revenue.loc[df_revenue['tot_sales'] > 0, 'color'] = 'red'
 df_revenue.loc[df_revenue['tot_sales'] == 0, 'color'] = 'blue'
 
-with open('./Colorado_County_Boundaries.json') as json_file:
+with open('./Data/Colorado_County_Boundaries.json') as json_file:
     jdata = json_file.read()
     topoJSON = json.loads(jdata)
     
@@ -102,8 +102,7 @@ body = dbc.Container([
             html.Div([
                 daq.ToggleSwitch(
                     id='rev-biz-switch',
-                    value=True,
-                    
+                    value=True, 
                 ),
             ]),
             width={'size':1}
