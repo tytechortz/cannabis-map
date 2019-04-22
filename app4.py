@@ -23,7 +23,6 @@ per_rev = pd.read_csv('./Data/revenue_pop_data.csv',header=0, delim_whitespace=F
 rpd = pop_rev.set_index('COUNTY', drop=False)
 df = gpd.read_file('./Data/cannabis_business.geojson')
 df_revenue = pd.read_csv('https://data.colorado.gov/resource/j7a3-jgd3.csv?$limit=5000&$$app_token=Uwt19jYZWTc9a2UPr7tB6x2k1')
-# df_taxes = pd.read_csv('https://data.colorado.gov/resource/3sm5-jtur.csv')
 df_biz = pd.read_csv('https://data.colorado.gov/resource/sqs8-2un5.csv?$select=Category,License_No,Month,Year&$limit=166000&$$app_token=Uwt19jYZWTc9a2UPr7tB6x2k1')
 
 
@@ -43,7 +42,6 @@ sources=[]
 for feat in topoJSON['features']: 
         sources.append({"type": "FeatureCollection", 'features': [feat]})
 
-# counties_s = counties.sort_values(by=['US_FIPS'])
 dfinal = df_revenue.merge(counties, how='inner', left_on='county', right_on='COUNTY')
 
 county_revenue_df = df_revenue.groupby(['county', 'year'])
@@ -160,9 +158,6 @@ def display_rev_page(value):
                     ),
                     width = {'size': 4}
                 ),
-                
-                
-                  # style = {'height': 50}
             ])
         )
         return rev_page
@@ -239,7 +234,6 @@ def display_biz_page(value):
                 ),
             ]),
         ) 
-       
         return biz_page
 
 
@@ -402,7 +396,6 @@ def create_rev_scat(rev,clickData,year,value):
     year_df = df_revenue[df_revenue['year'] == year]
     filtered_df = year_df[year_df['county'] == clickData['points'][-1]['text']]
 
-    # if selected_values == 'rev-map':
     labels = ['Feb', 'Apr', 'Jun','Aug','Oct','Dec']
     tickvals = [2,4,6,8,10,12]
     traces = []
@@ -458,11 +451,10 @@ def create_rev_bar_a(clickData,value):
         return {
             'data': trace1,
             'layout': go.Layout(
-                height = 500,
+                height = 400,
                 title = '{} COUNTY REVENUE BY YEAR'.format(clickData['points'][-1]['text'])
             ),
         }
-
 
 @app.callback(
             Output('biz-map', 'figure'),
@@ -474,9 +466,6 @@ def update_figure_a(value,selected_values):
   
     rpd_s = rpd_s.apply(pd.to_numeric, errors='ignore')
     rpd_s = rpd_s.fillna(0)
-
-    # counties_s = counties.sort_values(by=['US_FIPS'])
-  
 
     data = [dict(
             type = 'scattermapbox',
@@ -519,7 +508,6 @@ def update_figure_a(value,selected_values):
             clickmode = 'event+select'
         )  
   
-        
     fig = dict(data=data, layout=layout)
     return fig
 
