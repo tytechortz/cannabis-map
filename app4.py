@@ -18,13 +18,13 @@ mapbox_access_token = 'pk.eyJ1IjoidHl0ZWNob3J0eiIsImEiOiJjanN1emtuc2cwMXNhNDNuej
 
 counties = gpd.read_file('./Data/Colorado_County_Boundaries.geojson')
 counties.sort_values(by=['US_FIPS'])
-pop_rev = gpd.read_file('./per_cap_joined.geojson')
-per_rev = pd.read_csv('./revenue_pop_data.csv',header=0, delim_whitespace=False)
+pop_rev = gpd.read_file('./Data/per_cap_joined.geojson')
+per_rev = pd.read_csv('./Data/revenue_pop_data.csv',header=0, delim_whitespace=False)
 rpd = pop_rev.set_index('COUNTY', drop=False)
 df = gpd.read_file('./Data/cannabis_business.geojson')
 df_revenue = pd.read_csv('https://data.colorado.gov/resource/j7a3-jgd3.csv?$limit=5000&$$app_token=Uwt19jYZWTc9a2UPr7tB6x2k1')
 # df_taxes = pd.read_csv('https://data.colorado.gov/resource/3sm5-jtur.csv')
-# df_biz = pd.read_csv('https://data.colorado.gov/resource/sqs8-2un5.csv')
+df_biz = pd.read_csv('https://data.colorado.gov/resource/sqs8-2un5.csv?$select=Category,License_No,Month,Year&$limit=166000&$$app_token=Uwt19jYZWTc9a2UPr7tB6x2k1')
 
 
 df_revenue['county'] = df_revenue['county'].str.upper()
@@ -102,10 +102,10 @@ body = dbc.Container([
         ),
         dbc.Col(
             html.Div([
-                daq.BooleanSwitch(
+                daq.ToggleSwitch(
                     id='rev-biz-switch',
-                    on=True,
-                    color='red'
+                    value=True,
+                    
                 ),
             ]),
             width={'size':1}
@@ -128,11 +128,11 @@ body = dbc.Container([
 
 @app.callback(
             Output('rev-stuff', 'children'),
-            [Input('rev-biz-switch', 'on')])
-def display_rev_page(switch):
-    print(switch)
+            [Input('rev-biz-switch', 'value')])
+def display_rev_page(value):
+    print(value)
     rev_page = []
-    if switch == True:
+    if value == True:
         rev_page.append(
             dbc.Row([
                 dbc.Col(
@@ -153,24 +153,14 @@ def display_rev_page(switch):
                     config={
                         'scrollZoom': True
                     }),
-                    width={'size':8},
+                    width={'size':7},
                 ),
                 dbc.Col(
-                    html.Div([
-                            html.Table ([
-                                html.Tr([html.Th('Revenue Stats')]),
-                                html.Tr(html.Div(id='county-name', style={'height':30, 'text-align': 'left'})),
-                                # html.Tr(html.Div(id='biz-name', style={'height':30, 'text-align': 'left'})),
-                                # html.Tr(html.Div(id='biz-type', style={'height':30, 'text-align': 'left'})),
-                                # html.Tr(html.Div(id='city', style={'height':30, 'text-align': 'left'})),
-                                # html.Tr(html.Div(id='address', style={'height':30, 'text-align': 'left'})),
-                                # html.Tr(html.Div(id='lic-num', style={'height':30, 'text-align': 'left'})),
-                            ]),
-                        ],
-                        style = {'overflow-x':'scroll'}
-                        ),   
-                    width = {'size':3}
+                    dcc.Graph(id='rev-bar',
+                    ),
+                    width = {'size': 4}
                 ),
+                
                 
                   # style = {'height': 50}
             ])
@@ -179,11 +169,11 @@ def display_rev_page(switch):
 
 @app.callback(
             Output('biz-stuff', 'children'),
-            [Input('rev-biz-switch', 'on')])
-def display_biz_page(switch):
-    print(switch)
+            [Input('rev-biz-switch', 'value')])
+def display_biz_page(value):
+    print(value)
     biz_page = []
-    if switch == False:
+    if value == False:
         biz_page.append(
             dbc.Row([
                 dbc.Col(
@@ -255,13 +245,12 @@ def display_biz_page(switch):
 
 @app.callback(
             Output('rev-stuff-2', 'children'),
-            [Input('rev-biz-switch', 'on')])
-def display_rev_page_a(switch):
+            [Input('rev-biz-switch', 'value')])
+def display_rev_page_a(value):
     rev_page_selectors = []
-    if switch == True:
+    if value == True:
         rev_page_selectors.append(
             dbc.Row([
-                
                 dbc.Col(
                     html.Div(
                         className='rev-radio',
@@ -284,22 +273,23 @@ def display_rev_page_a(switch):
 
 @app.callback(
             Output('rev-stuff-3', 'children'),
-            [Input('rev-biz-switch', 'on')])
-def display_rev_page_b(switch):
+            [Input('rev-biz-switch', 'value')])
+def display_rev_page_b(value):
     rev_page_graphs = []
-    if switch == True:
+    if value == True:
         rev_page_graphs.append(
            dbc.Row([
                 dbc.Col(
-                    dcc.Graph(id='rev-bar',
+                    dcc.Graph(id='biz-bar',
                     ),
-                    width = {'size': 6}
+                    width = {'size': 7}
                 ),
                 dbc.Col(
                     dcc.Graph(id='rev-scatter',
                     ),
-                    width = {'size': 6}
+                    width = {'size': 5}
                 ),
+                
             ]), 
         )
         return rev_page_graphs  
@@ -308,9 +298,9 @@ def display_rev_page_b(switch):
 
 @app.callback(
             Output('rev-map', 'figure'),
-            [Input('rev-biz-switch', 'on'),
+            [Input('rev-biz-switch', 'value'),
             Input('year-selector', 'value')])         
-def update_figure(switch,year):
+def update_figure(value,year):
     
     year1 = str(year)
     year2 = year1[-2:]
@@ -376,12 +366,38 @@ def update_figure(switch,year):
     return fig
 
 @app.callback(
+            Output('biz-bar', 'figure'),
+            [Input('year-selector', 'value'),
+            Input('rev-biz-switch', 'value')])
+def create_rev_bar(year,value):
+    biz_year = df_biz.loc[df_biz['Year'] == year]
+    biz_year_dec = biz_year[biz_year['Month'] == 12]
+
+    biz_type = biz_year_dec.groupby('Category')['License_No'].nunique()
+    biz_count = pd.DataFrame({'Category':biz_type.index, 'Value':biz_type.values})
+   
+    trace1 = [
+        {'y': biz_count['Category'], 'x': biz_count['Value'], 'type': 'bar','orientation':'h','name': '' },
+    ]
+    if value == True:
+        return {
+            'data': trace1,
+            'layout': go.Layout(
+                height = 400,
+                yaxis = go.layout.YAxis(
+                    automargin = True,
+                ),
+                title = 'License Count for {}'.format(year)
+            ),
+        }
+
+@app.callback(
             Output('rev-scatter', 'figure'),
             [Input('rev', 'value'),
             Input('rev-map', 'clickData'),
             Input('year-selector','value'),
-            Input('rev-biz-switch', 'on')])
-def create_rev_scat(rev,clickData,year,switch):
+            Input('rev-biz-switch', 'value')])
+def create_rev_scat(rev,clickData,year,value):
   
     year_df = df_revenue[df_revenue['year'] == year]
     filtered_df = year_df[year_df['county'] == clickData['points'][-1]['text']]
@@ -426,8 +442,8 @@ def create_rev_scat(rev,clickData,year,switch):
 @app.callback(
             Output('rev-bar', 'figure'),
             [Input('rev-map', 'clickData'),
-            Input('rev-biz-switch', 'on')])
-def create_rev_bar(clickData,switch):
+            Input('rev-biz-switch', 'value')])
+def create_rev_bar_a(clickData,value):
     filtered_county = crat['county'] ==  clickData['points'][-1]['text']
     selected_county = crat[filtered_county]
 
@@ -438,11 +454,11 @@ def create_rev_bar(clickData,switch):
         {'x': selected_county['year'], 'y': selected_county['tot_sales'], 'type': 'bar', 'name': 'Tot Sales' },
     ]
     traces.append(trace1)
-    if switch == True:
+    if value == True:
         return {
             'data': trace1,
             'layout': go.Layout(
-                height = 400,
+                height = 500,
                 title = '{} COUNTY REVENUE BY YEAR'.format(clickData['points'][-1]['text'])
             ),
         }
@@ -450,9 +466,9 @@ def create_rev_bar(clickData,switch):
 
 @app.callback(
             Output('biz-map', 'figure'),
-            [Input('rev-biz-switch', 'on'),
+            [Input('rev-biz-switch', 'value'),
             Input('categories', 'value')])
-def update_figure_a(switch,selected_values):
+def update_figure_a(value,selected_values):
     
     rpd_s = rpd.sort_values(by=['RId2'])
   
@@ -510,62 +526,56 @@ def update_figure_a(switch,selected_values):
 @app.callback(
     Output('lic-name', 'children'),
     [Input('biz-map', 'hoverData'),
-    Input('rev-biz-switch', 'on')])
-def update_text_a(hoverData,switch):
-    if switch == False:
+    Input('rev-biz-switch', 'value')])
+def update_text_a(hoverData,value):
+    if value == False:
         s = df[df['uid'] == hoverData['points'][0]['customdata']]
         return  'Licensee: {}'.format(s.iloc[0]['Licensee'])
 
 @app.callback(
     Output('biz-name', 'children'),
     [Input('biz-map', 'hoverData'),
-    Input('rev-biz-switch', 'on')])
-def update_text_b(hoverData,switch):
-    if switch == False:
+    Input('rev-biz-switch', 'value')])
+def update_text_b(hoverData,value):
+    if value == False:
         s = df[df['uid'] == hoverData['points'][0]['customdata']]
         return  'Business: {}'.format(s.iloc[0]['DBA'])
 
 @app.callback(
     Output('biz-type', 'children'),
     [Input('biz-map', 'hoverData'),
-    Input('rev-biz-switch', 'on')])
-def update_text_c(hoverData,switch):
-    if switch == False:
+    Input('rev-biz-switch', 'value')])
+def update_text_c(hoverData,value):
+    if value == False:
         s = df[df['uid'] == hoverData['points'][0]['customdata']]
         return  'Business Type: {}'.format(s.iloc[0]['Category'][13:])
 
 @app.callback(
     Output('city', 'children'),
     [Input('biz-map', 'hoverData'),
-    Input('rev-biz-switch', 'on')])
-def update_text_d(hoverData,switch):
-    if switch == False:
+    Input('rev-biz-switch', 'value')])
+def update_text_d(hoverData,value):
+    if value == False:
         s = df[df['uid'] == hoverData['points'][0]['customdata']]
         return  'City: {}'.format(s.iloc[0]['City'])
 
 @app.callback(
     Output('address', 'children'),
     [Input('biz-map', 'hoverData'),
-    Input('rev-biz-switch', 'on')])
-def update_text_e(hoverData,switch):
-    if switch == False:
+    Input('rev-biz-switch', 'value')])
+def update_text_e(hoverData,value):
+    if value == False:
         s = df[df['uid'] == hoverData['points'][0]['customdata']]
         return  'Address: {}'.format(s.iloc[0]['Street_Address'])
         
 @app.callback(
     Output('lic-num', 'children'),
     [Input('biz-map', 'hoverData'),
-    Input('rev-biz-switch', 'on')])
-def update_text_f(hoverData,switch):
-    if switch == False:
+    Input('rev-biz-switch', 'value')])
+def update_text_f(hoverData,value):
+    if value == False:
         s = df[df['uid'] == hoverData['points'][0]['customdata']]
         return  'License Number: {}'.format(s.iloc[0]['License_No'])
-
-
-
-
-
-
 
 
 app.layout = html.Div(body)
