@@ -15,7 +15,7 @@ app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 app.config['suppress_callback_exceptions']=True
 
-mapbox_access_token = 'pk.eyJ1IjoidHl0ZWNob3J0eiIsImEiOiJjanN1emtuc2cwMXNhNDNuejdrMnN2aHYyIn0.kY0fOoozCTY-4IUzcLx22w'
+
 
 counties = gpd.read_file('./Data/Colorado_County_Boundaries.geojson')
 counties.sort_values(by=['US_FIPS'])
@@ -23,8 +23,8 @@ pop_rev = gpd.read_file('./Data/per_cap_joined.geojson')
 per_rev = pd.read_csv('./Data/revenue_pop_data.csv',header=0, delim_whitespace=False)
 rpd = pop_rev.set_index('COUNTY', drop=False)
 df = gpd.read_file('./Data/cannabis_business.geojson')
-df_revenue = pd.read_csv('https://data.colorado.gov/resource/j7a3-jgd3.csv?$limit=5000&$$app_token=Uwt19jYZWTc9a2UPr7tB6x2k1')
-df_biz = pd.read_csv('https://data.colorado.gov/resource/sqs8-2un5.csv?$select=Category,License_No,Month,Year&$limit=166000&$$app_token=Uwt19jYZWTc9a2UPr7tB6x2k1')
+df_revenue = pd.read_csv('https://data.colorado.gov/resource/j7a3-jgd3.csv?$limit=5000&$$app_token='+ os.environ.get("state_data_token"))
+df_biz = pd.read_csv('https://data.colorado.gov/resource/sqs8-2un5.csv?$select=Category,License_No,Month,Year&$limit=166000&$$app_token='+ os.environ.get("state_data_token"))
 
 
 df_revenue['county'] = df_revenue['county'].str.upper()
@@ -346,7 +346,7 @@ def update_figure(value,year):
         )]
     layout = dict(
             mapbox = dict(
-                accesstoken = mapbox_access_token,
+                accesstoken = os.environ.get('mapbox_token'),
                 center = dict(lat=39, lon=-105.5),
                 zoom = 6.25,
                 style = 'light',
@@ -497,7 +497,7 @@ def update_figure_a(value,selected_values):
     
     layout = dict(
             mapbox = dict(
-                accesstoken = mapbox_access_token,
+                accesstoken = os.environ.get('mapbox_token'),
                 center = dict(lat=39, lon=-105.5),
                 zoom = 6.5,
                 style = 'light'
