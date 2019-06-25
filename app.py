@@ -42,7 +42,7 @@ sources=[]
 for feat in topoJSON['features']: 
         sources.append({"type": "FeatureCollection", 'features': [feat]})
 
-dfinal = df_revenue.merge(counties, how='inner', left_on='county', right_on='COUNTY')
+# dfinal = df_revenue.merge(counties, how='inner', left_on='county', right_on='COUNTY')
 
 county_revenue_df = df_revenue.groupby(['county', 'year'])
 crat = county_revenue_df.sum()
@@ -380,7 +380,7 @@ def create_rev_bar(year,value):
                 yaxis = go.layout.YAxis(
                     automargin = True,
                 ),
-                title = 'License Count for {}'.format(year)
+                title = 'License Count By Type For {}'.format(year)
             ),
         }
 
