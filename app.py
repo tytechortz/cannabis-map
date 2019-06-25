@@ -10,6 +10,7 @@ import numpy as np
 from dash.dependencies import Input, Output, State
 import dash_daq as daq
 import os
+import config
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 
@@ -23,8 +24,8 @@ pop_rev = gpd.read_file('./Data/per_cap_joined.geojson')
 per_rev = pd.read_csv('./Data/revenue_pop_data.csv',header=0, delim_whitespace=False)
 rpd = pop_rev.set_index('COUNTY', drop=False)
 df = gpd.read_file('./Data/cannabis_business.geojson')
-df_revenue = pd.read_csv('https://data.colorado.gov/resource/j7a3-jgd3.csv?$limit=5000&$$app_token='+ os.environ.get("state_data_token"))
-df_biz = pd.read_csv('https://data.colorado.gov/resource/sqs8-2un5.csv?$select=Category,License_No,Month,Year&$limit=166000&$$app_token='+ os.environ.get("state_data_token"))
+df_revenue = pd.read_csv('https://data.colorado.gov/resource/j7a3-jgd3.csv?$limit=5000&$$app_token='+ config.state_data_token)
+df_biz = pd.read_csv('https://data.colorado.gov/resource/sqs8-2un5.csv?$select=Category,License_No,Month,Year&$limit=166000&$$app_token='+ config.state_data_token)
 
 
 df_revenue['county'] = df_revenue['county'].str.upper()
@@ -346,7 +347,7 @@ def update_figure(value,year):
         )]
     layout = dict(
             mapbox = dict(
-                accesstoken = os.environ.get('mapbox_token'),
+                accesstoken = config.mapbox_token,
                 center = dict(lat=39, lon=-105.5),
                 zoom = 6.25,
                 style = 'light',
@@ -497,7 +498,7 @@ def update_figure_a(value,selected_values):
     
     layout = dict(
             mapbox = dict(
-                accesstoken = os.environ.get('mapbox_token'),
+                accesstoken = config.mapbox_token,
                 center = dict(lat=39, lon=-105.5),
                 zoom = 6.5,
                 style = 'light'
