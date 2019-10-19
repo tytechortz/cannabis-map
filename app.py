@@ -81,8 +81,6 @@ for i in df['Category'].unique():
 
 categories_table = pd.DataFrame({'Category':df['Category'].unique()})
 
-
-
 colors = dict(zip(categories, color_list))
 
 body = dbc.Container([
@@ -570,4 +568,4 @@ def update_text_f(hoverData,value):
 app.layout = html.Div(body)
 
 if __name__ == '__main__':
-    app.run_server(port=8050, debug=True)
+    app.run_server(port=8050, debug=False)
