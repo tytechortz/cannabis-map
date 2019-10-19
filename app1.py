@@ -12,8 +12,7 @@ import dash_daq as daq
 import os
 import config
 
-app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
-
+app = dash.Dash(__name__)
 app.config['suppress_callback_exceptions']=True
 
 counties = gpd.read_file('./Data/Colorado_County_Boundaries.geojson')
@@ -103,8 +102,8 @@ def get_layout():
                 html.Div([
                     daq.ToggleSwitch(
                         id='rev-biz-switch',
-                        value=True, 
-                    ),
+                        value=False
+                    )
                 ],
                     className='two columns'
                 ),
@@ -119,58 +118,87 @@ def get_layout():
             html.Div([
                 html.Div([
                     html.Div(
-                        id='map'
+                        id='rev-map-and-year'
                     ),
                 ],
                     className='eight columns'
+                ),
+                html.Div([
+                    html.Div(id='rev-map-year-slider')
+                ],
+                    className='four columns'
                 ),
             ],
                 className='row'
             ),
             html.Div([
-                html.Div(id='rev-map-year-slider')
+                # html.Div([
+                #     html.Div(id='rev-map-year-slider')
+                # ],
+                #     className='four columns'
+                # ),
+                
             ],
                 className='row'
             ),
         ]
     )
 
-app = dash.Dash(__name__)
+# app = dash.Dash(__name__)
 app.layout = get_layout
-app.config['suppress_callback_exceptions']=True
+# app.config['suppress_callback_exceptions']=True
+
 
 @app.callback(
-    Output('map', 'children'),
+    Output('rev-map-and-year', 'children'),
     [Input('rev-biz-switch', 'value')])
 def display_graph(value):
     print(value)
-    if value == True:
-        return dcc.Graph(id='rev-map')
-    elif value == False:
-        return dcc.Graph(id='biz-map')
-
-@app.callback(
-            Output('rev-map-year-slider', 'children'),
-            [Input('rev-biz-switch', 'value')])         
-def update_figure(value):
-    if value == True:
-        return dcc.Slider(
-                    id='year-selector',
+    if value == False:
+        return html.Div([
+            html.Div([
+                dcc.Graph(id='rev-map'),
+            ]),
+            html.Div([
+                dcc.Slider(
+                    id='rev-map-year',
                         min = 2014,
                         max = 2018,
                         marks={i: '{}'.format(i) for i in range(2014,2019)}, 
                         step = 1,
                         value = 2014,
-                        vertical = False,
+                        # vertical = False,
                         updatemode = 'drag'
-                    )
+                    )   
+            ])
+        ]) 
+        
+        
+
+    elif value == True:
+        return dcc.Graph(id='biz-map')
+
+# @app.callback(
+#             Output('rev-map-year-slider', 'children'),
+#             [Input('rev-biz-switch', 'value')])         
+# def update_figure(value):
+#     if value == False:
+#         return dcc.Slider(
+#                     id='rev-map-year',
+#                         min = 2014,
+#                         max = 2018,
+#                         marks={i: '{}'.format(i) for i in range(2014,2019)}, 
+#                         step = 1,
+#                         value = 2014,
+#                         # vertical = False,
+#                         updatemode = 'drag'
+#                     )
 
 @app.callback(
             Output('rev-map', 'figure'),
-            [Input('rev-biz-switch', 'value'),
-            Input('year-selector', 'value')])         
-def update_figure(value,year):
-    
+            [Input('rev-map-year', 'value')])         
+def update_rev_map(year):
+    print(year)
     year1 = str(year)
     year2 = year1[-2:]
     rpd_s = rpd.sort_values(by=['RId2'])
@@ -222,72 +250,72 @@ def update_figure(value,year):
     layout = dict(
             mapbox = dict(
                 accesstoken = config.mapbox_token,
-                center = dict(lat=39, lon=-105.5),
-                zoom = 6.25,
+                center = dict(lat=39.05, lon=-105.5),
+                zoom = 6,
                 style = 'light',
                 layers = layers
             ),
             hovermode = 'closest',
-            height = 575,
+            height = 475,
             margin = dict(r=0, l=0, t=0, b=0)
             )
     fig = dict(data=data, layout=layout)
     return fig
 
-@app.callback(
-            Output('biz-map', 'figure'),
-            [Input('rev-biz-switch', 'value'),
-            Input('categories', 'value')])
-def update_figure_a(value,selected_values):
+# @app.callback(
+#             Output('biz-map', 'figure'),
+#             [Input('rev-biz-switch', 'value'),
+#             Input('categories', 'value')])
+# def update_figure_a(value,selected_values):
     
-    rpd_s = rpd.sort_values(by=['RId2'])
+#     rpd_s = rpd.sort_values(by=['RId2'])
   
-    rpd_s = rpd_s.apply(pd.to_numeric, errors='ignore')
-    rpd_s = rpd_s.fillna(0)
+#     rpd_s = rpd_s.apply(pd.to_numeric, errors='ignore')
+#     rpd_s = rpd_s.fillna(0)
 
-    data = [dict(
-            type = 'scattermapbox',
-        )]
+#     data = [dict(
+#             type = 'scattermapbox',
+#         )]
 
-    df1 = pd.DataFrame(df.loc[df['Category'] == selected_values])
-    if selected_values == 'all':
-            filtered_df = df
-            data = [dict(
-                lat = df['lat'],
-                lon = df['long'],
-                text = text,
-                hoverinfo = 'text',
-                type = 'scattermapbox',
-                customdata = df['uid'],
-                marker = dict(size=10,color=df['color'],opacity=.6)
-            )]
-    else: 
-            filtered_df = df1
-            data = [dict(
-                lat = filtered_df['lat'],
-                lon = filtered_df['long'],
-                text = text,
-                hoverinfo = 'text',
-                type = 'scattermapbox',
-                customdata = df1['uid'],
-                marker = dict(size=7,color=df1['color'],opacity=.6)
-            )]
+#     df1 = pd.DataFrame(df.loc[df['Category'] == selected_values])
+#     if selected_values == 'all':
+#             filtered_df = df
+#             data = [dict(
+#                 lat = df['lat'],
+#                 lon = df['long'],
+#                 text = text,
+#                 hoverinfo = 'text',
+#                 type = 'scattermapbox',
+#                 customdata = df['uid'],
+#                 marker = dict(size=10,color=df['color'],opacity=.6)
+#             )]
+#     else: 
+#             filtered_df = df1
+#             data = [dict(
+#                 lat = filtered_df['lat'],
+#                 lon = filtered_df['long'],
+#                 text = text,
+#                 hoverinfo = 'text',
+#                 type = 'scattermapbox',
+#                 customdata = df1['uid'],
+#                 marker = dict(size=7,color=df1['color'],opacity=.6)
+#             )]
     
-    layout = dict(
-            mapbox = dict(
-                accesstoken = config.mapbox_token,
-                center = dict(lat=39, lon=-105.5),
-                zoom = 6.5,
-                style = 'light'
-            ),
-            hovermode = 'closest',
-            height = 700,
-            margin = dict(r=0, l=0, t=0, b=0),
-            clickmode = 'event+select'
-        )  
+#     layout = dict(
+#             mapbox = dict(
+#                 accesstoken = config.mapbox_token,
+#                 center = dict(lat=39, lon=-105.5),
+#                 zoom = 6.5,
+#                 style = 'light'
+#             ),
+#             hovermode = 'closest',
+#             height = 575,
+#             margin = dict(r=0, l=0, t=0, b=0),
+#             clickmode = 'event+select'
+#         )  
   
-    fig = dict(data=data, layout=layout)
-    return fig
+#     fig = dict(data=data, layout=layout)
+#     return fig
 
 
 if __name__ == "__main__":
