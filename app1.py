@@ -121,23 +121,32 @@ def get_layout():
                         id='rev-map-and-year'
                     ),
                 ],
-                    className='eight columns'
+                    className='seven columns'
                 ),
                 html.Div([
-                    html.Div(id='rev-map-year-slider')
+                    html.Div(
+                        id='rev-bar-and-markdown'
+                    ),
                 ],
-                    className='four columns'
+                    className='five columns'
                 ),
             ],
                 className='row'
             ),
             html.Div([
-                # html.Div([
-                #     html.Div(id='rev-map-year-slider')
-                # ],
-                #     className='four columns'
-                # ),
+                html.Div([
+                    html.Div(
+                    id='rev-radio'
+                ),
+                ],
+                    className='twelve columns'
+                ),
                 
+            ],
+                className='row'
+            ),
+            html.Div([
+
             ],
                 className='row'
             ),
@@ -148,11 +157,31 @@ def get_layout():
 app.layout = get_layout
 # app.config['suppress_callback_exceptions']=True
 
+@app.callback(
+    Output('rev-radio', 'children'),
+    [Input('rev-biz-switch', 'value')])
+def display_graph(value):
+    if value == False:
+        return html.Div([
+            dcc.RadioItems(id='rev', options=[
+                {'label':'Total Sales', 'value':'TOTAL'},
+                {'label':'Rec Sales','value':'REC'},
+                {'label':'Med Sales','value':'MED'},
+            ],
+            labelStyle={'display':'inline-block', 'margin': 0, 'padding': 1},
+            value = 'TOTAL',
+            style = {'text-align': 'center'}
+            ),
+        ],
+            className='round1'
+        ),
+        
+
 
 @app.callback(
     Output('rev-map-and-year', 'children'),
     [Input('rev-biz-switch', 'value')])
-def display_graph(value):
+def display_rev_map_year(value):
     print(value)
     if value == False:
         return html.Div([
@@ -172,27 +201,60 @@ def display_graph(value):
                     )   
             ])
         ]) 
-        
-        
 
-    elif value == True:
-        return dcc.Graph(id='biz-map')
+    # elif value == True:
+    #     return html.Div([
+    #         html.Div([
+    #             dcc.Graph(id='biz-map'),
+    #         ]),
+    #     ])
 
-# @app.callback(
-#             Output('rev-map-year-slider', 'children'),
-#             [Input('rev-biz-switch', 'value')])         
-# def update_figure(value):
-#     if value == False:
-#         return dcc.Slider(
-#                     id='rev-map-year',
-#                         min = 2014,
-#                         max = 2018,
-#                         marks={i: '{}'.format(i) for i in range(2014,2019)}, 
-#                         step = 1,
-#                         value = 2014,
-#                         # vertical = False,
-#                         updatemode = 'drag'
-#                     )
+@app.callback(
+        Output('rev-bar-and-markdown', 'children'),
+        [Input('rev-biz-switch', 'value')])
+def create_rev_bar(value):
+    if value == False:
+        return html.Div([
+            html.Div([
+                dcc.Graph(id='rev-bar'),
+            ]),
+            html.Div([
+                dcc.Markdown('''
+                    Click on counties and use year slider to see annual county revenue data displayed in 
+                    graphs.  Green counties have at least one form of legalized cannabis, and green circles 
+                    centered on counties show relative per capita cannabis revenue for the selected year.  Select 
+                    sales radio buttons to display that type of revenue graphically below.
+                    '''),   
+            ])
+        ])
+
+@app.callback(
+            Output('rev-bar', 'figure'),
+            [Input('rev-map', 'clickData'),
+            Input('rev-biz-switch', 'value')])         
+def create_rev_bar_a(clickData,value):
+    print(clickData)
+    filtered_county = crat['county'] ==  clickData['points'][-1]['text']
+    selected_county = crat[filtered_county]
+    print(selected_county)
+
+    traces = []
+    trace1 = [
+        {'x': selected_county['year'], 'y': selected_county['med_sales'], 'type': 'bar', 'name': 'Med Sales' },
+        {'x': selected_county['year'], 'y': selected_county['rec_sales'], 'type': 'bar', 'name': 'Rec Sales' },
+        {'x': selected_county['year'], 'y': selected_county['tot_sales'], 'type': 'bar', 'name': 'Tot Sales' },
+    ]
+    traces.append(trace1)
+    if value == False:
+        return {
+            'data': trace1,
+            'layout': go.Layout(
+                height = 390,
+                title = '{} COUNTY REVENUE BY YEAR'.format(clickData['points'][-1]['text'])
+            ),
+        }
+    
+
 
 @app.callback(
             Output('rev-map', 'figure'),
