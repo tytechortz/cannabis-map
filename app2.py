@@ -94,6 +94,28 @@ def get_layout():
             ],
                 className='row'
             ),
+            html.Div([
+                html.Div([
+                    html.H6('Business Data',style={'text-align':'right'})
+                ],
+                    className='five columns'
+                ),
+                html.Div([
+                    daq.ToggleSwitch(
+                        id='rev-biz-switch',
+                        value=True
+                    )
+                ],
+                    className='two columns'
+                ),
+                html.Div([
+                    html.H6('Revenue Data', style={'text-align':'left'})
+                ],
+                    className='five columns'
+                ),
+            ],
+                className='row'
+            ),
         ]
     )
 
