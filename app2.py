@@ -266,6 +266,24 @@ def biz_layout(value):
                                 ],
                                     className='row'
                                 ),
+                                html.Div([
+                                    html.Div([
+                                        html.Div(id='city')
+                                    ],
+                                        className='twelve columns'
+                                    ),
+                                ],
+                                    className='row'
+                                ),
+                                html.Div([
+                                    html.Div([
+                                        html.Div(id='address')
+                                    ],
+                                        className='twelve columns'
+                                    ),
+                                ],
+                                    className='row'
+                                ),
                             ],
                                 className='round1'
                             ),
@@ -306,6 +324,24 @@ def biz_layout(value):
             #     className='row'
             # ),
         ])
+
+@app.callback(
+    Output('address', 'children'),
+    [Input('biz-map', 'hoverData'),
+    Input('rev-biz-switch', 'value')])
+def update_text_e(hoverData,value):
+    if value == False:
+        s = df[df['uid'] == hoverData['points'][0]['customdata']]
+        return  'Address: {}'.format(s.iloc[0]['Street_Address'])
+
+@app.callback(
+    Output('city', 'children'),
+    [Input('biz-map', 'hoverData'),
+    Input('rev-biz-switch', 'value')])
+def update_text_d(hoverData,value):
+    if value == False:
+        s = df[df['uid'] == hoverData['points'][0]['customdata']]
+        return  'City: {}'.format(s.iloc[0]['City'])
 
 @app.callback(
     Output('biz-type', 'children'),
