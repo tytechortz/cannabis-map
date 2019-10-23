@@ -606,7 +606,7 @@ def update_figure_a(value, selected_values):
             mapbox = dict(
                 accesstoken = config.mapbox_token,
                 center = dict(lat=39, lon=-105.5),
-                zoom = 5.85,
+                zoom = 5.6,
                 style = 'light'
             ),
             hovermode = 'closest',
