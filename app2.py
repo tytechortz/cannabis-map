@@ -129,11 +129,19 @@ def revenue_layout(value):
         return html.Div([
             html.Div([
                 html.Div([
-                    html.Div('hello world', style={'text-align':'center'})
+                    dcc.Graph(id='revenue-map')
                 ],
                     className='seven columns'
                 ),
-                
+            ],
+                className='row'
+            ),
+            html.Div([
+                html.Div([
+                    html.Div(id='year-slider')
+                ],
+                    className='seven columns'
+                ),
             ],
                 className='row'
             ),
@@ -142,7 +150,7 @@ def revenue_layout(value):
 @app.callback(
     Output('biz', 'children'),
     [Input('rev-biz-switch', 'value')])
-def revenue_layout(value):
+def biz_layout(value):
     if value == False:
         return html.Div([
             html.Div([
@@ -157,7 +165,89 @@ def revenue_layout(value):
             ),
         ])
 
+@app.callback(
+    Output('year-slider', 'children'),
+    [Input('rev-biz-switch', 'value')])
+def display_rev_map_year(value): 
+    if value == True:
+        return html.Div([
+                dcc.Slider(
+                    id='year',
+                        min = 2014,
+                        max = 2018,
+                        marks={i: '{}'.format(i) for i in range(2014,2019)}, 
+                        step = 1,
+                        value = 2014,
+                        # vertical = False,
+                        updatemode = 'drag'
+                    )   
+            ]) 
 
+@app.callback(
+    Output('revenue-map', 'figure'),
+    [Input('year', 'value')])         
+def update_rev_map(year):
+    print(year)
+    year1 = str(year)
+    year2 = year1[-2:]
+    rpd_s = rpd.sort_values(by=['RId2'])
+  
+    rpd_s = rpd_s.apply(pd.to_numeric, errors='ignore')
+    rpd_s = rpd_s.fillna(0)
+
+    counties_s = counties.sort_values(by=['US_FIPS'])
+  
+    selected_med_rev = rpd_s.loc[ : ,'Rper_cap_med_'+year2+'']
+    selected_rec_rev = rpd_s.loc[ : ,'Rper_cap_rec_'+year2+'']
+  
+    df_smr = pd.DataFrame({'name': selected_med_rev.index, 'med_rev': selected_med_rev.values, 'rec_rev': 
+            selected_rec_rev.values, 'tot_rev': selected_med_rev.values + selected_rec_rev.values,'CENT_LAT':counties_s['CENT_LAT'],
+                'CENT_LON':counties_s['CENT_LONG'], 'marker_size':(selected_med_rev.values + selected_rec_rev.values)*(.3**3)})
+
+    df_year = df_revenue.loc[df_revenue['year'] == year]
+ 
+    df_year_filtered = df_year.loc[df_year['color'] == 'red']
+
+    color_counties = df_year_filtered['county'].unique().tolist()
+    
+    def fill_color():
+        for k in range(len(sources)):
+            if sources[k]['features'][0]['properties']['COUNTY'] in color_counties:
+                sources[k]['features'][0]['properties']['COLOR'] = 'lightgreen'
+            else: sources[k]['features'][0]['properties']['COLOR'] = 'white'                 
+    fill_color()
+
+    
+    layers=[dict(sourcetype = 'json',
+        source =sources[k],
+        below="water", 
+        type = 'fill',
+        color = sources[k]['features'][0]['properties']['COLOR'],
+        opacity = 0.5
+        ) for k in range(len(sources))]
+    data = [dict(
+        lat = df_smr['CENT_LAT'],
+        lon = df_smr['CENT_LON'],
+        text = df_smr['name'],
+        hoverinfo = 'text',
+        type = 'scattermapbox',
+        customdata = df['uid'],
+        marker = dict(size=df_smr['marker_size'],color='forestgreen',opacity=.5),
+        )]
+    layout = dict(
+            mapbox = dict(
+                accesstoken = config.mapbox_token,
+                center = dict(lat=39.05, lon=-105.5),
+                zoom = 6,
+                style = 'light',
+                layers = layers
+            ),
+            hovermode = 'closest',
+            height = 475,
+            margin = dict(r=0, l=0, t=0, b=0)
+            )
+    fig = dict(data=data, layout=layout)
+    return fig
 
 
 app.layout = get_layout
