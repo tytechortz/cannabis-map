@@ -116,8 +116,47 @@ def get_layout():
             ],
                 className='row'
             ),
+            html.Div(id='revenue'),
+            html.Div(id='biz')
         ]
     )
+
+@app.callback(
+    Output('revenue', 'children'),
+    [Input('rev-biz-switch', 'value')])
+def revenue_layout(value):
+    if value == True:
+        return html.Div([
+            html.Div([
+                html.Div([
+                    html.Div('hello world', style={'text-align':'center'})
+                ],
+                    className='seven columns'
+                ),
+                
+            ],
+                className='row'
+            ),
+        ])
+
+@app.callback(
+    Output('biz', 'children'),
+    [Input('rev-biz-switch', 'value')])
+def revenue_layout(value):
+    if value == False:
+        return html.Div([
+            html.Div([
+                html.Div([
+                    html.Div('goodbye world', style={'text-align':'center'})
+                ],
+                    className='seven columns'
+                ),
+                
+            ],
+                className='row'
+            ),
+        ])
+
 
 
 
