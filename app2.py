@@ -129,7 +129,86 @@ def revenue_layout(value):
         return html.Div([
             html.Div([
                 html.Div([
-                    dcc.Graph(id='revenue-map')
+                    html.Div([
+                        dcc.Graph(id='revenue-map')
+                    ],
+                        className='six columns'
+                    ),
+                    html.Div([
+                        dcc.Graph(id='rev-bar')
+                    ],
+                        className='five columns'
+                    ),
+                    html.Div([
+                        html.Div(id='instructions')
+                    ],
+                        className='five columns'
+                    ),
+                ],
+                    className='twelve columns'
+                ),
+                    
+            ],
+                className='row'
+            ),
+            html.Div([
+                html.Div([
+                    html.Div(id='year-slider')
+                ],
+                    className='six columns'
+                ),
+                html.Div([
+                    html.Div(id='rev-radio')
+                ],
+                    className='six columns'
+                ),
+            ],
+                className='row'
+            ),
+        ]),
+        
+@app.callback(
+    Output('rev-radio', 'children'),
+    [Input('rev-biz-switch', 'value')])
+def display_graph(value):
+    if value == True:
+        return html.Div([
+            dcc.RadioItems(id='rev', options=[
+                {'label':'Total Sales', 'value':'TOTAL'},
+                {'label':'Rec Sales','value':'REC'},
+                {'label':'Med Sales','value':'MED'},
+            ],
+            labelStyle={'display':'inline-block', 'margin': 0, 'padding': 1},
+            value = 'TOTAL',
+            style = {'text-align': 'center'}
+            ),
+        ],
+            # className='round1'
+        ),
+
+@app.callback(
+    Output('instructions', 'children'),
+    [Input('rev-biz-switch', 'value')])
+def instructions(value):
+    if value == True:
+        return html.Div([
+            dcc.Markdown('''
+            Click on counties and use year slider to see annual county
+            revenue data displayed in graphs.  Green counties have at
+            least one form of legalized cannabis, green circles show 
+            relative per capita cannabis revenue for selected year. 
+            Select sales radio buttons to display revenue graphically below.''')
+        ])
+
+@app.callback(
+    Output('biz', 'children'),
+    [Input('rev-biz-switch', 'value')])
+def biz_layout(value):
+    if value == False:
+        return html.Div([
+            html.Div([
+                html.Div([
+                    dcc.Graph(id='biz-map')
                 ],
                     className='seven columns'
                 ),
@@ -148,28 +227,46 @@ def revenue_layout(value):
         ])
 
 @app.callback(
-    Output('biz', 'children'),
-    [Input('rev-biz-switch', 'value')])
-def biz_layout(value):
-    if value == False:
-        return html.Div([
-            html.Div([
-                html.Div([
-                    html.Div('goodbye world', style={'text-align':'center'})
-                ],
-                    className='seven columns'
-                ),
-                
-            ],
-                className='row'
+            Output('rev-bar', 'figure'),
+            [Input('revenue-map', 'clickData'),
+            Input('rev-biz-switch', 'value')])         
+def create_rev_bar_a(clickData,value):
+    print(clickData)
+    filtered_county = crat['county'] ==  clickData['points'][-1]['text']
+    # print(filtered_county)
+    selected_county = crat[filtered_county]
+    # denver_county = crat['county'] == 'DENVER'
+    # county1 = crat[denver_county]
+    # print(county1)
+    # print(selected_county)
+
+    traces = []
+    # trace = [
+    #     {'x': county1['year'], 'y': county1['med_sales'], 'type': 'bar', 'name': 'Med Sales' },
+    #     {'x': county1['year'], 'y': county1['rec_sales'], 'type': 'bar', 'name': 'Rec Sales' },
+    #     {'x': county1['year'], 'y': county1['tot_sales'], 'type': 'bar', 'name': 'Tot Sales' },
+    # ]
+    trace1 = [
+        {'x': selected_county['year'], 'y': selected_county['med_sales'], 'type': 'bar', 'name': 'Med Sales' },
+        {'x': selected_county['year'], 'y': selected_county['rec_sales'], 'type': 'bar', 'name': 'Rec Sales' },
+        {'x': selected_county['year'], 'y': selected_county['tot_sales'], 'type': 'bar', 'name': 'Tot Sales' },
+    ]
+
+    
+    if value == True:
+        return {
+            'data': trace1,
+            'layout': go.Layout(
+                height = 350,
+                title = '{} COUNTY REVENUE BY YEAR'.format(clickData['points'][-1]['text'])
             ),
-        ])
+        }
 
 @app.callback(
     Output('year-slider', 'children'),
     [Input('rev-biz-switch', 'value')])
 def display_rev_map_year(value): 
-    if value == True:
+    # if value == True:
         return html.Div([
                 dcc.Slider(
                     id='year',
@@ -238,14 +335,69 @@ def update_rev_map(year):
             mapbox = dict(
                 accesstoken = config.mapbox_token,
                 center = dict(lat=39.05, lon=-105.5),
-                zoom = 6,
+                zoom = 5.85,
                 style = 'light',
                 layers = layers
             ),
             hovermode = 'closest',
-            height = 475,
+            height = 450,
             margin = dict(r=0, l=0, t=0, b=0)
             )
+    fig = dict(data=data, layout=layout)
+    return fig
+
+@app.callback(
+            Output('biz-map', 'figure'),
+            [Input('rev-biz-switch', 'value'),
+            Input('categories', 'value')])
+def update_figure_a(value, selected_values):
+    
+    rpd_s = rpd.sort_values(by=['RId2'])
+  
+    rpd_s = rpd_s.apply(pd.to_numeric, errors='ignore')
+    rpd_s = rpd_s.fillna(0)
+
+    data = [dict(
+            type = 'scattermapbox',
+        )]
+
+    df1 = pd.DataFrame(df.loc[df['Category'] == selected_values])
+    if selected_values == 'all':
+            filtered_df = df
+            data = [dict(
+                lat = df['lat'],
+                lon = df['long'],
+                text = text,
+                hoverinfo = 'text',
+                type = 'scattermapbox',
+                customdata = df['uid'],
+                marker = dict(size=10,color=df['color'],opacity=.6)
+            )]
+    else: 
+            filtered_df = df1
+            data = [dict(
+                lat = filtered_df['lat'],
+                lon = filtered_df['long'],
+                text = text,
+                hoverinfo = 'text',
+                type = 'scattermapbox',
+                customdata = df1['uid'],
+                marker = dict(size=7,color=df1['color'],opacity=.6)
+            )]
+    
+    layout = dict(
+            mapbox = dict(
+                accesstoken = config.mapbox_token,
+                center = dict(lat=39, lon=-105.5),
+                zoom = 6.5,
+                style = 'light'
+            ),
+            hovermode = 'closest',
+            height = 400,
+            margin = dict(r=0, l=0, t=0, b=0),
+            clickmode = 'event+select'
+        )  
+  
     fig = dict(data=data, layout=layout)
     return fig
 
