@@ -170,7 +170,7 @@ def revenue_layout(value):
 @app.callback(
     Output('rev-radio', 'children'),
     [Input('rev-biz-switch', 'value')])
-def display_graph(value):
+def display_rev_radio(value):
     if value == True:
         return html.Div([
             dcc.RadioItems(id='rev', options=[
@@ -210,21 +210,56 @@ def biz_layout(value):
                 html.Div([
                     dcc.Graph(id='biz-map')
                 ],
-                    className='seven columns'
+                    className='six columns'
                 ),
-            ],
-                className='row'
-            ),
-            html.Div([
                 html.Div([
-                    html.Div(id='year-slider')
+                    html.Div(id='biz-selector')
                 ],
-                    className='seven columns'
+                    className='six columns'
                 ),
             ],
                 className='row'
             ),
+        #     html.Div([
+        #         html.Div([
+        #             html.Div(id='biz-selector')
+        #         ],
+        #             className='six columns'
+        #         ),
+        #     ],
+        #         className='row'
+        #     ),
         ])
+
+@app.callback(
+    Output('biz-selector', 'children'),
+    [Input('rev-biz-switch', 'value')])
+def biz_selector(value):
+    if value == False:
+        return html.Div([
+            dcc.RadioItems(id='categories', options=[
+                        {'label':'All License Types', 'value':'all'},
+                        {'label':'','value':'MED Licensed Transporters'},
+                        {'label':'','value':'MED Licensed Center'},
+                        {'label':'','value':'MED Licensed Cultivator'},
+                        {'label':'','value':'MED Licensed Infused Product Manufacturer'},
+                        {'label':'','value':'MED Licensed R&D Cultivation'},
+                        {'label':'','value':'MED Licensed Retail Operator'},
+                        {'label':'','value':'MED Licensed Testing Facility'},
+                        {'label':'','value':'MED Licensed Retail Marijuana Product Manufacturer'},
+                        {'label':'','value':'MED Licensed Retail Cultivator'},
+                        {'label':'','value':'MED Licensed Retail Testing Facility'},
+                        {'label':'','value':'MED Licensed Retail Transporter'},
+                        {'label':'','value':'MED Licensed Retail Marijuana Store'},
+                    ],
+                    labelStyle={'display':'block', 'margin': 0, 'padding': 1},
+                    value = 'all'
+                    ),
+        ],
+            className='four columns'
+        ),
+
+
 
 @app.callback(
             Output('rev-bar', 'figure'),
