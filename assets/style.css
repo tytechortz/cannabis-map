@@ -133,7 +133,7 @@ Table of contents
   }
   .pretty_container2 {
     border-radius: 5px;
-    background-color: rgb(199, 70, 70);
+    background-color: rgb(255, 255, 255);
     margin: 5px;
     padding: 15px;
     position: relative;
@@ -535,7 +535,7 @@ body {
 .radio {
     background-color: lightgreen 
 }
-
+/*  */
 table {
     table-layout: fixed; 
     width: 100%;
@@ -544,7 +544,7 @@ table {
     font-family: sans-serif;
     font-size: 15px;
     padding-left: 0px;
-    opacity: .9 */
+    opacity: .9 
 }
 
 thead th:nth-child(1) {

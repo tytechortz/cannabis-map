@@ -208,28 +208,156 @@ def biz_layout(value):
         return html.Div([
             html.Div([
                 html.Div([
-                    dcc.Graph(id='biz-map')
+                    html.Div([
+                        dcc.Graph(id='biz-map')
+                    ],
+                        className='five columns'
+                    ),
+                    html.Div([
+                        html.Div([
+                            html.Div(id='biz-colors')
+                        ],
+                        className='five columns'
+                        ),
+                        html.Div([
+                            html.Div([
+                                html.Div(id='biz-selector')
+                            ],
+                            # className='pretty_container'
+                            ),  
+                        ],
+                            className='one column'
+                        ),
+                        html.Div([
+                            html.Div([
+                                html.Div([
+                                    html.Div([
+                                        html.H6('Business Info', style={'text-align': 'center'})
+                                    ],
+                                        className='twelve columns'
+                                    ),   
+                                ],
+                                    className='row'
+                                ),
+                                html.Div([
+                                    html.Div([
+                                        html.Div(id='lic-name')
+                                    ],
+                                        className='twelve columns'
+                                    ),
+                                ],
+                                    className='row'
+                                ),
+                                html.Div([
+                                    html.Div([
+                                        html.Div(id='biz-name')
+                                    ],
+                                        className='twelve columns'
+                                    ),
+                                ],
+                                    className='row'
+                                ),
+                                html.Div([
+                                    html.Div([
+                                        html.Div(id='biz-type')
+                                    ],
+                                        className='twelve columns'
+                                    ),
+                                ],
+                                    className='row'
+                                ),
+                            ],
+                                className='round1'
+                            ),
+                            
+                        ],
+                            className='six columns'
+                        ),
+                    ],
+                        className='row'
+                    ),
                 ],
-                    className='six columns'
+                    className='twelve columns'
                 ),
-                html.Div([
-                    html.Div(id='biz-selector')
-                ],
-                    className='six columns'
-                ),
-            ],
-                className='row'
-            ),
-        #     html.Div([
-        #         html.Div([
-        #             html.Div(id='biz-selector')
-        #         ],
-        #             className='six columns'
-        #         ),
-        #     ],
-        #         className='row'
-        #     ),
+        ],
+            className='row'
+        ),
+            # html.Div([
+            #     html.Div([
+            #             html.Div([
+            #                 html.Div([
+            #                     html.H6('Business Info', style={'text-align': 'center'})
+            #                 ],
+            #                     className='six columns'
+            #                 ),
+                            
+            #             ],
+            #                 className='row'
+            #             ),
+            #             html.Div([
+            #                 html.H6('Name', style={'text-align': 'center'})
+            #             ],
+            #                 className='row'
+            #             ),
+            #     ],
+            #         className='six columns'
+            #     ),
+            # ],
+            #     className='row'
+            # ),
         ])
+
+@app.callback(
+    Output('biz-type', 'children'),
+    [Input('biz-map', 'hoverData'),
+    Input('rev-biz-switch', 'value')])
+def update_text_c(hoverData,value):
+    if value == False:
+        s = df[df['uid'] == hoverData['points'][0]['customdata']]
+        return  'Business Type: {}'.format(s.iloc[0]['Category'][13:])
+
+@app.callback(
+    Output('lic-name', 'children'),
+    [Input('biz-map', 'hoverData'),
+    Input('rev-biz-switch', 'value')])
+def update_text_a(hoverData,value):
+    if value == False:
+        s = df[df['uid'] == hoverData['points'][0]['customdata']]
+        return  'Licensee: {}'.format(s.iloc[0]['Licensee'])
+
+@app.callback(
+    Output('biz-name', 'children'),
+    [Input('biz-map', 'hoverData'),
+    Input('rev-biz-switch', 'value')])
+def update_text_b(hoverData,value):
+    if value == False:
+        s = df[df['uid'] == hoverData['points'][0]['customdata']]
+        return  'Business: {}'.format(s.iloc[0]['DBA'])
+
+@app.callback(
+    Output('biz-colors', 'children'),
+    [Input('rev-biz-switch', 'value')])
+def biz_colors(value):
+    if value == False:
+        return html.Div([
+                html.Table ([
+                    html.Tr(html.Div('All License Types', id='lics-num9', style={'height':25,'font-size':17.5})),
+                    html.Tr(html.Div('Transporters', id='lics-num10', style={'font-size':17.5})),
+                    html.Tr(html.Div('Center', id='lics-num11', style={'font-size':17.5})),
+                    html.Tr(html.Div('Cultivator', id='lics-num12', style={'height':25,'font-size':17.5})),
+                    html.Tr(html.Div('Infused Product Mfg.', id='lics-num13', style={'height':25,'font-size':17.5})),
+                    html.Tr(html.Div('R&D Cultivation', id='lics-num1', style={'height':25,'font-size':17.5})),
+                    html.Tr(html.Div('Retail Operator', id='lics-num2', style={'height':25,'font-size':17.5})),
+                    html.Tr(html.Div('Testing Facility', id='lics-num3', style={'height':25,'font-size':17.5})),
+                    html.Tr(html.Div('Retail Marijuana Product Mfg.', id='lics-num4', style={'height':25,'font-size':17.5})),
+                    html.Tr(html.Div('Retail Cultivator', id='lics-num5', style={'height':25,'font-size':17.5})),
+                    html.Tr(html.Div('Retail Testing Facility', id='lics-num6', style={'height':25,'font-size':17.5})),
+                    html.Tr(html.Div('Retail Transporter', id='lics-num7', style={'height':25,'font-size':17.5})),
+                    html.Tr(html.Div('Retail Marijuana Store', id='lics-num8', style={'font-size':17.5})),
+                ]),
+    ],
+        className='twelve columns'
+    ),
 
 @app.callback(
     Output('biz-selector', 'children'),
@@ -238,7 +366,7 @@ def biz_selector(value):
     if value == False:
         return html.Div([
             dcc.RadioItems(id='categories', options=[
-                        {'label':'All License Types', 'value':'all'},
+                        {'label':'', 'value':'all'},
                         {'label':'','value':'MED Licensed Transporters'},
                         {'label':'','value':'MED Licensed Center'},
                         {'label':'','value':'MED Licensed Cultivator'},
@@ -251,12 +379,12 @@ def biz_selector(value):
                         {'label':'','value':'MED Licensed Retail Testing Facility'},
                         {'label':'','value':'MED Licensed Retail Transporter'},
                         {'label':'','value':'MED Licensed Retail Marijuana Store'},
-                    ],
+                    ],        
                     labelStyle={'display':'block', 'margin': 0, 'padding': 1},
                     value = 'all'
                     ),
         ],
-            className='four columns'
+            # className='five columns'
         ),
 
 
@@ -424,11 +552,11 @@ def update_figure_a(value, selected_values):
             mapbox = dict(
                 accesstoken = config.mapbox_token,
                 center = dict(lat=39, lon=-105.5),
-                zoom = 6.5,
+                zoom = 5.85,
                 style = 'light'
             ),
             hovermode = 'closest',
-            height = 400,
+            height = 375,
             margin = dict(r=0, l=0, t=0, b=0),
             clickmode = 'event+select'
         )  

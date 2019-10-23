@@ -581,60 +581,60 @@ def update_rev_map(year):
     fig = dict(data=data, layout=layout)
     return fig
 
-# @app.callback(
-#             Output('biz-map', 'figure'),
-#             [Input('rev-biz-switch', 'value'),
-#             Input('categories', 'value')])
-# def update_figure_a(value,selected_values):
+@app.callback(
+            Output('biz-map', 'figure'),
+            [Input('rev-biz-switch', 'value'),
+            Input('categories', 'value')])
+def update_figure_a(value,selected_values):
     
-#     rpd_s = rpd.sort_values(by=['RId2'])
+    rpd_s = rpd.sort_values(by=['RId2'])
   
-#     rpd_s = rpd_s.apply(pd.to_numeric, errors='ignore')
-#     rpd_s = rpd_s.fillna(0)
+    rpd_s = rpd_s.apply(pd.to_numeric, errors='ignore')
+    rpd_s = rpd_s.fillna(0)
 
-#     data = [dict(
-#             type = 'scattermapbox',
-#         )]
+    data = [dict(
+            type = 'scattermapbox',
+        )]
 
-#     df1 = pd.DataFrame(df.loc[df['Category'] == selected_values])
-#     if selected_values == 'all':
-#             filtered_df = df
-#             data = [dict(
-#                 lat = df['lat'],
-#                 lon = df['long'],
-#                 text = text,
-#                 hoverinfo = 'text',
-#                 type = 'scattermapbox',
-#                 customdata = df['uid'],
-#                 marker = dict(size=10,color=df['color'],opacity=.6)
-#             )]
-#     else: 
-#             filtered_df = df1
-#             data = [dict(
-#                 lat = filtered_df['lat'],
-#                 lon = filtered_df['long'],
-#                 text = text,
-#                 hoverinfo = 'text',
-#                 type = 'scattermapbox',
-#                 customdata = df1['uid'],
-#                 marker = dict(size=7,color=df1['color'],opacity=.6)
-#             )]
+    df1 = pd.DataFrame(df.loc[df['Category'] == selected_values])
+    if selected_values == 'all':
+            filtered_df = df
+            data = [dict(
+                lat = df['lat'],
+                lon = df['long'],
+                text = text,
+                hoverinfo = 'text',
+                type = 'scattermapbox',
+                customdata = df['uid'],
+                marker = dict(size=10,color=df['color'],opacity=.6)
+            )]
+    else: 
+            filtered_df = df1
+            data = [dict(
+                lat = filtered_df['lat'],
+                lon = filtered_df['long'],
+                text = text,
+                hoverinfo = 'text',
+                type = 'scattermapbox',
+                customdata = df1['uid'],
+                marker = dict(size=7,color=df1['color'],opacity=.6)
+            )]
     
-#     layout = dict(
-#             mapbox = dict(
-#                 accesstoken = config.mapbox_token,
-#                 center = dict(lat=39, lon=-105.5),
-#                 zoom = 6.5,
-#                 style = 'light'
-#             ),
-#             hovermode = 'closest',
-#             height = 575,
-#             margin = dict(r=0, l=0, t=0, b=0),
-#             clickmode = 'event+select'
-#         )  
+    layout = dict(
+            mapbox = dict(
+                accesstoken = config.mapbox_token,
+                center = dict(lat=39, lon=-105.5),
+                zoom = 6.5,
+                style = 'light'
+            ),
+            hovermode = 'closest',
+            height = 575,
+            margin = dict(r=0, l=0, t=0, b=0),
+            clickmode = 'event+select'
+        )  
   
-#     fig = dict(data=data, layout=layout)
-#     return fig
+    fig = dict(data=data, layout=layout)
+    return fig
 
 
 if __name__ == "__main__":
