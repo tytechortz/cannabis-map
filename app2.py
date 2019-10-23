@@ -117,9 +117,93 @@ def get_layout():
                 className='row'
             ),
             html.Div(id='revenue'),
-            html.Div(id='biz')
+            html.Div(id='biz'),
+
+            html.Div(id='crat', style={'display': 'none'}),
         ]
     )
+
+@app.callback(
+    Output('crat', 'children'),
+    [Input('rev-biz-switch', 'value')])
+def clean_crat(value):
+    if value == True:
+        county_revenue_df = df_revenue.groupby(['county', 'year'])
+        crat = county_revenue_df.sum()
+        crat.reset_index(inplace=True)
+        return crat.to_json()
+
+@app.callback(
+            Output('biz-bar', 'figure'),
+            [Input('year', 'value'),
+            Input('rev-biz-switch', 'value')])
+def create_rev_bar(year,value):
+    biz_year = df_biz.loc[df_biz['Year'] == year]
+    biz_year_dec = biz_year[biz_year['Month'] == 12]
+
+    biz_type = biz_year_dec.groupby('Category')['License_No'].nunique()
+    biz_count = pd.DataFrame({'Category':biz_type.index, 'Value':biz_type.values})
+   
+    trace1 = [
+        {'y': biz_count['Category'], 'x': biz_count['Value'], 'type': 'bar','orientation':'h','name': '' },
+    ]
+    if value == True:
+        return {
+            'data': trace1,
+            'layout': go.Layout(
+                height = 400,
+                yaxis = go.layout.YAxis(
+                    automargin = True,
+                ),
+                title = 'License Count for {}'.format(year)
+            ),
+        }   
+
+@app.callback(
+            Output('rev-scatter', 'figure'),
+            [Input('rev', 'value'),
+            Input('revenue-map', 'clickData'),
+            Input('year','value'),
+            Input('rev-biz-switch', 'value')])
+def create_rev_scat(rev,clickData,year,value):
+  
+    year_df = df_revenue[df_revenue['year'] == year]
+    filtered_df = year_df[year_df['county'] == clickData['points'][-1]['text']]
+    labels = ['Feb', 'Apr', 'Jun','Aug','Oct','Dec']
+    tickvals = [2,4,6,8,10,12]
+    traces = []
+
+    if rev == 'TOTAL':
+            traces.append(go.Scatter(
+            x = filtered_df['month'],
+            y = filtered_df['tot_sales'],
+            name = rev,
+            line = {'color':'red'} 
+            ))
+    elif rev == 'REC':  
+            traces.append(go.Scatter(
+            x = filtered_df['month'],
+            y = filtered_df['rec_sales'],
+            name = rev,
+            line = {'color':'dodgerblue'}
+            ))
+    elif rev == 'MED':  
+            traces.append(go.Scatter(
+            x = filtered_df['month'],
+            y = filtered_df['med_sales'],
+            name = rev,
+            line = {'color':'black'}
+            ))
+    return {
+            'data': traces,
+            'layout': go.Layout(
+                xaxis = {'title': 'Month','tickvals':tickvals,'tickmode': 'array','ticktext': labels},
+                yaxis = {'title': 'Revenue'},
+                hovermode = 'closest',
+                title = '{} COUNTY {} REVENUE - {}'.format(clickData['points'][-1]['text'],rev,year),
+                height = 400,
+            )
+        }
 
 @app.callback(
     Output('revenue', 'children'),
@@ -162,10 +246,31 @@ def revenue_layout(value):
                 ],
                     className='six columns'
                 ),
+
+            ],
+                className='row'
+            ),
+            html.Div([
+                html.Div('-')
+                ],
+                    className='row'
+                ),
+            html.Div([
+                html.Div([
+                    dcc.Graph(id='rev-scatter')
+                ],
+                    className='six columns'
+                ),
+                html.Div([
+                    dcc.Graph(id='biz-bar')
+                ],
+                    className='six columns'
+                ),
             ],
                 className='row'
             ),
         ]),
+    
         
 @app.callback(
     Output('rev-radio', 'children'),
@@ -309,30 +414,7 @@ def biz_layout(value):
         ],
             className='row'
         ),
-            # html.Div([
-            #     html.Div([
-            #             html.Div([
-            #                 html.Div([
-            #                     html.H6('Business Info', style={'text-align': 'center'})
-            #                 ],
-            #                     className='six columns'
-            #                 ),
-                            
-            #             ],
-            #                 className='row'
-            #             ),
-            #             html.Div([
-            #                 html.H6('Name', style={'text-align': 'center'})
-            #             ],
-            #                 className='row'
-            #             ),
-            #     ],
-            #         className='six columns'
-            #     ),
-            # ],
-            #     className='row'
-            # ),
-        ])
+    ])
 
 @app.callback(
     Output('lic-num', 'children'),
@@ -340,6 +422,7 @@ def biz_layout(value):
     Input('rev-biz-switch', 'value')])
 def update_text_f(hoverData,value):
     if value == False:
+
         s = df[df['uid'] == hoverData['points'][0]['customdata']]
         return  'License Number: {}'.format(s.iloc[0]['License_No'])
 
@@ -441,35 +524,24 @@ def biz_selector(value):
             # className='five columns'
         ),
 
-
-
 @app.callback(
             Output('rev-bar', 'figure'),
             [Input('revenue-map', 'clickData'),
+            Input('crat', 'children'),
             Input('rev-biz-switch', 'value')])         
-def create_rev_bar_a(clickData,value):
+def create_rev_bar_a(clickData, crat, value):
     print(clickData)
+    crat = pd.read_json(crat)
     filtered_county = crat['county'] ==  clickData['points'][-1]['text']
     # print(filtered_county)
     selected_county = crat[filtered_county]
-    # denver_county = crat['county'] == 'DENVER'
-    # county1 = crat[denver_county]
-    # print(county1)
-    # print(selected_county)
 
-    traces = []
-    # trace = [
-    #     {'x': county1['year'], 'y': county1['med_sales'], 'type': 'bar', 'name': 'Med Sales' },
-    #     {'x': county1['year'], 'y': county1['rec_sales'], 'type': 'bar', 'name': 'Rec Sales' },
-    #     {'x': county1['year'], 'y': county1['tot_sales'], 'type': 'bar', 'name': 'Tot Sales' },
-    # ]
     trace1 = [
         {'x': selected_county['year'], 'y': selected_county['med_sales'], 'type': 'bar', 'name': 'Med Sales' },
         {'x': selected_county['year'], 'y': selected_county['rec_sales'], 'type': 'bar', 'name': 'Rec Sales' },
         {'x': selected_county['year'], 'y': selected_county['tot_sales'], 'type': 'bar', 'name': 'Tot Sales' },
     ]
 
-    
     if value == True:
         return {
             'data': trace1,
