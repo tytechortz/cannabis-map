@@ -284,6 +284,15 @@ def biz_layout(value):
                                 ],
                                     className='row'
                                 ),
+                                html.Div([
+                                    html.Div([
+                                        html.Div(id='lic-num')
+                                    ],
+                                        className='twelve columns'
+                                    ),
+                                ],
+                                    className='row'
+                                ),
                             ],
                                 className='round1'
                             ),
@@ -324,6 +333,15 @@ def biz_layout(value):
             #     className='row'
             # ),
         ])
+
+@app.callback(
+    Output('lic-num', 'children'),
+    [Input('biz-map', 'hoverData'),
+    Input('rev-biz-switch', 'value')])
+def update_text_f(hoverData,value):
+    if value == False:
+        s = df[df['uid'] == hoverData['points'][0]['customdata']]
+        return  'License Number: {}'.format(s.iloc[0]['License_No'])
 
 @app.callback(
     Output('address', 'children'),
