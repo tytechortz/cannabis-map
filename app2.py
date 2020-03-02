@@ -214,19 +214,14 @@ def revenue_layout(value):
             html.Div([
                 html.Div([
                     html.Div([
-                        dcc.Graph(id='revenue-map')
-                    ],
-                        className='six columns'
-                    ),
-                    html.Div([
-                        dcc.Graph(id='rev-bar')
-                    ],
-                        className='five columns'
-                    ),
-                    html.Div([
                         html.Div(id='instructions')
                     ],
                         className='five columns'
+                    ),
+                    html.Div([
+                        dcc.Graph(id='revenue-map')
+                    ],
+                        className='six columns'
                     ),
                 ],
                     className='twelve columns'
@@ -237,16 +232,15 @@ def revenue_layout(value):
             ),
             html.Div([
                 html.Div([
-                    html.Div(id='year-slider')
-                ],
-                    className='six columns'
-                ),
-                html.Div([
                     html.Div(id='rev-radio')
                 ],
                     className='six columns'
                 ),
-
+                html.Div([
+                    html.Div(id='year-slider')
+                ],
+                    className='six columns'
+                ),
             ],
                 className='row'
             ),
@@ -262,9 +256,23 @@ def revenue_layout(value):
                     className='six columns'
                 ),
                 html.Div([
-                    dcc.Graph(id='biz-bar')
+                    dcc.Graph(id='rev-bar')
                 ],
                     className='six columns'
+                )
+            ],
+                className='row'
+            ),
+            html.Div([
+                html.Div('-')
+                ],
+                    className='row'
+                ),
+            html.Div([
+                html.Div([
+                    dcc.Graph(id='biz-bar')
+                ],
+                    className='twelve columns'
                 ),
             ],
                 className='row'
@@ -414,6 +422,11 @@ def biz_layout(value):
         ],
             className='row'
         ),
+        html.Div([
+            dcc.Markdown('''Filter map by license type and hover over map markers to view business information''')
+        ],
+            className='row'
+        ),
     ])
 
 @app.callback(
@@ -546,7 +559,7 @@ def create_rev_bar_a(clickData, crat, value):
         return {
             'data': trace1,
             'layout': go.Layout(
-                height = 350,
+                height = 400,
                 title = '{} COUNTY REVENUE BY YEAR'.format(clickData['points'][-1]['text'])
             ),
         }
