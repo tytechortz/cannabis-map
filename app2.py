@@ -96,7 +96,7 @@ def get_layout():
             ),
             html.Div([
                 html.Div([
-                    html.H6('Business Data',style={'text-align':'right'})
+                    html.H6('Business Info',style={'text-align':'right'})
                 ],
                     className='five columns'
                 ),
